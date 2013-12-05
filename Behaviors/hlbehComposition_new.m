@@ -153,7 +153,7 @@ function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposi
 %% Globals
     global DB_PLOT;     % This global variable determines if we print plots.
     global DB_WRITE;    % This global variable determines if we write data to file.
-
+    global isTraining;  % Flag for Error Characterization Layer
 %%  Structure and indeces for low-level behavior structure
 %%  Labels for low-level behaviors
  	FIX     = 1;        % Fixed in place
@@ -207,7 +207,8 @@ function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposi
 
 %%  State: 
     [rState,~]= size(stateData);
-    if(~strcmp(StratTypeFolder,'ForceControl/HIRO/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
+    %% TODO: Do I need to change ForceControl/HIRO to ForceControl/SideApproach??
+    if(~strcmp(StratTypeFolder,'ForceControl/SideApproach/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
         
         % Only when all states where accomplished and there is a terminating time, do we want to subtract 1 to enumerate the number of states
         if(rState==5)
@@ -236,8 +237,8 @@ function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposi
 	hlbehStruc = zeros(1,rState-1);      % Currently 5 States for PivotApproach 
                                             % Currently 4 states for Side Approach
 
-%% PivotApproach/PA10 Code
-    if(~strcmp(StratTypeFolder,'ForceControl/HIRO/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
+%% PivotApproach -- PA10 Code
+    if(~strcmp(StratTypeFolder,'ForceControl/SideApproach/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
         
         %% (1) Create a state x ForceElments Cell array structure
 
@@ -543,15 +544,25 @@ function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposi
         %% Approach (State 1). Check to verify failure, if not assume success.
         
         if(rState>1) % I.e. Do this if there is: [ApproachStart,ApproachEnd]
-             [bool_fcData,avgData]=failureCharacterizationC(fPath,StratTypeFolder,stateData,motCompsFM,mcNumElems,llbehFM,LLBehNumElems,approachState,isTrainStruc);
-             
-             % Study Outcomes: if any of the following are true, there was failure. 
-             if(sum(bool_fcData(:,1))) 
-                 fcResult=1;            % If true, something failed.
-             else
-                 fcResult=0;            % First two zeros indicate no failure found, the other 5 indeces mean no condition to identify failure were found
-             end
-             
+            
+            % Error Characterization Layer can be turned on or off. 
+            % If off, assume success. If on, do analysis. 
+            if(isTraining)
+                [bool_fcData,avgData]=failureCharacterizationC(fPath,StratTypeFolder,stateData,motCompsFM,mcNumElems,llbehFM,LLBehNumElems,approachState,isTrainStruc);
+                
+                 % Error Charac Outcomes: if any of the following are true, there was failure. 
+                 if(sum(bool_fcData(:,1))) 
+                     fcResult=1;            % If true, something failed.
+                 else
+                     fcResult=0;            % First two zeros indicate no failure found, the other 5 indeces mean no condition to identify failure were found
+                 end
+                             
+            else
+                fcResult    = 0;            % Assumes no failure.
+                avgData     =-1;
+                bool_fcData =-1;
+            end
+            
             %% Failure Specific Steps
             if(fcResult) % Indicates failure.
                 % Do recovery steps and then...

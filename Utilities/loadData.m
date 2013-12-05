@@ -15,12 +15,13 @@
 %--------------------------------------------------------------------------
 function [AD,FD,CP,SD] = loadData(fPath,StratTypeFolder,FolderName)
 
-
+    %% Global Functions
+    global DB_DEBUG;
     % If manually loading adjust here and comment out later
-%     AngleData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/Angles.dat';
-%     ForceData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/Torques.dat';
-%     CartPos         ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/CartPos.dat';
-%     StateData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/State.dat';
+    %AngleData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/Angles.dat';
+    %ForceData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/Torques.dat';
+    %CartPos         ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/CartPos.dat';
+    %StateData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/State.dat';
     
     % If running HIRO Online Experiments use:
     %AngleData       ='\\home\\grxuser\\src\\OpenHRP3-0\\Controller\\IOserver\\HRP2STEP1\\bin\\Angles.dat';
@@ -81,9 +82,11 @@ function [AD,FD,CP,SD] = loadData(fPath,StratTypeFolder,FolderName)
         
     end
     %% Check to make sure that StateData has a finishing time included
-    if(strcmp(StratTypeFolder,'ForceControl/SideApproach/') || strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
-        if(rSD<5)
-            fprintf('StateData does not have 5 entries. You probably need to include the finishing time of the Assembly task in this vector.\n');
+    if(DB_DEBUG)
+        if(strcmp(StratTypeFolder,'ForceControl/SideApproach/') || strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
+            if(rSD<5)
+                fprintf('StateData does not have 5 entries. You probably need to include the finishing time of the Assembly task in this vector.\n');
+            end
         end
     end
 end

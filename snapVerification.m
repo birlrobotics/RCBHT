@@ -144,29 +144,39 @@ function  [hlbBelief,llbBelief,...
     global xYallDirTest;
     global isTraining;                      % Flag to determine if training or testing is being performed for failure characterization
     
-    %successAssembly=0;
+    failureOff=0;
     failureTraining=1;
     failureTesting=2;
     
-    xDirTest        = 1;                    % Normally set to true. Except when training specific cases of failure.
-    yDirTest        = 1;
-    xYallDirTest    = 1;
-    isTraining      = failureTesting;       % Can be one of 3 modes: 
+    xDirTest        = 0;                    % Normally set to true. Except when training specific cases of failure.
+    yDirTest        = 0;
+    xYallDirTest    = 0;
+    isTraining      = failureOff;           % Can be one of 3 modes: 
                                             % (i) Only working with success assemblies, isTraining=0;
                                             % (ii) Training failure, isTraining=1. In this case, you can choose to set one, or two, or all of xDirTest/yDirTest/xYallDirTest to 0 or 1.
                                             % (iii) Testing failure, isTraining=2. In this case, xDir,yDir,xYallDir should all be 1!!
+    if(isTraining==failureOff)
+        xDirTest=0; yDirTest=0; xYallDirTest=0;
+    elseif(isTraining==failureTesting)
+        xDirTest=1; yDirTest=1; xYallDirTest=1;
+    elseif(isTraining==failureTraining)
+        % Please set one axis at a time for training.
+        xDirTest        =1;
+        yDirTest        =0;
+        xYallDirTest    =0;
+    end
         
     % Create a structure for them
     isTrainStruc=[isTraining, xDirTest, yDirTest, xYallDirTest];
 
 %------------------------------------------------------------------------------------------
     %% Local Variables - to run or not to run layers
-    PRIM_LAYER      = 1;    % Compute the primitives layer
-    MC_LAYER        = 1;    % Compute the  motion compositions and clean up cycle
-    LLB_LAYER       = 1;    % Compute the low-level behavior and refinement cycle
-    HLB_LAYER       = 1;    % Compute the higher-level behavior
-    pRCBHT          = 0;    % Compute the llb and hlb Beliefs  
-    
+    PRIM_LAYER      = 1;         % Compute the primitives layer
+    MC_LAYER        = 0;         % Compute the  motion compositions and clean up cycle
+    LLB_LAYER       = 0;         % Compute the low-level behavior and refinement cycle
+    HLB_LAYER       = 0;         % Compute the higher-level behavior
+    pRCBHT          = 0;         % Compute the llb and hlb Beliefs  
+    errorCharacLayer=isTraining; % If true, we are doing errorCharacteriztion. Afects the call to hlbehComposition_new
 %------------------------------------------------------------------------------------------
 %% Debug Enable Commands
 % Not supported for cplusplus code generation
@@ -274,7 +284,11 @@ function  [hlbBelief,llbBelief,...
         end                                
     end % End all axes
 %%  F) After all axes are finished computing the LLB layer, generate and plot labels for high-level behaviors.
-    if(HLB_LAYER)                        
+    if(HLB_LAYER)   
+        
+        %if(errorCharacLayer==0)
+        %    hlbehStruc=hlbehComposition_new(~,~,llbehFM,llbehLbl,stateData,axesHandles,TL,BL,fPath,StratTypeFolder,FolderName);
+        %else
         % Save all llbeh strucs in a structure. One field for each llbeh. This is an
         % update from the previous array. 
         % 2013July: 
@@ -288,7 +302,13 @@ function  [hlbBelief,llbBelief,...
                                                                            llbehFM,LLBehNumElems,llbehLbl,...
                                                                            stateData,axesHandles,TL,BL,...
                                                                            fPath,StratTypeFolder,FolderName,...
-                                                                           isTrainStruc);    
+                                                                           isTrainStruc);
+    % If the layer is off, set outputs to -1.                                                                        
+    else
+        hlbehStruc  =  1;
+        fcAvgData   = -1;
+        successFlag = -1;
+        boolFCData  = -1;
     end
     
 %% G) Compute the Bayesian Filter for the HLB
