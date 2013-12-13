@@ -122,7 +122,7 @@ function  [hlbBelief,llbBelief,...
     global DB_WRITE;        % To write data to file
     global DB_DEBUG;        % To enable debugging capabilities
     
-    DB_PLOT         = 0;
+    DB_PLOT         = 1;
     DB_PRINT        = 0; 
     DB_WRITE        = 1;
     DB_DEBUG        = 0;
@@ -151,7 +151,7 @@ function  [hlbBelief,llbBelief,...
     xDirTest        = 0;                    % Normally set to true. Except when training specific cases of failure.
     yDirTest        = 0;
     xYallDirTest    = 0;
-    isTraining      = failureOff;           % Can be one of 3 modes: 
+    isTraining      = failureTesting;           % Can be one of 3 modes: 
                                             % (i) Only working with success assemblies, isTraining=0;
                                             % (ii) Training failure, isTraining=1. In this case, you can choose to set one, or two, or all of xDirTest/yDirTest/xYallDirTest to 0 or 1.
                                             % (iii) Testing failure, isTraining=2. In this case, xDir,yDir,xYallDir should all be 1!!
@@ -172,8 +172,8 @@ function  [hlbBelief,llbBelief,...
 %------------------------------------------------------------------------------------------
     %% Local Variables - to run or not to run layers
     PRIM_LAYER      = 1;         % Compute the primitives layer
-    MC_LAYER        = 0;         % Compute the  motion compositions and clean up cycle
-    LLB_LAYER       = 0;         % Compute the low-level behavior and refinement cycle
+    MC_LAYER        = 1;         % Compute the  motion compositions and clean up cycle
+    LLB_LAYER       = 1;         % Compute the low-level behavior and refinement cycle
     HLB_LAYER       = 0;         % Compute the higher-level behavior
     pRCBHT          = 0;         % Compute the llb and hlb Beliefs  
     errorCharacLayer=isTraining; % If true, we are doing errorCharacteriztion. Afects the call to hlbehComposition_new
@@ -185,7 +185,7 @@ function  [hlbBelief,llbBelief,...
 %     end
     
 %% Initialization/Preprocessing
-    % Create a CELL of strings to capture the types of possible force-torque data plots
+    % Create an array of strings to capture the types of possible force-torque data plots
     plotType = ['Fx';'Fy';'Fz';'Mx';'My';'Mz'];
     stateTimes=-1;
 %% A) Plot Forces
@@ -195,7 +195,8 @@ function  [hlbBelief,llbBelief,...
 %% B) Perform regression curves for force moment reasoning          
     % Iterate through each of the six force-moment plots Fx Fy Fz Mx My Mz
     % generated in snapData3 and superimpose regressionfit lines in each of
-    % the diagrams. 
+    % the diagrams.
+    
     for axisIndex=first:last
         if(PRIM_LAYER)
             wStart  = 1;                            % Initialize index for starting analysis
@@ -301,7 +302,7 @@ function  [hlbBelief,llbBelief,...
         [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,...
                                                                            llbehFM,LLBehNumElems,llbehLbl,...
                                                                            stateData,axesHandles,TL,BL,...
-                                                                           fPath,StratTypeFolder,FolderName,...
+                                                                           fPath,StratTypeFolder,StratType,FolderName,...
                                                                            isTrainStruc);
     % If the layer is off, set outputs to -1.                                                                        
     else

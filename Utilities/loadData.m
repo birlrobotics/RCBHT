@@ -17,6 +17,7 @@ function [AD,FD,CP,SD] = loadData(fPath,StratTypeFolder,FolderName)
 
     %% Global Functions
     global DB_DEBUG;
+    
     % If manually loading adjust here and comment out later
     %AngleData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/Angles.dat';
     %ForceData       ='/home/grxuser/Documents/School/Research/AIST/Results/ForceControl/ErrorCharac/Torques.dat';

@@ -31,6 +31,8 @@ function StratTypeFolder = AssignDir(StrategyType)
         StratTypeFolder = 'ForceControl/SideApproach/';                                     % Used with HIRO SideApproach Simulation and Physical
     elseif strcmp(StrategyType, 'ErrorCharac')
         StratTypeFolder = 'ForceControl/ErrorCharac/';                                      % Used with HIRO SideApproach to compute error characteristics
+    elseif strcmp(StrategyType,'HIRO')
+        StratTypeFolder = 'ForceControl/HIRO/';                                             % Used for experiments with real HIRO robot and side approach.
     else
         StratTypeFolder = '';
 %        FolderName='';

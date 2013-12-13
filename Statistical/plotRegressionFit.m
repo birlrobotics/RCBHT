@@ -72,6 +72,6 @@ function [rHandle,TOP_LIMIT,BOTTOM_LIMIT]=plotRegressionFit(x,yfit,Type,pHandle,
     end
     
     % Title
-    title(strcat('Regression Fits for',' ',Type));
+    title(['Regression Fits for',' ',Type]); % Square brackets acts as strcat but allow the inclusion of a space ' '.
 
 end % End function

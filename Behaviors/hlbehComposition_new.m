@@ -6,7 +6,8 @@
 % HIRO robot both in Simulation and Physical Experiments.
 %
 % Note: The original implementation used cell data structures, but we have moved
-% away from them because they cannot be used by coder. 
+% away from them because they cannot be used by Matlab coder to convert to
+% C++.
 % 
 % In July, 2013, we integrated a failure characterization scheme.  We did 
 % not only analyze if the assembly is successful but also if there is a failure
@@ -118,7 +119,7 @@
 %                 state 2. Will insert state 1 at the initialization stage.
 % curHandle:    - handle to axes in figure.
 % TL/BL:        - top and bottom limits of all axes in the subplot fig.
-% fPath,StratTypeFolder,FolderName
+% fPath,StratType,FolderName
 % isTrainStruc  - [isTrainingFailure?,XDirTrainingFlag,YDirTrainingFlag,xYallDirTrainingFlag]
 %--------------------------------------------------------------------------
 % Output Parameters:
@@ -147,7 +148,7 @@
 function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposition_new(motCompsFM,mcNumElems,llbehFM,LLBehNumElems,...
                                                                                            llbehLbl,stateData,...
                                                                                            curHandle,TL,BL,...
-                                                                                           fPath,StratTypeFolder,FolderName,...
+                                                                                           fPath,StratTypeFolder,StratType,FolderName,...
                                                                                            isTrainStruc)
    
 %% Globals
@@ -208,7 +209,7 @@ function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposi
 %%  State: 
     [rState,~]= size(stateData);
     %% TODO: Do I need to change ForceControl/HIRO to ForceControl/SideApproach??
-    if(~strcmp(StratTypeFolder,'ForceControl/SideApproach/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
+    if(~strcmp(StratType,'HSA') && ~strcmp(StratType,'ErrorCharac') && ~strcmp(StrategyType,'HIRO'))
         
         % Only when all states where accomplished and there is a terminating time, do we want to subtract 1 to enumerate the number of states
         if(rState==5)
@@ -238,7 +239,7 @@ function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposi
                                             % Currently 4 states for Side Approach
 
 %% PivotApproach -- PA10 Code
-    if(~strcmp(StratTypeFolder,'ForceControl/SideApproach/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
+    if(~strcmp(StratType,'HSA') && ~strcmp(StratType,'ErrorCharac') && ~strcmp(StrategyType,'HIRO'))
         
         %% (1) Create a state x ForceElments Cell array structure
 
@@ -615,7 +616,7 @@ function [hlbehStruc,avgData,snapVerificationSuccess,bool_fcData] = hlbehComposi
             llbIsInAxis = checkLLBExistance( stateLbl, matState, llbehLbl, stateLLBstruc);
             if(llbIsInAxis);hlbehStruc(1,matState)=1;end       
         end
-    end % End if(strcmp(StratTypeFolder,'\\ForceControl\\HIRO\\'))
+    end % End if(~strcmp(StratType,'HSA') && ~strcmp(StratType,'ErrorCharac') && ~strcmp(StrategyType,'HIRO'))
     
 %% Compute successFlag
     snapVerificationSuccess=all(hlbehStruc); % Returns true if all states are successful

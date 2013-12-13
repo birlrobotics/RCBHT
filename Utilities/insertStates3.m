@@ -21,7 +21,15 @@ function insertStates3(StrategyType,stateData,EndTime,handles,TOP_LIMIT,BOTTOM_L
    
     % Insert EndTime as the last row of the stateData
     r = size(stateData);
-    stateData(r(1)+1,1) = EndTime;
+    if(strcmp(StrategyType,'HSA') || strcmp(StrategyType,'ErrorCharac') || strcmp(StrategyType,'HIRO'))
+        if(r(1)<5)
+            stateData(r(1)+1,1) = EndTime;
+        end
+    elseif(strcmp(StrategyType,'FP'))
+        if(r(1)<6)
+            stateData(r(1)+1,1) = EndTime;
+        end            
+    end
     
     % Determine how many limits do we have: 6 for force moment or 8
     % including snap joints.
