@@ -46,10 +46,9 @@
 % looks for specific characteristics outlined in more detailed in those
 % functions or in the documentation.
 %
-% 6) Bayes Filtering or pRCBHT
-% This function converts data found in the MC/LLB/HLB layers into a
-% probabilistic rendition and uses that information to study whether
-% failure is likely or success has happened.
+% 6) Bayes Filtering or pRCBHT This function converts data found in the
+% MC/LLB/HLB layers into a probabilistic rendition and uses that
+% information to study whether failure is likely or success has happened.
 %
 % 7) Save Learning Data
 % After the analysis has finished, data that is required for probabilistic
@@ -189,7 +188,7 @@ function  [hlbBelief,llbBelief,...
     plotType = ['Fx';'Fy';'Fz';'Mx';'My';'Mz'];
     stateTimes=-1;
 %% A) Plot Forces
-    plotOptions=1;  % plotOptions=0: plot separate figures. =1, plot in subplots
+    plotOptions=0;  % plotOptions=0: plot separate figures. =1, plot in subplots
     [fPath,StratTypeFolder,forceData,stateData,axesHandles,TL,BL]=snapData3(StrategyType,FolderName,plotOptions);
 
 %% B) Perform regression curves for force moment reasoning          

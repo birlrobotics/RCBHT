@@ -12,8 +12,9 @@
 %                     limits
 % AVERAGE:          - uses the average value of data to compute the axis
 %                     limits. useful for data with big impulses
+% plotOptions:      - If false, all FT axes plot in one plot, else subplots
 %**************************************************************************
-function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMIT_PERC,SIGNAL_THRESHOLD,WITHMARGIN,AVERAGE)
+function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMIT_PERC,SIGNAL_THRESHOLD,WITHMARGIN,AVERAGE,plotOptions)
 
 %% Initialize local variable
     global DB_PRINT;
@@ -52,7 +53,11 @@ function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMI
 
     elseif(strcmp(Type,'Mz'))
         Range = Data(1:length(Data)*TIME_LIMIT_PERC,7);   
-        fmFlag = true;       
+        fmFlag = true;
+        
+    else % All Plots 
+        Range = Data(1:length(Data)*TIME_LIMIT_PERC,2:7);   
+        fmFlag = true;          
     end
 
 %% Compute max and min axis parameters for force and moment plots    
@@ -115,10 +120,15 @@ function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMI
             %WITHMARGIN = 1;        
         
         else
-            % the 2nd/3rd/or 4th smallest and largest numbers given that often
-            % there is an impulse
-            x = x(4); %min(Range);
-            y = y(4); %max(Range);
+                if(plotOptions==0) % All FT data in one plot
+                    x = min(x);
+                    y = max(y);
+                else                    
+                    % the 2nd/3rd/or 4th smallest and largest numbers given that often
+                    % there is an impulse
+                    x = x(4); %min(Range);
+                    y = y(4); %max(Range);
+                end
         end
         
         % Print max/min values
@@ -151,7 +161,7 @@ function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMI
     end
     
     % Adjust the axes
-    axis([Data(1,1) (Data(length(Data),1)*TIME_LIMIT_PERC) BOTTOM_LIMIT TOP_LIMIT]);
+    axis([Data(1,1) (Data(length(Data),1)*TIME_LIMIT_PERC) min(BOTTOM_LIMIT) max(TOP_LIMIT)]);
 
 %% Write the legend
     if(strcmp(Type,'Rotation Spring'))

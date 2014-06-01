@@ -12,16 +12,16 @@ function insertStates(stateVector,max,min,FillFlag)
 %% Initialization
    
     % Count rows in the state vector
-    [r c] = size(stateVector);
+    [r,c] = size(stateVector);
     
     % Define colors and transparency
-    red     = [0.8 0.25 0.9];
+    %red     = [0.8 0.25 0.9];
     orange  = [1.0, 0.6, 0.0];
     green   = [0 1 0.1];
     yellow  = [1 1 0];
     cyan    = [0.05 0.9 1];
     blue    = [0 0.25 1]; 
-    white   = [1 1 1];
+    %white   = [1 1 1];
     Transparency = 0.75;
 %     if(FillFlag)
 %         Transparency = 0.25;    
