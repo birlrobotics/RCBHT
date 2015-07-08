@@ -49,7 +49,7 @@ function htext = plotLowLevelBehCompositions(StrategyType,rHandle,TL,BL,data)
                 htext(i)=text   (data(index,AvgTime),...                  % x-position. Average time of composition.
                                 (0.75*TL(i)),...                          % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                                  llbInt2llbLbl(...
-                                    data(index,LblIndex)),...             % Composition string: alignment, increase, decrease, constant.
+                                 data(index,LblIndex)),...                % Composition string: alignment, increase, decrease, constant.
                                 'Color',              [1,0,0],...         % Font color
                                 'FontSize',            8.5,...            % Size of font. Changed from 7.5 to 8.5
                                 'FontWeight',         'light',...         % Font weight can be light, normal, demi, bold

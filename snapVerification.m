@@ -143,6 +143,7 @@ function  [hlbBelief,llbBelief,...
     global xYallDirTest;
     global isTraining;                      % Flag to determine if training or testing is being performed for failure characterization
     
+    % Options: please set isTraining
     failureOff=0;
     failureTraining=1;
     failureTesting=2;
@@ -150,7 +151,7 @@ function  [hlbBelief,llbBelief,...
     xDirTest        = 0;                    % Normally set to true. Except when training specific cases of failure.
     yDirTest        = 0;
     xYallDirTest    = 0;
-    isTraining      = failureTesting;           % Can be one of 3 modes: 
+    isTraining      = failureOff;           % Can be one of 3 modes: 
                                             % (i) Only working with success assemblies, isTraining=0;
                                             % (ii) Training failure, isTraining=1. In this case, you can choose to set one, or two, or all of xDirTest/yDirTest/xYallDirTest to 0 or 1.
                                             % (iii) Testing failure, isTraining=2. In this case, xDir,yDir,xYallDir should all be 1!!
@@ -173,7 +174,7 @@ function  [hlbBelief,llbBelief,...
     PRIM_LAYER      = 1;         % Compute the primitives layer
     MC_LAYER        = 1;         % Compute the  motion compositions and clean up cycle
     LLB_LAYER       = 1;         % Compute the low-level behavior and refinement cycle
-    HLB_LAYER       = 0;         % Compute the higher-level behavior
+    HLB_LAYER       = 1;         % Compute the higher-level behavior
     pRCBHT          = 0;         % Compute the llb and hlb Beliefs  
     errorCharacLayer=isTraining; % If true, we are doing errorCharacteriztion. Afects the call to hlbehComposition_new
 %------------------------------------------------------------------------------------------
@@ -188,7 +189,7 @@ function  [hlbBelief,llbBelief,...
     plotType = ['Fx';'Fy';'Fz';'Mx';'My';'Mz'];
     stateTimes=-1;
 %% A) Plot Forces
-    plotOptions=0;  % plotOptions=0: plot separate figures. =1, plot in subplots
+    plotOptions=1;  % plotOptions=0: plot separate figures. =1, plot in subplots
     [fPath,StratTypeFolder,forceData,stateData,axesHandles,TL,BL]=snapData3(StrategyType,FolderName,plotOptions);
 
 %% B) Perform regression curves for force moment reasoning          
@@ -301,7 +302,7 @@ function  [hlbBelief,llbBelief,...
         [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,...
                                                                            llbehFM,LLBehNumElems,llbehLbl,...
                                                                            stateData,axesHandles,TL,BL,...
-                                                                           fPath,StratTypeFolder,StratType,FolderName,...
+                                                                           fPath,StratTypeFolder,StrategyType,FolderName,...
                                                                            isTrainStruc);
     % If the layer is off, set outputs to -1.                                                                        
     else

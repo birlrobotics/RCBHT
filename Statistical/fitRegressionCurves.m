@@ -66,7 +66,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
 
     % Size
     window_length       = 5;                        % Length of window used to analyze the data
-    [rows c]            = size(forceData);          % size elements of force data
+    [rows, ~]            = size(forceData);          % size elements of force data
     
     % Thresholds
     if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
@@ -205,7 +205,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
                         dataFit     = dataFit(Range);               % Corresponding force data for a given force element in a given window                                        
                     end
 %%                  ii) Retrieve the segment's statistical Data and write to file
-                    [dAvg dMax dMin dStart dFinish dGradient dLabel]=statisticalData(Time(1),   Time(length(Range)),...
+                    [dAvg, dMax, dMin, dStart, dFinish, dGradient, dLabel]=statisticalData(Time(1),   Time(length(Range)),...
                                                                                      dataFit,   domain,      polyCoeffs,...
                                                                                      FolderName,StrategyType,index); % 1+windowlength
 

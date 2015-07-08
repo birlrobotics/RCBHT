@@ -8,8 +8,9 @@
 % StratTypeFodler   - Strategy Specific Folder
 % handle            - Handle for plot you want to save
 % plotName          - Name you want to assign the plot in the file
+% plotOptions       - If false, one plot for all FT, else subplots
 %%
-function savePlot(fPath, StratTypeFolder, FolderName, handle, plotName)
+function savePlot(fPath, StratTypeFolder, FolderName, handle, plotName, plotOptions)
 
 %%  Set Directory    
 %    if(ispc)
@@ -49,9 +50,16 @@ function savePlot(fPath, StratTypeFolder, FolderName, handle, plotName)
         end
         p = strcat(nm,'.png');
         f = strcat(nm,'.fig');
-        saveas(hdl,p,'png');         
-        saveas(hdl,f,'fig');
-        %saveas(hdl,FolderName,'epsc');        
+        
+        if(plotOptions==0)
+            saveas(gca,p,'png');         
+            saveas(gca,f,'fig');
+            %saveas(hdl,FolderName,'epsc');              
+        else
+            saveas(hdl,p,'png');         
+            saveas(hdl,f,'fig');
+            %saveas(hdl,FolderName,'epsc');        
+        end
 %     else
 %         print -depsc    diffPlot.eps;
 %         print -dpslatex diffPlot.eps;

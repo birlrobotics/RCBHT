@@ -122,5 +122,6 @@ function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData
     end
     
 %%  Save plot
-    savePlot(fPath,StratTypeFolder,FolderName,aHandle,'hlbehPlot');
+    plotOptions=1; % Save the plot for each Axes in a separate file
+    savePlot(fPath,StratTypeFolder,FolderName,aHandle,'hlbehPlot',plotOptions);
 end

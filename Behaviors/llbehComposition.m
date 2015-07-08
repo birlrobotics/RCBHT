@@ -257,6 +257,7 @@ function [llbehStruc,llbehLbl] = llbehComposition(StrategyType,motComps,curHandl
         htext = plotLowLevelBehCompositions(StrategyType,curHandle,TL,BL,llbehStruc);
 
         %  Save plot
-        savePlot(fPath,StratTypeFolder,FolderName,curHandle,'llbehPlot'); 
+        plotOptions=1; % Save the plot for each Axes in a separate file
+        savePlot(fPath,StratTypeFolder,FolderName,curHandle,'llbehPlot',plotOptions); 
     end
 end

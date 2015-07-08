@@ -212,7 +212,7 @@ function [fPath,StratTypeFolder,forceData,stateData,handles,TOP_LIMIT,BOTTOM_LIM
         insertStates3(StrategyType,stateData,EndTime,handles,TOP_LIMIT,BOTTOM_LIMIT,plotOptions);    
 
 %% Save plot to file
-            savePlot(fPath,StratTypeFolder,FolderName,handles(1),mfilename);
+            savePlot(fPath,StratTypeFolder,FolderName,handles(1),mfilename,plotOptions);
     else
         handles     =-1;
         TOP_LIMIT   =-1;
