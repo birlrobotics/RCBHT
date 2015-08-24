@@ -163,7 +163,7 @@ function gradLabel = GradientClassification(gradient,domain,...
         %% Read value from file to know if we should load standard values
         %% or optimized values
         
-        if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+        if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
             pimp  =1000.0;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
             bpos  = 100.0;     bneg = -1*bpos;
             mpos  =  10.0;     mneg = -1*mpos;
@@ -182,7 +182,7 @@ function gradLabel = GradientClassification(gradient,domain,...
 %% OPTIMIZATION ACCORDING TO THE FORCE/MOMENT-AXIS DOMAIN --Primarily used in moment signals.
         % 1) Scale values by 0.5 if domain is less than 0.1 in total value.
         if(forceAxisIndex>3) % moments
-            if(strcmp(StrategyType,'HSA') && domain < 1.9) 
+            if(strcmp(StrategyType,'SIM_SideApproach') || strcmp(StrategyType,'SIM_SA_DualArm') && domain < 1.9) 
                 factor = 10.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
@@ -190,7 +190,7 @@ function gradLabel = GradientClassification(gradient,domain,...
                 mpos  = mpos/factor;     mneg = -1*mpos;
                 spos  = spos/factor;     sneg = -1*spos;   
 
-            elseif(strcmp(StrategyType,'HSA') && domain < 0.1) 
+            elseif(strcmp(StrategyType,'SIM_SideApproach') || strcmp(StrategyType,'SIM_SA_DualArm') && domain < 0.1) 
                 factor = 100.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
@@ -198,7 +198,8 @@ function gradLabel = GradientClassification(gradient,domain,...
                 mpos  = mpos/factor;     mneg = -1*mpos;
                 spos  = spos/factor;     sneg = -1*spos; 
 
-            elseif(strcmp(StrategyType,'ErrorCharac') && domain < 4.0)
+            %% Error Characterization: Has larger values
+            elseif(strcmp(StrategyType(1:12),'SIM_SA_Error') && domain < 4.0)
                 factor = 10.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
@@ -206,7 +207,7 @@ function gradLabel = GradientClassification(gradient,domain,...
                 mpos  = mpos/factor;     mneg = -1*mpos;
                 spos  = spos/factor;     sneg = -1*spos;   
 
-            elseif(strcmp(StrategyType,'ErrorCharac') && domain < 1)
+            elseif(strcmp(StrategyType(1:12),'SIM_SA_Error') && domain < 1)
                 factor = 100.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8

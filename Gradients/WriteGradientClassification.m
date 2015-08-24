@@ -4,20 +4,11 @@
 % 2) Write the entire gradient classification structure.
 % The second choice is done after the relevant gradient classification
 % values have been computed as per described in gradientCalibration()
-function WriteGradientClassification(WinPath,StratTypeFolder,gradClassification,index)                                           
+function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,index)                                           
 
 %% Create Directory   
-    if(ispc)
-        % Set path with new folder "Segments" in it.
-        gradClassFolder = 'gradClassFolder';
-        dir             = strcat(WinPath,StratTypeFolder,gradClassFolder);        
-    % Linux
-    else
-        gradClassFolder='gradClassFolder';
-        LinuxPath   = '\\home\\Documents\\Results\\Force Control\\Pivot Approach\\';
-        %QNXPath    = '\\home\\hrpuser\\forceSensorPlugin_Pivot\\data\\Results\\'
-        dir         = strcat(LinuxPath,StratTypeFolder,gradClassFolder);        
-    end    
+    gradClassFolder = 'gradClassFolder';
+    dir             = strcat(fPath,StratTypeFolder,gradClassFolder);        
  
     % Check if directory exists, if not create a directory
     if(exist(dir,'dir')==0)

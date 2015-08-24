@@ -25,7 +25,7 @@ function insertStates3(StrategyType,stateData,EndTime,handles,TOP_LIMIT,BOTTOM_L
     
     % Determine how many limits do we have: 6 for force moment or 8
     % including snap joints.
-    if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac')) % If not HIRO
+    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm')) % If not HIRO
         FX=3;FY=4;FZ=5;MX=6;MY=7;MZ=8;
     else
         FX=1;FY=2;FZ=3;MX=4;MY=5;MZ=6;

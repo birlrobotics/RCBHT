@@ -66,6 +66,10 @@ function motComps=CompoundMotionComposition(StrategyType,statData,saveData,gradL
 %--------------------------------------------------------------------------
     global DB_PLOT;                                 % Declared in snapVerification. Enables plotting.
     global DB_WRITE;
+
+%--------------------------------------------------------------------------    
+    global axisIndex;                               % Maintain global variables to identify which index of the force plot we are plotting. 
+    global lastIndex;        
 %--------------------------------------------------------------------------    
     global MC_COMPS_CLEANUP_CYCLES;
 %--------------------------------------------------------------------------
@@ -154,7 +158,7 @@ function motComps=CompoundMotionComposition(StrategyType,statData,saveData,gradL
     
 %% E. CleanUp the motion compositions
     % PA10 Pivot Approach
-    if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
         CleanLoops = CLEANUP_CYCLES;
     % HIRO Side Approach
     else
@@ -180,7 +184,9 @@ function motComps=CompoundMotionComposition(StrategyType,statData,saveData,gradL
         % Plot the compound motion compositions, given the right axes and
         % top-limit boundary. 
         if(DB_PLOT)
-            plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps);
+            if(axisIndex==lastIndex) % We are in the last round of MCs, now plot.
+                plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps);
+            end
         end
         
 end     % End function

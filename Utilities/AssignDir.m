@@ -14,7 +14,7 @@
 %**************************************************************************
 function StratTypeFolder = AssignDir(StrategyType)
 
-% Assign a directory path based on the StrategyType used. 
+    % Assign a directory path based on the StrategyType used. 
     if strcmp(StrategyType,'S')
         StratTypeFolder = 'PositionControl/StraightLineApproach-NewIKinParams/';            % Straight Line with new IKin params
     

@@ -103,21 +103,57 @@ function  [hlbBelief,llbBelief,...
 %  StrategyType = 'HSA';
 %  FolderName='20120426-1844-SideApproach-S';
 %  first=1;last=6;
-figure;
 
 %% Global Variables
+
+    % Maintain global variables to identify which index of the force plot we are plotting. 
+    global axisIndex;
+    global firstIndex;
+    global lastIndex; 
+    
+    firstIndex=first;
+    lastIndex= last;
+    axisIndex=firstIndex; 
+
+%-----------------------------------------------------------------------------------------
+    % Create figures for the right and left arms
+
+    global rarmHandle;
+    global larmHandle; 
+
+    rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off');
+    movegui(rarmHandle,'east');
+    % figR=gcf; figR.PaperUnits='centimeters';
+    % figure('position', [990, 0, 970, 950])
+    
+    larmHandle=figure('Name','Left Arm Forces','NumberTitle','off');
+    movegui(larmHandle,'west');
+    figure(rarmHandle);
+    % figL=gcf; figL.PaperUnits='centimeters';
+    % figure('position', [990, 0, 970, 950])
+    
+%-----------------------------------------------------------------------------------------
+    % 
+%-----------------------------------------------------------------------------------------
+    % Index to choose right and left arms in for loop
+    global armSide;
+    RIGHT=1;
+    LEFT =2;
+    
+    armSide=RIGHT;          % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
+    
 %-----------------------------------------------------------------------------------------
     % GRADIENT OPTIMIZATION
-    %opengl software;       % If matlab crashes make sure to enable this command as matlab cannot render the state colors in hardware. 
+    %opengl software;       % If matlab crashes make sure to enable this command as matlab may not be able to render the state colors in hardware. 
     global Optimization;    % The Optimization variable is used to extract gradient classifications from a first trial. Normally should have a zero value.
-    Optimization    = 0;    % If you want to calibrate gradient values turn this to 1 and make sure that all calibration files found in:
-                            % C:\Documents and Settings\suarezjl\My Documents\School\Research\AIST\Results\ForceControl\SideApproach\gradClassFolder
+    Optimization    = 1;    % If you want to calibrate gradient values turn this to 1 and make sure that all calibration files found in:
+                            % %{USER}\Documents\School\Research\AIST\Results\ForceControl\${StratTypeFolder}\gradClassFolder
                             % are deleted. 
                             % After one run, turn the switch off. The routine will used the saved values to file. 
                             
 %------------------------------------------------------------------------------------------
     
-    % DEBUGGING
+% DEBUGGING
     global DB_PLOT;         % To plot graphs
     global DB_PRINT;        % To print console messages
     global DB_WRITE;        % To write data to file
@@ -139,22 +175,38 @@ figure;
     
 %------------------------------------------------------------------------------------------
 
+    % OTHER DATA TO PLOT: ANGLES, CARTESIAN, LEFT ARM
+    global anglesDataFlag;
+    global cartposDataFlag;
+    global local0_world1_coords;
+    global gravityCompensated;
+    global leftArmDataFlag;
+    
+    anglesDataFlag                  = 0; 	% If you want to current joint angle data for analysis set to true. 
+    cartposDataFlag                 = 0;    % If you want to use cartesian coordinates wrt the wrst set to true.    
+    local0_world1_coords            = 0;    % If you want to plot wrt end-eff set to false, wrt the world, set to true.
+    gravityCompensated              = 0;    % If you want to plot torques that have used gravity compensation
+    leftArmDataFlag                 = 1;    % If you want to plot data for the left arm, set to true.    
+    
+%------------------------------------------------------------------------------------------
+
     % FAILURE CHARACTERIZATION TESTING FLAGS
     global xDirTest;
     global yDirTest;
     global xRollDirTest;
     
-    xDirTest        = 1;                    % Normally set to true. Except when training specific cases of failure.
-    yDirTest        = 1;
-    xRollDirTest    = 1;
+    xDirTest                        = 1;    % Normally set to true. Except when training specific cases of failure.
+    yDirTest                        = 1;
+    xRollDirTest                    = 1;
 
 %------------------------------------------------------------------------------------------
-    %% Local Variables - to run or not to run layers
-    PRIM_LAYER      = 1;    % Compute the primitives layer
-    MC_LAYER        = 1;    % Compute the  motion compositions and clean up cycle
-    LLB_LAYER       = 1;    % Compute the low-level behavior and refinement cycle
-    HLB_LAYER       = 1;    % Compute the higher-level behavior
-    pRCBHT          = 0;    % Compute the llb and hlb Beliefs  
+    
+    % Local Variables - to run or not to run layers
+    PRIM_LAYER                      = 1;    % Compute the primitives layer
+    MC_LAYER                        = 1;    % Compute the  motion compositions and clean up cycle
+    LLB_LAYER                       = 1;    % Compute the low-level behavior and refinement cycle
+    HLB_LAYER                       = 0;    % Compute the higher-level behavior
+    pRCBHT                          = 0;    % Compute the llb and hlb Beliefs  
     
 %------------------------------------------------------------------------------------------
 %% Debug Enable Commands
@@ -169,85 +221,128 @@ figure;
     stateTimes=-1;
 %% A) Plot Forces
     plotOptions=1;  % plotOptions=0: plot separate figures. =1, plot in subplots
-    [fPath,StratTypeFolder,forceData,stateData,axesHandles,TL,BL]=snapData3(StrategyType,FolderName,plotOptions);
-
-%% B) Perform regression curves for force moment reasoning          
-    % Iterate through each of the six force-moment plots Fx Fy Fz Mx My Mz
-    % generated in snapData3 and superimpose regressionfit lines in each of
-    % the diagrams. 
-    for axisIndex=first:last
-        if(PRIM_LAYER)
-            wStart  = 1;                            % Initialize index for starting analysis
-
-            % Determine how many handles
-            if(last-first==0)
-                pHandle = 0;
-            else
-                pHandle = axesHandles(axisIndex);           % Retrieve the handle for each of the force curves
-            end
-
-            % Determine the type of the plot
-            pType   = plotType(axisIndex,:);                  % Use curly brackets to retrieve the plotType out of the cell
-
-            % Compute regression curves for each force curve
-            [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData,stateData,wStart,pHandle,TL,BL,axisIndex);        
-
-            if(Optimization==1)
-               gradientCalibration(fPath,StratTypeFolder,stateData,statData,axisIndex);
-
-               llbBelief=-1;
-               hlbBelief=-1; % Dummy variables for this segment
-            end
-        end     % End PRIMITIVES_LAYER
+    
+    % Consider single or dual arm case to output relevant data.
+    % Right Arm
+    if(leftArmDataFlag==0)
+        [fPath,StratTypeFolder,...
+         forceData,~,...
+         ~,~,...                   %angleData,angleDataL,...
+         ~,~,...                   %cartPosData,cartPosDataL,...
+         stateData,axesHandlesRight,...
+         TL,BL]=snapData3(StrategyType,FolderName,plotOptions);
+     
+     % Left Arm
+    else
+        [fPath,StratTypeFolder,...
+         forceData,forceDataL,...
+         ~,~,...                   %angleData,angleDataL,...
+         ~,~,...                   %cartPosData,cartPosDataL,...
+         stateData,axesHandlesRight,axesHandlesLeft,...
+         TL,BL]=snapData3(StrategyType,FolderName,plotOptions);
+    end
+ 
+%% B) Relative-Change Behavior Hierarchical Taxonomy: 
+    % This taxonomy seeks to yield high-level estimates of what the robot
+    % is doing. Currently assumes a SideApproach strategy. Data is
+    % evaluated through the primitives, motion composition, LLB, HLB layer.
+    % Optionally we can run a BayesianFilter to get a likelihood on the
+    % result. Can also run a calibration routine to tune fitting parameters
+    % to different environments.
+   
+    % Switch to the right arm figure    
+    figure(rarmHandle);
+    
+%% B_Right_1) Perform regression curves for force moment reasoning for the right/left arm                  
         
-%% Do the following only if (gradient classification) optimization is turned off
-        if(Optimization==0) 
-            
-            
-%% C)       Generate the compound motion compositions for each of the six force elements
-
-            if(MC_LAYER)
-                % If you want to save the .mat of motComps, set saveData to 1. 
-                saveData = 0;
-                motComps = CompoundMotionComposition(StrategyType,statData,saveData,gradLabels,curHandle,TL(axisIndex),BL(axisIndex),fPath,StratTypeFolder,FolderName,pType,stateData); %TL(axisIndex+2) skips limits for the first two snapJoint suplots              
-            
-                if(axisIndex==1)
-                    MCFx = motComps;
-                elseif(axisIndex==2)
-                    MCFy = motComps;
-                elseif(axisIndex==3)
-                    MCFz = motComps;
-                elseif(axisIndex==4)
-                    MCMx = motComps;
-                elseif(axisIndex==5)
-                    MCMy = motComps;
-                elseif(axisIndex==6)
-                    MCMz = motComps;
-                end     
-            end
-
-%% D)       Generate the low-level behaviors
+    %% Set variables according to whether we are using the right arm or the left
+    for armSide=RIGHT:LEFT
+        if(armSide==RIGHT)
+            % Create a matlab pointer struc to force structures, axis handles, to be used later in RCBHT analysis 
+            forceData_p = libpointer('doublePtr',forceData);            % Data is extracted by calling forceData_p.Value
+            axesHandles = axesHandlesRight;
+        else
+            forceData_p = libpointer('doublePtr',forceDataL); % If want to extract array contents do: forceData_p.Value(index)
+            axesHandles = axesHandlesLeft;
+        end
         
-            if(LLB_LAYER)
-                % Combine motion compositions to produce low-level behaviors
-                [llbehStruc,llbehLbl] = llbehComposition(StrategyType,motComps,curHandle,TL(axisIndex),BL(axisIndex),fPath,StratTypeFolder,FolderName,pType);                          
-                
-%% E)          Copy to a fixed structure for post-processing        
-                if(axisIndex==1)
-                    llbehFx = llbehStruc;
-                elseif(axisIndex==2)
-                    llbehFy = llbehStruc;
-                elseif(axisIndex==3)
-                    llbehFz = llbehStruc;
-                elseif(axisIndex==4)
-                    llbehMx = llbehStruc;
-                elseif(axisIndex==5)
-                    llbehMy = llbehStruc;
-                elseif(axisIndex==6)
-                    llbehMz = llbehStruc;
+        %% Iterate through each of the six force-moment plots Fx Fy Fz Mx My Mz
+        % generated in snapData3 and superimpose regressionfit lines in each of
+        % the diagrams.           
+        for axisIndex=first:last   
+            %% PRIMITIVES LAYER: First layer of the RCBHT. Perform fitting and gradient labels
+            if(PRIM_LAYER)
+                wStart  = 1;                            % Initialize index for starting analysis
+
+                % Determine how many handles
+                if(last-first==0)
+                    pHandle = 0;
+                else
+                    pHandle = axesHandles(axisIndex);           % Retrieve the handle for each of the force curves
                 end
-            end
-        end                                
+
+                % Determine the type of the plot
+                pType   = plotType(axisIndex,:);                  % Use curly brackets to retrieve the plotType out of the cell
+
+                % Compute regression curves for each force curve
+                [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData_p.Value,stateData,wStart,pHandle,TL,BL,axisIndex);        
+
+                if(Optimization==1)
+                   gradientCalibration(fPath,StratTypeFolder,stateData,statData,axisIndex);
+
+                   llbBelief=-1;
+                   hlbBelief=-1; % Dummy variables for this segment
+                end
+            end     % End PRIMITIVES_LAYER
+
+    %% Do the following only if (gradient classification) optimization is turned off
+            if(Optimization==0) 
+
+    %% C)       Generate the compound motion compositions for each of the six force elements
+
+                if(MC_LAYER)
+                    % If you want to save the .mat of motComps, set saveData to 1. 
+                    saveData = 0;
+                    motComps = CompoundMotionComposition(StrategyType,statData,saveData,gradLabels,curHandle,TL(axisIndex),BL(axisIndex),fPath,StratTypeFolder,FolderName,pType,stateData); %TL(axisIndex+2) skips limits for the first two snapJoint suplots              
+
+                    if(axisIndex==1)
+                        MCFx = motComps;
+                    elseif(axisIndex==2)
+                        MCFy = motComps;
+                    elseif(axisIndex==3)
+                        MCFz = motComps;
+                    elseif(axisIndex==4)
+                        MCMx = motComps;
+                    elseif(axisIndex==5)
+                        MCMy = motComps;
+                    elseif(axisIndex==6)
+                        MCMz = motComps;
+                    end     
+                end
+
+    %% D)       Generate the low-level behaviors
+
+                if(LLB_LAYER)
+                    % Combine motion compositions to produce low-level behaviors
+                    [llbehStruc,llbehLbl] = llbehComposition(StrategyType,motComps,curHandle,TL(axisIndex),BL(axisIndex),fPath,StratTypeFolder,FolderName,pType);                          
+
+    %% E)          Copy to a fixed structure for post-processing        
+                    if(axisIndex==1)
+                        llbehFx = llbehStruc;
+                    elseif(axisIndex==2)
+                        llbehFy = llbehStruc;
+                    elseif(axisIndex==3)
+                        llbehFz = llbehStruc;
+                    elseif(axisIndex==4)
+                        llbehMx = llbehStruc;
+                    elseif(axisIndex==5)
+                        llbehMy = llbehStruc;
+                    elseif(axisIndex==6)
+                        llbehMz = llbehStruc;
+                    end
+                end
+            end              
+        end % End for right arm and left arm
     end % End all axes
 %%  F) After all axes are finished computing the LLB layer, generate and plot labels for high-level behaviors.
     if(HLB_LAYER)                        
@@ -260,7 +355,7 @@ figure;
         [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
         
         % Generate the high level behaviors
-        [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandles,TL,BL,fPath,StratTypeFolder,FolderName);    
+        [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL,BL,fPath,StratTypeFolder,FolderName);    
     end
     
 %% G) Compute the Bayesian Filter for the HLB

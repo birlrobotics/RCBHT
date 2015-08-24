@@ -69,7 +69,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
     [rows c]            = size(forceData);          % size elements of force data
     
     % Thresholds
-    if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+     if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
         GoodFitThreshold    = 0.70;                 % Correlation coefficient USed to determine when to start a new data fit
     else
         GoodFitThreshold    = 0.90;                 % Correlation coefficient USed to determine when to start a new data fit        

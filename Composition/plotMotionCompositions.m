@@ -41,7 +41,7 @@ function htext = plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps)
         % For each of the compositions
         % PA10
         for index=1:r(1)                                             % rows            
-            if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+            if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
                 htext(i)=text(motComps(index,AvgTime),...                 % x-position. Average time of composition.
                              (0.75*TL(i)+((randn*TL(i))/10)),...          % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                               actionInt2actionLbl(...

@@ -94,7 +94,7 @@ function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMI
             index=1;
             
             % For PA10 Simulation Results
-            if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+             if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
                 if(length(x)<1000000)
                     for i=2000:length(x); % no meaningful forces till this point
                         if(x(i)>abs(0.001))
