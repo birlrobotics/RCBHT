@@ -24,10 +24,11 @@
 % stateData:        - vector of times for different states of the task
 % handles:          - vector of handles for six force plots for right hand
 % handles:          - same but for left arm
-% TOP_LIMIT         - vector holding upper plot (+y) limits for 6 right arm
-%                     force plots
+% TOP_LIMIT:        - vector holding upper plot (+y) limits for 6 right arm
+%                     force.
+% TOP_LIMIT_L:      - same but for left arm.  
 % BOTTOM_LIMIT:     - same as above but for lower plot limits
-%
+% BOTTOM_LIMIT_L:   - same for left arm.
 %
 % TODO: we will need to expand plot options to know how to plot angleData,
 % cartesian position data, left arm data, etc. This may become a structure
@@ -38,7 +39,8 @@ function [fPath,StratTypeFolder,...
           angleData,angleDataL,...
           cartPosData,cartPosDataL,...
           stateData,handles,handlesL,...
-          TOP_LIMIT,BOTTOM_LIMIT]=snapData3(StrategyType,FolderName,plotOptions)
+          TOP_LIMIT,BOTTOM_LIMIT,...
+          TOP_LIMIT_L,BOTTOM_LIMIT_L]=snapData3(StrategyType,FolderName,plotOptions)
 
 %% INTIALIZATION
     % These globals are declared in snapVerification.

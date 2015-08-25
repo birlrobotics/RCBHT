@@ -29,7 +29,7 @@
 % The domain
 %**************************************************************************
 function gradLabel = GradientClassification(gradient,domain,...
-                                            FolderName,StrategyType,forceAxisIndex)
+                                            fPath,FolderName,StrategyType,forceAxisIndex)
 
 %% Intialization
     global Optimization;                            % Copy the global value defined in snapVerification.m
@@ -49,60 +49,40 @@ function gradLabel = GradientClassification(gradient,domain,...
     end    
 
 %% Create Directory   
-    % Windows
-    if(ispc)
-        % Set path with new folder "Segments" in it.
-        WinPath         = 'C:\\Documents and Settings\\suarezjl\\My Documents\\School\\Research\\AIST\\Results';
-        gradClassFolder = 'gradClassFolder';
-        dir             = strcat(WinPath,StratTypeFolder,gradClassFolder);        
-        
-        % Check if directory exists where optimized gradients were saved
-        if(exist(strcat(dir,name))==2)
-            
-            % The folder exists thus optimization has taken place. Set
-            % gradientClassificationFlag to true to USE those values. 
-            if(Optimization==0)
-                gradientClassificationFlag = true; 
-                gradClassification = load(strcat(dir,name));    % I.e. gradients have been optimized
-                
-            % Optimization == 1
-            % There is a desire to RECOMPUTE the values one more time. Keep
-            % the classification false flag. 
-            else
-                gradientClassificationFlag = true;
+    gradClassFolder = 'gradClassFolder';
+    dir             = strcat(fPath,StratTypeFolder,gradClassFolder);        
 
-            end
-            
-        % No optimized gradients exist because the folder doesn't exist.        
-        else
-            % The folder does not exist but we want to calibrate for the
-            % first time
-            if(Optimization==1)
-                gradientClassificationFlag  = false; %WriteGradientClassification will trigger the computation of calibrated gradients
-                
-            % No calibrated gradients and don't want to compute them.
-            else
-                gradientClassificationFlag = false;
-            end
-            
-        end
+    % Check if directory exists where optimized gradients were saved
+    if(exist(strcat(dir,name),'dir')==2)
 
-    % Linux
-    else
-        gradClassFolder='gradClassFolder';
-        LinuxPath   = '/home/grxuser/Documents/School/Research/AIST/Results/';
-        %QNXPath    = '\\home\\hrpuser\\forceSensorPlugin_Pivot\\data\\Results\\'
-        dir         = strcat(LinuxPath,StratTypeFolder,gradClassFolder,name); 
-        % Check if directory exists, if not create a directory
-        if(exist(dir,'dir')==0)
-            if(Optimization==1)
-                fprintf('Offline:SideApproach:GradientClassification - grad classification folder does not exist. Continue with standard values!!\n');            
-            end
+        % The folder exists thus optimization has taken place. Set
+        % gradientClassificationFlag to true to USE those values. 
+        if(Optimization==0)
+            gradientClassificationFlag = true; 
+            gradClassification = load(strcat(dir,name));    % I.e. gradients have been optimized
+
+        % Optimization == 1
+        % There is a desire to RECOMPUTE the values one more time. Keep
+        % the classification false flag. 
         else
             gradientClassificationFlag = true;
-            gradClassification = load(strcat(dir,name));
-        end         
-    end    
+
+        end
+
+    % No optimized gradients exist because the folder doesn't exist.        
+    else
+        % The folder does not exist but we want to calibrate for the
+        % first time. This will happen in snapVerification's call to
+        % gradientCalibration ~ L290
+        if(Optimization==1)
+            gradientClassificationFlag  = false; %WriteGradientClassification will trigger the computation of calibrated gradients
+
+        % No calibrated gradients and don't want to compute them.
+        else
+            gradientClassificationFlag = false;
+        end
+
+    end 
 
 %% Gradient limits - values based on strategy, domain, or optimization
 

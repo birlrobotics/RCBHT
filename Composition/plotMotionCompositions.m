@@ -33,6 +33,35 @@ function htext = plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps)
     compString  = 1;                    % type of composition: alignment, increase, decrease, constant
     AvgTime     = 11;               	% Used as an index. Always verify to make sure the index is not obsolete.
     
+    % Maximum height of plot
+    fig_handle = gca;
+    maxHeight = fig_handle.YLim(2);
+    minHeight = fig_handle.YLim(1);
+    
+    % Set Text Height Limit
+    if(TL>maxHeight)
+        TL=maxHeight;
+    elseif(TL<minHeight)
+        TL=minHeight;
+    end
+    
+    % Set Scaling Factor for Labels
+    % PA10
+    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))        
+        if(TL>0) % Positive plot
+            k=0.75;                   
+        else % Negative Plot
+            k=1.25;
+        end
+    % HIRO plots
+    else
+        if(TL>0) % Positive plot
+            k=0.90;                   
+        else % Negative Plot
+            k=1.1;
+        end
+    end
+    
 %%  Labeling
     
     % For each of the handles
@@ -43,7 +72,7 @@ function htext = plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps)
         for index=1:r(1)                                             % rows            
             if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
                 htext(i)=text(motComps(index,AvgTime),...                 % x-position. Average time of composition.
-                             (0.75*TL(i)+((randn*TL(i))/10)),...          % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
+                             (k*TL+((randn*TL)/10)),...                   % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                               actionInt2actionLbl(...
                                 motComps(index,compString)),...           % Composition string: alignment, increase, decrease, constant.
                               'FontSize',8,...                            % Size of font. (Changed from 7.5 to 8).
@@ -52,7 +81,7 @@ function htext = plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps)
             % Side Approach: no rand variability
             else
                 htext(i)=text(motComps(index,AvgTime),...                 % x-position. Average time of composition.
-                         (0.90*TL(i)),...%+((randn*TL(i))/10)),...        % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
+                         (k*TL(i)),...%+((randn*TL(i))/10)),...        % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                           actionInt2actionLbl(...
                           motComps(index,compString)),...                 % Composition string: alignment, increase, decrease, constant.
                           'FontSize',8,...                                % Size of font. (Changed from 7.5 to 8).

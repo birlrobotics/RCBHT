@@ -184,9 +184,7 @@ function motComps=CompoundMotionComposition(StrategyType,statData,saveData,gradL
         % Plot the compound motion compositions, given the right axes and
         % top-limit boundary. 
         if(DB_PLOT)
-            if(axisIndex==lastIndex) % We are in the last round of MCs, now plot.
-                plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps);
-            end
+            plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps);
         end
         
 end     % End function

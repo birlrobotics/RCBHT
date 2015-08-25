@@ -16,12 +16,12 @@ function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,in
     end     
         
 %% Load values and copy appropriately
-    if(index==1);         name='\\FxLims.dat';
-    elseif(index==2);     name='\\FyLims.dat';
-    elseif(index==3);     name='\\FzLims.dat';
-    elseif(index==4);     name='\\MxLims.dat';
-    elseif(index==5);     name='\\MyLims.dat';
-    elseif(index==6);     name='\\MzLims.dat';
+    if(index==1);         name='/FxLims.dat';
+    elseif(index==2);     name='/FyLims.dat';
+    elseif(index==3);     name='/FzLims.dat';
+    elseif(index==4);     name='/MxLims.dat';
+    elseif(index==5);     name='/MyLims.dat';
+    elseif(index==6);     name='/MzLims.dat';
     end
     
 %% Write Limits [pimp pConst] to File
@@ -54,12 +54,12 @@ function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,in
     if(index==6)
         
         % Load all 6 gradient limits : [pimp pConst]      
-        FX = load(strcat(dir,'\\FxLims.dat'));
-        FY = load(strcat(dir,'\\FyLims.dat'));
-        FZ = load(strcat(dir,'\\FzLims.dat'));
-        MX = load(strcat(dir,'\\MxLims.dat'));
-        MY = load(strcat(dir,'\\MyLims.dat'));
-        MZ = load(strcat(dir,'\\MzLims.dat'));              
+        FX = load(strcat(dir,'/FxLims.dat'));
+        FY = load(strcat(dir,'/FyLims.dat'));
+        FZ = load(strcat(dir,'/FzLims.dat'));
+        MX = load(strcat(dir,'/MxLims.dat'));
+        MY = load(strcat(dir,'/MyLims.dat'));
+        MZ = load(strcat(dir,'/MzLims.dat'));              
         
 %% Compute gradient classification values for each axes separately.
 
@@ -102,22 +102,22 @@ function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,in
         for i=1:6
 
             if(i==1);       
-                FileName=strcat(dir,'\\Fx.dat');
+                FileName=strcat(dir,'/Fx.dat');
                 data = Fx;
             elseif(i==2)  
-                FileName=strcat(dir,'\\Fy.dat');
+                FileName=strcat(dir,'/Fy.dat');
                 data = Fy;
             elseif(i==3)
-                FileName=strcat(dir,'\\Fz.dat');
+                FileName=strcat(dir,'/Fz.dat');
                 data = Fz;
             elseif(i==4)
-                FileName=strcat(dir,'\\Mx.dat');
+                FileName=strcat(dir,'/Mx.dat');
                 data = Mx;
             elseif(i==5)
-                FileName=strcat(dir,'\\My.dat');
+                FileName=strcat(dir,'/My.dat');
                 data = My;
             elseif(i==6)
-                FileName=strcat(dir,'\\Mz.dat');
+                FileName=strcat(dir,'/Mz.dat');
                 data = Mz;
             end
 

@@ -146,7 +146,7 @@ function  [hlbBelief,llbBelief,...
     % GRADIENT OPTIMIZATION
     %opengl software;       % If matlab crashes make sure to enable this command as matlab may not be able to render the state colors in hardware. 
     global Optimization;    % The Optimization variable is used to extract gradient classifications from a first trial. Normally should have a zero value.
-    Optimization    = 1;    % If you want to calibrate gradient values turn this to 1 and make sure that all calibration files found in:
+    Optimization    = 0;    % If you want to calibrate gradient values turn this to 1 and make sure that all calibration files found in:
                             % %{USER}\Documents\School\Research\AIST\Results\ForceControl\${StratTypeFolder}\gradClassFolder
                             % are deleted. 
                             % After one run, turn the switch off. The routine will used the saved values to file. 
@@ -170,8 +170,8 @@ function  [hlbBelief,llbBelief,...
     global MC_COMPS_CLEANUP_CYCLES;
     global LLB_REFINEMENT_CYCLES;  
     
-    MC_COMPS_CLEANUP_CYCLES         = 4;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
-    LLB_REFINEMENT_CYCLES           = 5;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
+    MC_COMPS_CLEANUP_CYCLES         = 2;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
+    LLB_REFINEMENT_CYCLES           = 4;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
     
 %------------------------------------------------------------------------------------------
 
@@ -198,6 +198,9 @@ function  [hlbBelief,llbBelief,...
     xDirTest                        = 1;    % Normally set to true. Except when training specific cases of failure.
     yDirTest                        = 1;
     xRollDirTest                    = 1;
+    
+    % Training success flag
+    successFlag                     = 0;
 
 %------------------------------------------------------------------------------------------
     
@@ -207,7 +210,7 @@ function  [hlbBelief,llbBelief,...
     LLB_LAYER                       = 1;    % Compute the low-level behavior and refinement cycle
     HLB_LAYER                       = 0;    % Compute the higher-level behavior
     pRCBHT                          = 0;    % Compute the llb and hlb Beliefs  
-    
+    FAILURE_CHARACTERIZATION        = 0;    % Run failure characterization analysis
 %------------------------------------------------------------------------------------------
 %% Debug Enable Commands
 % Not supported for cplusplus code generation
@@ -230,7 +233,7 @@ function  [hlbBelief,llbBelief,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,...
-         TL,BL]=snapData3(StrategyType,FolderName,plotOptions);
+         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions);
      
      % Left Arm
     else
@@ -239,7 +242,7 @@ function  [hlbBelief,llbBelief,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
-         TL,BL]=snapData3(StrategyType,FolderName,plotOptions);
+         TL,BL,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
     end
  
 %% B) Relative-Change Behavior Hierarchical Taxonomy: 
@@ -261,9 +264,13 @@ function  [hlbBelief,llbBelief,...
             % Create a matlab pointer struc to force structures, axis handles, to be used later in RCBHT analysis 
             forceData_p = libpointer('doublePtr',forceData);            % Data is extracted by calling forceData_p.Value
             axesHandles = axesHandlesRight;
+            TL_p = libpointer('doublePtr',TL);
+            BL_p = libpointer('doublePtr',BL);
         else
             forceData_p = libpointer('doublePtr',forceDataL); % If want to extract array contents do: forceData_p.Value(index)
             axesHandles = axesHandlesLeft;
+            TL_p= libpointer('doublePtr',TL_L);
+            BL_p = libpointer('doublePtr',BL_L);
         end
         
         %% Iterate through each of the six force-moment plots Fx Fy Fz Mx My Mz
@@ -272,7 +279,7 @@ function  [hlbBelief,llbBelief,...
         for axisIndex=first:last   
             %% PRIMITIVES LAYER: First layer of the RCBHT. Perform fitting and gradient labels
             if(PRIM_LAYER)
-                wStart  = 1;                            % Initialize index for starting analysis
+                wStart  = 1;                                    % Initialize index for starting analysis
 
                 % Determine how many handles
                 if(last-first==0)
@@ -285,7 +292,7 @@ function  [hlbBelief,llbBelief,...
                 pType   = plotType(axisIndex,:);                  % Use curly brackets to retrieve the plotType out of the cell
 
                 % Compute regression curves for each force curve
-                [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData_p.Value,stateData,wStart,pHandle,TL,BL,axisIndex);        
+                [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData_p.Value,stateData,wStart,pHandle,TL_p.Value,BL_p.Value,axisIndex);        
 
                 if(Optimization==1)
                    gradientCalibration(fPath,StratTypeFolder,stateData,statData,axisIndex);
@@ -303,7 +310,7 @@ function  [hlbBelief,llbBelief,...
                 if(MC_LAYER)
                     % If you want to save the .mat of motComps, set saveData to 1. 
                     saveData = 0;
-                    motComps = CompoundMotionComposition(StrategyType,statData,saveData,gradLabels,curHandle,TL(axisIndex),BL(axisIndex),fPath,StratTypeFolder,FolderName,pType,stateData); %TL(axisIndex+2) skips limits for the first two snapJoint suplots              
+                    motComps = CompoundMotionComposition(StrategyType,statData,saveData,gradLabels,curHandle,TL_p.Value(axisIndex),BL_p.Value(axisIndex),fPath,StratTypeFolder,FolderName,pType,stateData); %TL(axisIndex+2) skips limits for the first two snapJoint suplots              
 
                     if(axisIndex==1)
                         MCFx = motComps;
@@ -324,7 +331,7 @@ function  [hlbBelief,llbBelief,...
 
                 if(LLB_LAYER)
                     % Combine motion compositions to produce low-level behaviors
-                    [llbehStruc,llbehLbl] = llbehComposition(StrategyType,motComps,curHandle,TL(axisIndex),BL(axisIndex),fPath,StratTypeFolder,FolderName,pType);                          
+                    [llbehStruc,llbehLbl] = llbehComposition(StrategyType,motComps,curHandle,TL_p.Value(axisIndex),BL_p.Value(axisIndex),fPath,StratTypeFolder,FolderName,pType);                          
 
     %% E)          Copy to a fixed structure for post-processing        
                     if(axisIndex==1)
@@ -355,7 +362,7 @@ function  [hlbBelief,llbBelief,...
         [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
         
         % Generate the high level behaviors
-        [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL,BL,fPath,StratTypeFolder,FolderName);    
+        [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StratTypeFolder,FolderName);    
     end
     
 %% G) Compute the Bayesian Filter for the HLB
@@ -376,123 +383,125 @@ function  [hlbBelief,llbBelief,...
     %% Probabilistic Data
     
     %% Failure Characterization Data
-    % If the assembly was successful record its data
-    if(successFlag)
-        
-        %% x-Dir
-        if(xDirTest)
-            % Do these if there was no failure, ie boolFCData is zero.
-            if(boolFCData(1,1)==0)          % Order of indeces is connected to the specific names of variables.
-                % 1) Update Historically Averaged My.Rot.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(1,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histMyRotAvgMag.mat');
-            end
-            if(boolFCData(2,1)==0)
-                % 2) Update Historically Averaged Fz.Rot.AvgMag
-                avgData = fcAvgData(1,2);        
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histFzRotAvgMag.mat');
-            end
-        end
-        %% y-Dir
-        if(yDirTest)
-            if(boolFCData(3,1)==0)
-                % 1) Update Historically Averaged Mz.Rot.Pos.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(1,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histMzRotPosAvgMag.mat');
-            end
-            if(boolFCData(4,1)==0)
-                % 1) Update Historically Averaged Mz.Rot.Min.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(2,2);
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histMzRotMinAvgMag.mat');            
-            end
-        end
-       %% xRoll-DirPos
-       if(xRollDirTest)
-           if(boolFCData(5,1)==0)
-                % 1) Update Historically Averaged Fx.App.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(3,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histFxAppPosAvgMag.mat');
-           end
-           
-           if(boolFCData(6,1)==0)
-                % 2) Update Historically Averaged Fz.App.AvgMag
-                avgData = fcAvgData(3,2);        
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histFzAppPosAvgMag.mat');        
-           end
-           
-           
-           %% xRoll-DirMin
-           if(boolFCData(7,1)==0)
-                % 1) Update Historically Averaged Fx.App.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(4,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histFxAppMinAvgMag.mat');
-           end
-           
-           if(boolFCData(8,1)==0)
-                % 2) Update Historically Averaged Fz.App.AvgMag
-                avgData = fcAvgData(4,2);        
-                updateHistData(fPath,StratTypeFolder,avgData,'s_histFzAppMinAvgMag.mat');        
-           end
-       end           
-    
-    %% If the assembly was unsuccessful update the historical values for those key parameters of failure    
-    else
+    if(FAILURE_CHARACTERIZATION)
+        % If the assembly was successful record its data
+        if(successFlag)
 
-        %% x-Dir
-        if(xDirTest)
-            % Do these if there was failure, ie fcbool is 1.
-            if(boolFCData(1,1))
-                % 1) Update Historically Averaged My.Rot.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(1,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histMyRotAvgMag.mat');
+            %% x-Dir
+            if(xDirTest)
+                % Do these if there was no failure, ie boolFCData is zero.
+                if(boolFCData(1,1)==0)          % Order of indeces is connected to the specific names of variables.
+                    % 1) Update Historically Averaged My.Rot.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(1,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histMyRotAvgMag.mat');
+                end
+                if(boolFCData(2,1)==0)
+                    % 2) Update Historically Averaged Fz.Rot.AvgMag
+                    avgData = fcAvgData(1,2);        
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histFzRotAvgMag.mat');
+                end
             end
-            if(boolFCData(2,1))
-                % 2) Update Historically Averaged Fz.Rot.AvgMag
-                avgData = fcAvgData(1,2);        
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histFzRotAvgMag.mat');
+            %% y-Dir
+            if(yDirTest)
+                if(boolFCData(3,1)==0)
+                    % 1) Update Historically Averaged Mz.Rot.Pos.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(1,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histMzRotPosAvgMag.mat');
+                end
+                if(boolFCData(4,1)==0)
+                    % 1) Update Historically Averaged Mz.Rot.Min.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(2,2);
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histMzRotMinAvgMag.mat');            
+                end
+            end
+           %% xRoll-DirPos
+           if(xRollDirTest)
+               if(boolFCData(5,1)==0)
+                    % 1) Update Historically Averaged Fx.App.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(3,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histFxAppPosAvgMag.mat');
+               end
+
+               if(boolFCData(6,1)==0)
+                    % 2) Update Historically Averaged Fz.App.AvgMag
+                    avgData = fcAvgData(3,2);        
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histFzAppPosAvgMag.mat');        
+               end
+
+
+               %% xRoll-DirMin
+               if(boolFCData(7,1)==0)
+                    % 1) Update Historically Averaged Fx.App.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(4,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histFxAppMinAvgMag.mat');
+               end
+
+               if(boolFCData(8,1)==0)
+                    % 2) Update Historically Averaged Fz.App.AvgMag
+                    avgData = fcAvgData(4,2);        
+                    updateHistData(fPath,StratTypeFolder,avgData,'s_histFzAppMinAvgMag.mat');        
+               end
+           end           
+
+        %% If the assembly was unsuccessful update the historical values for those key parameters of failure    
+        else
+
+            %% x-Dir
+            if(xDirTest)
+                % Do these if there was failure, ie fcbool is 1.
+                if(boolFCData(1,1))
+                    % 1) Update Historically Averaged My.Rot.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(1,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histMyRotAvgMag.mat');
+                end
+                if(boolFCData(2,1))
+                    % 2) Update Historically Averaged Fz.Rot.AvgMag
+                    avgData = fcAvgData(1,2);        
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histFzRotAvgMag.mat');
+                end
+            end
+            %% y-Dir
+            if(yDirTest)
+                if(boolFCData(3,1))
+                    % 1) Update Historically Averaged Mz.Rot.Pos.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(2,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histMzRotPosAvgMag.mat');
+                end
+                if(boolFCData(4,1))
+                    % 2) Update Historically Averaged Mz.Rot.Min.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(2,2);
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histMzRotMinAvgMag.mat');            
+                end
+            end
+            %% xRollDir-Pos       
+            if(xRollDirTest)
+                %% xRollDirPos
+                if(boolFCData(5,1))
+                    % 1) Update Historically Averaged Fx.App.Min.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(3,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histFxAppPosAvgMag.mat');
+                end
+
+                if(boolFCData(6,1))
+                    % 2) Update Historically Averaged Fz.App.Min.AvgMag
+                    avgData = fcAvgData(3,2);        
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histFzAppPosAvgMag.mat');          
+                end
+
+                %% xRollDir-Min
+                if(boolFCData(7,1))
+                    % 1) Update Historically Averaged Fx.App.Min.AvgMag data as well as counter time for successful assemblies        
+                    avgData = fcAvgData(4,1);
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histFxAppMinAvgMag.mat');
+                end
+
+                if(boolFCData(8,1))
+                    % 2) Update Historically Averaged Fz.App.Min.AvgMag
+                    avgData = fcAvgData(4,2);        
+                    updateHistData(fPath,StratTypeFolder,avgData,'f_histFzAppMinAvgMag.mat');          
+                end            
             end
         end
-        %% y-Dir
-        if(yDirTest)
-            if(boolFCData(3,1))
-                % 1) Update Historically Averaged Mz.Rot.Pos.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(2,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histMzRotPosAvgMag.mat');
-            end
-            if(boolFCData(4,1))
-                % 2) Update Historically Averaged Mz.Rot.Min.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(2,2);
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histMzRotMinAvgMag.mat');            
-            end
-        end
-        %% xRollDir-Pos       
-        if(xRollDirTest)
-            %% xRollDirPos
-            if(boolFCData(5,1))
-                % 1) Update Historically Averaged Fx.App.Min.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(3,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histFxAppPosAvgMag.mat');
-            end
-            
-            if(boolFCData(6,1))
-                % 2) Update Historically Averaged Fz.App.Min.AvgMag
-                avgData = fcAvgData(3,2);        
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histFzAppPosAvgMag.mat');          
-            end
-            
-            %% xRollDir-Min
-            if(boolFCData(7,1))
-                % 1) Update Historically Averaged Fx.App.Min.AvgMag data as well as counter time for successful assemblies        
-                avgData = fcAvgData(4,1);
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histFxAppMinAvgMag.mat');
-            end
-            
-            if(boolFCData(8,1))
-                % 2) Update Historically Averaged Fz.App.Min.AvgMag
-                avgData = fcAvgData(4,2);        
-                updateHistData(fPath,StratTypeFolder,avgData,'f_histFzAppMinAvgMag.mat');          
-            end            
-        end
-    end
-      save(strcat('/home/vmrguser/Documents/School/Research/AIST/Results/',StratTypeFolder,FolderName,'/','MATs','/output.mat'),'fcAvgData','boolFCData');
+          save(strcat(fpath,StratTypeFolder,FolderName,'/','MATs','/output.mat'),'fcAvgData','boolFCData');
+    end % End FailureCharacterizationLayer
 end

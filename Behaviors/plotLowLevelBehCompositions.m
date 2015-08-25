@@ -29,6 +29,35 @@ function htext = plotLowLevelBehCompositions(StrategyType,rHandle,TL,BL,data)
     LblIndex  = 1;                % type of composition: alignment, increase, decrease, constant
     AvgTime   = 17;                % Used as an index
     
+   % Maximum height of plot
+    fig_handle = gca;
+    maxHeight = fig_handle.YLim(2);
+    minHeight = fig_handle.YLim(1);
+    
+    % Set Text Height Limit
+    if(TL>maxHeight)
+        TL=maxHeight;
+    elseif(TL<minHeight)
+        TL=minHeight;
+    end
+    
+    % Set Scaling Factor for Labels
+    % PA10
+    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))        
+        if(TL>0) % Positive plot
+            k=0.75;                   
+        else % Negative Plot
+            k=1.25;
+        end
+    % HIRO plots
+    else
+        if(TL>0) % Positive plot
+            k=0.75;                   
+        else % Negative Plot
+            k=1.25;
+        end
+    end    
+    
 %%  Labeling
     
     % For each of the handles
@@ -38,7 +67,7 @@ function htext = plotLowLevelBehCompositions(StrategyType,rHandle,TL,BL,data)
         for index=1:r(1);                                    % rows
             if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') &&  ~strcmp(StrategyType,'SIM_SA_DualArm'))
                 htext(i)=text(data(index,AvgTime),...               % x-position. Average time of composition.
-                             (-0.75*TL(i)+(0.10*randn*TL(i))),...   % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
+                             (k*TL(i)+(0.10*randn*TL(i))),...   % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                               data(index,LblIndex),...              % Composition string: alignment, increase, decrease, constant.
                               'Color',[1,0,0],...                   % Font color
                               'FontSize',8.5,...                  	% Size of font. Changed from 7.5 to 8.5
@@ -47,7 +76,7 @@ function htext = plotLowLevelBehCompositions(StrategyType,rHandle,TL,BL,data)
             % HIRO Side Approach and related. No variability
             else
                 htext(i)=text   (data(index,AvgTime),...                  % x-position. Average time of composition.
-                                (0.75*TL(i)),...                          % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
+                                (k*TL(i)),...                          % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                                  llbInt2llbLbl(...
                                     data(index,LblIndex)),...             % Composition string: alignment, increase, decrease, constant.
                                 'Color',              [1,0,0],...         % Font color
