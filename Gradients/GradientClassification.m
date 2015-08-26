@@ -52,8 +52,8 @@ function gradLabel = GradientClassification(gradient,domain,...
     gradClassFolder = 'gradClassFolder';
     dir             = strcat(fPath,StratTypeFolder,gradClassFolder);        
 
-    % Check if directory exists where optimized gradients were saved
-    if(exist(strcat(dir,name),'dir')==2)
+    % Check if directory exists where optimized gradients were saved. ==2, means that it exists.
+    if(exist(strcat(dir,name),'file')==2)
 
         % The folder exists thus optimization has taken place. Set
         % gradientClassificationFlag to true to USE those values. 
@@ -63,7 +63,7 @@ function gradLabel = GradientClassification(gradient,domain,...
 
         % Optimization == 1
         % There is a desire to RECOMPUTE the values one more time. Keep
-        % the classification false flag. 
+        % the gradientClassificationFlag to true. 
         else
             gradientClassificationFlag = true;
 

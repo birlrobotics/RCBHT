@@ -12,7 +12,7 @@
 % gradient" that occurs during the ROTATION state of the task. 
 %
 % As for the CONTACT value, we will look at the max gradient values in the
-% Snap state of the task. The max value associated with Fz will be used to
+% Insertion state of the task. The max value associated with Fz will be used to
 % classify both Fz and Fy. The value of Fx will be used for itself. And the
 % value of My will be used for Mx and Mz as well. 
 % This last arbitration was selected based on the fact that Fx, Fz, and My
@@ -41,23 +41,24 @@ function gradientCalibration(fPath,StratTypeFolder,stateVec,statData,index)
     % Variables
     %GradientNum	= 2;                               % Used to describe two values for gradient limits 
     
-    % Statistical Data
+    % Statistical Data ("statData") Indeces
     startTime   = 4;                                % start time for statistical vector
     endTime     = 5;                                % end time for statistical vector
     dGradient   = 6;                                % gradient value for statistical vector
     
-    % State Vector
+    % State Vector ("stateVec") Indeces
     rotStart    = 2;
     rotEnd      = 3;
-    snapStart   = 3;
+    %---------------
+    snapStart   = 3;                                % Also known as the insertion state.
     snapEnd     = 4;
     
     % Size
-    rStatistical = size(statData);   % Size of statistical data vector
+    rStatistical = size(statData);                  % Size of statistical data vector
     
     % Gradients
-    scalingConstRange   = 0.10;          % Used to scale the constant values by a certain percentage.    
-    scalingCtctRange    = 0.15;          % Used to scale the contact values by a certain percentage.    
+    scalingConstRange   = 0.10;                     % Used to scale the constant values by a certain percentage.    
+    scalingCtctRange    = 0.15;                     % Used to scale the contact values by a certain percentage.    
 	maxContact          = 0;
     %maxConst           = 0;
     
@@ -71,7 +72,7 @@ function gradientCalibration(fPath,StratTypeFolder,stateVec,statData,index)
     
     % Only compute for Fx
     if(index==1 || index==5)
-        % Look at all the primitives within the Rotation state        
+        % Look at all the primitives within the Rotation state by indentifying a starting and ending index for this state.       
         for i = 1:rStatistical(1)
             if( statData(i,startTime)>stateVec(rotStart,1) )
                 startIndex = i;
@@ -86,7 +87,7 @@ function gradientCalibration(fPath,StratTypeFolder,stateVec,statData,index)
             end
         end
 
-        % Compute the maxConst as the mean of all gradients
+        % Compute the maxConst as the absolute value of the mean of all gradients
         if(index==5)
             pConst = abs(mean(statData(startIndex:endIndex,dGradient)));
             %modeConst = abs(mode(statData(startIndex:endIndex,dGradient)));
@@ -106,10 +107,12 @@ function gradientCalibration(fPath,StratTypeFolder,stateVec,statData,index)
 
     % FORCE AXES -- 2 -- {(Fx),(Fz->Fy)}
     % Moment AXES -- 1 -- {My}
-    %if(index==1 || index==3 || index==5)
-        % Look at all the primitives within the snap state
+    %if(index==1 || index==3 || index==5)        
         for i = 1:rStatistical(1)
+            % Look at all the primitives within the snap state
             if( statData(i,startTime)>stateVec(snapStart,1) && statData(i,endTime)<stateVec(snapEnd,1))
+                
+                % Record the largest gradient
                 if ( abs(statData(i,dGradient)) > maxContact ) % Look for the absolute value
                     maxContact = abs(statData(i,dGradient));
                 end
@@ -138,11 +141,8 @@ function gradientCalibration(fPath,StratTypeFolder,stateVec,statData,index)
 %         meanContct   = abs(mean(statData(startIndex:endIndex,dGradient)));
 %         modeContct   = abs(mode(statData(startIndex:endIndex,dGradient)));
 %         medianContct = abs(median(statData(startIndex:endIndex,dGradient)));
-        
-    
-    
-%% Assign the maximum value Pimp and Nimp with a 10% leniency in the
-        % range of the avalue. 
+               
+%% Assign the maximum value Pimp and Nimp with a 10% leniency in the range of the value. 
         maxContact = maxContact - (scalingCtctRange*maxContact);    
         pimp = maxContact;
             gradClassification = [pimp pConst];

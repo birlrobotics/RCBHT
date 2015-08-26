@@ -4,6 +4,13 @@
 % 2) Write the entire gradient classification structure.
 % The second choice is done after the relevant gradient classification
 % values have been computed as per described in gradientCalibration()
+%
+% 2015 Aug. As we test the dual arm approach it seems that all moment
+% limits should depend on the limits of My and not those of Fx. I think my
+% prior consideration was the magnitude of the signals, those of Fx always
+% being larger, but in fact, we are measuring gradients. And those can be
+% very different in magnitude and are not linearly related with contact
+% magnitudes. L91-107 have the moment's upper limits vary according to My.
 function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,index)                                           
 
 %% Create Directory   
@@ -66,7 +73,7 @@ function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,in
     % Start with Fx, Fz, My which are the key axes for the Pivot Approach
     
 %% Fx   
-        pimp    = FX(1,1);  % pimp - positive impulse
+        pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = FX(2,1);  % pConst - positive constant
         Fx = computeGradientSpectrum(pimp,pConst);
         
@@ -83,18 +90,18 @@ function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,in
     
 %% Mx
         % Copy My's pimp into Mx
-        pimp    = FX(1,1); %pimp
+        pimp    = MY(1,1); %pimp                            // Changed upper limit so that it belongs to My not Fx: pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = MY(2,1);
         Mx = computeGradientSpectrum(pimp,pConst);
         
 %% My
-        pimp    = FX(1,1);  % pimp - positive impulse
+        pimp    = MY(1,1);  % pimp   - positive impulse     // Changed upper limit so that it belongs to My not Fx: pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = MY(2,1);  % pConst - positive constant
         My = computeGradientSpectrum(pimp,pConst);     
 
 %% Mz
         % Copy My's pimp into Mz
-        pimp    = FX(1,1); %pimp
+        pimp    = MY(1,1); %pimp                            // Changed upper limit so that it belongs to My not Fx: pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = MY(2,1);
         Mz = computeGradientSpectrum(pimp,pConst);    
 

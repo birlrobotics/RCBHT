@@ -72,6 +72,6 @@ function [rHandle,TOP_LIMIT,BOTTOM_LIMIT]=plotRegressionFit(x,yfit,Type,pHandle,
     end
     
     % Title
-    title(strcat('Regression Fits for',' ',Type));
+    title(['Regression Fits for',' ',Type]);
 
 end % End function
