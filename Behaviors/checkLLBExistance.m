@@ -20,7 +20,7 @@
 % Inputs: 
 %
 % stateLbl:         this is a multidimensional array (4xmx6). That is 4
-%                   automata states (Approach, Rotation, Insertion, Mating) with an unknown
+%                   automata states (Approach, Rotation, Insertion, Mating), in all 6 axis, with an unknown
 %                   number of labels. In fact, m is determined by the largest number of
 %                   labels across all 4 states. This implies that mean elements in the array
 %                   will be padded with zeros.

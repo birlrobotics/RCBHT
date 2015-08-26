@@ -20,9 +20,9 @@
 % Output Parameters:
 % htext         - handle to the text objects in case user wants to modify
 %**************************************************************************
-function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData,fPath,StratTypeFolder,FolderName)
+function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData,fPath,StrategyType,FolderName)
 
-%%  Preprocessing
+%%  Preprocessing    
     %k       = 1;                       % counter
     len     = length(aHandle);          % Check how many hanlde entries we have
     r       = length(hlbehStruc);       % Get the # entries of compositions
@@ -30,13 +30,13 @@ function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData
 
     % Indeces
     %LblIndex  = 1;                     % type of composition: alignment, increase, decrease, constant
-    if(~strcmp(StratTypeFolder,'ForceControl/HSA') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
+    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
         sLen    = length(stateData);        % Number of states. When working with Hiro this assumes that there is a state entry for the end of the task. This is not the case if working with PA1-0 yet.
-        hlBehLbl = {'Approach' 'Rotation' 'Alignment' 'Snap' 'Mating'};
+        hlBehLbl = {'Approach','Rotation','Alignment','Snap','Mating'};
         
     else
         sLen = length(stateData)-1;
-        hlBehLbl = ['Approach' 'Rotation' 'Snap' 'Mating']; % For HIRO and ErrorCharac change the labels into an array of strings.
+        hlBehLbl = ['Approach','Rotation','Snap','Mating']; % For HIRO and ErrorCharac change the labels into an array of strings.
     end
         
 %%  Labeling
@@ -83,7 +83,7 @@ function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData
             % Plot the labels
             htext(i)=text(textPos,...                           % x-position. Average time of composition.
                           (0.85*BL(i)),...                      % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = BL*0.04
-                          hlBehLbl(index),...                   % Composition string: alignment, increase, decrease, constant.
+                          hlBehLbl(index),...                   % HLB String: Approach, Rotation, Insertion, Mating
                           'Color',clrVec,...                    % Green or red font color
                           'FontSize',7,...                      % Size of font
                           'FontWeight','normal',...             % Font weight can be light, normal, demi, bold
@@ -122,5 +122,5 @@ function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData
     end
     
 %%  Save plot
-    savePlot(fPath,StratTypeFolder,FolderName,aHandle,'hlbehPlot');
+    savePlot(fPath,StrategyType,FolderName,aHandle,'hlbehPlot');
 end

@@ -121,11 +121,14 @@
 function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehComposition_new(motCompsFM,mcNumElems,llbehFM,LLBehNumElems,...
                                                                                            llbehLbl,stateData,...
                                                                                            curHandle,TL,BL,...
-                                                                                           fPath,StratTypeFolder,FolderName)
+                                                                                           fPath,StrategyType,FolderName)
    
 %% Globals
-    global DB_PLOT;     % This global variable determines if we print plots.
-    global DB_WRITE;    % This global variable determines if we write data to file.
+    global DB_PLOT;                     % This global variable determines if we print plots.
+    global DB_WRITE;                    % This global variable determines if we write data to file.
+    global FAILURE_CHARACTERIZATION;    % This global variable enables or disables failure characterization analysis.
+%% StratTypeFolder
+    StratTypeFolder=AssignDir(StrategyType);
 
 %%  Structure and indeces for low-level behavior structure
 %%  Labels for low-level behaviors
@@ -176,7 +179,7 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
 
 %%  State: 
     rState      = size(stateData);
-    if(~strcmp(StratTypeFolder,'ForceControl/HIRO/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
+    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
         
         % Only when all states where accomplished and there is a terminating time, do we want to subtract 1 to enumerate the number of states
         if(rState==5)
@@ -206,8 +209,7 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
                                             % Currently 4 states for Side Approach
 
 %% PivotApproach/PA10 Code
-    if(~strcmp(StratTypeFolder,'ForceControl/HIRO/') && ~strcmp(StratTypeFolder,'ForceControl/ErrorCharac/'))
-        
+    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))    
         %% (1) Create a state x ForceElments Cell array structure
 
         % Keep a counter of which labels belong to a given state
@@ -265,7 +267,7 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
                 for index=1:strucSize(axis,1)    
 
                     % 3. Extract a time vector
-                    timeVec = [llbehStruc(index,T1S:T2E)];
+                    timeVec = llbehStruc(index,T1S:T2E);
                     minTime = min(timeVec);
                     maxTime = max(timeVec);      
                     if(maxTime>8.3)
@@ -507,14 +509,18 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
         %% Approach (State 1). Check to verify failure, if not assume success.
         
         if(rState(1)>1) % I.e. Do this if there is: [ApproachStart,ApproachEnd]
-             [bool_fcData,avgMyData]=failureCharacterization(fPath,StratTypeFolder,stateData,motCompsFM,mcNumElems,llbehFM,LLBehNumElems,approachState);
+            if(FAILURE_CHARACTERIZATION)
+                [bool_fcData,avgMyData]=failureCharacterization(fPath,StratTypeFolder,stateData,motCompsFM,mcNumElems,llbehFM,LLBehNumElems,approachState);
              
-             % Study Outcomes: if any of the following are true, there was failure. 
-             if(sum(bool_fcData(:,1))) 
-                 fcResult=1;            % If true, something failed.
-             else
-                 fcResult=0;            % First two zeros indicate no failure found, the other 5 indeces mean no condition to identify failure were found
-             end
+                 % Study Outcomes: if any of the following are true, there was failure. 
+                 if(sum(bool_fcData(:,1))) 
+                     fcResult=1;            % If true, something failed.
+                 else
+                     fcResult=0;            % First two zeros indicate no failure found, the other 5 indeces mean no condition to identify failure were found
+                 end
+            else
+                fcResult=0;
+            end
              
             %% Failure Specific Steps
             if(fcResult) % Indicates failure.
@@ -575,7 +581,7 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
     
 %% Plot
     if(DB_PLOT)
-    	plotHighLevelBehCompositions(curHandle,TL,BL,hlbehStruc,stateData,fPath,StratTypeFolder,FolderName);
+    	plotHighLevelBehCompositions(curHandle,TL,BL,hlbehStruc,stateData,fPath,StrategyType,FolderName);
     end
 %% Save to File
     if(DB_WRITE)

@@ -121,19 +121,15 @@ function  [hlbBelief,llbBelief,...
     global rarmHandle;
     global larmHandle; 
 
-    rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off');
+    rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
     movegui(rarmHandle,'east');
-    % figR=gcf; figR.PaperUnits='centimeters';
-    % figure('position', [990, 0, 970, 950])
     
-    larmHandle=figure('Name','Left Arm Forces','NumberTitle','off');
+    larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
     movegui(larmHandle,'west');
-    figure(rarmHandle);
-    % figL=gcf; figL.PaperUnits='centimeters';
-    % figure('position', [990, 0, 970, 950])
     
+    figure(rarmHandle);    
 %-----------------------------------------------------------------------------------------
-    % 
+   
 %-----------------------------------------------------------------------------------------
     % Index to choose right and left arms in for loop
     global armSide;
@@ -170,8 +166,8 @@ function  [hlbBelief,llbBelief,...
     global MC_COMPS_CLEANUP_CYCLES;
     global LLB_REFINEMENT_CYCLES;  
     
-    MC_COMPS_CLEANUP_CYCLES         = 2;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
-    LLB_REFINEMENT_CYCLES           = 4;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
+    MC_COMPS_CLEANUP_CYCLES         = 4;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
+    LLB_REFINEMENT_CYCLES           = 5;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
     
 %------------------------------------------------------------------------------------------
 
@@ -205,10 +201,11 @@ function  [hlbBelief,llbBelief,...
 %------------------------------------------------------------------------------------------
     
     % Local Variables - to run or not to run layers
+    global FAILURE_CHARACTERIZATION;        % Flag checked in hlbehCompositions_new
     PRIM_LAYER                      = 1;    % Compute the primitives layer
     MC_LAYER                        = 1;    % Compute the  motion compositions and clean up cycle
     LLB_LAYER                       = 1;    % Compute the low-level behavior and refinement cycle
-    HLB_LAYER                       = 0;    % Compute the higher-level behavior
+    HLB_LAYER                       = 1;    % Compute the higher-level behavior
     pRCBHT                          = 0;    % Compute the llb and hlb Beliefs  
     FAILURE_CHARACTERIZATION        = 0;    % Run failure characterization analysis
 %------------------------------------------------------------------------------------------
@@ -357,12 +354,24 @@ function  [hlbBelief,llbBelief,...
         % update from the previous array. 
         % 2013July: 
         mcFlag=2; llbFlag=3;
+        
+        %% Right Arm
         % Each of these structures are mx17, so they can be separated in this way.    
         [motCompsFM,MCnumElems]     = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
         [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
         
-        % Generate the high level behaviors
-        [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StratTypeFolder,FolderName);    
+        % Generate the high level behaviors for the right arm        
+        [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);    
+        
+        %% Left Arm
+        if(leftArmDataFlag)
+            
+        	% Each of these structures are mx17, so they can be separated in this way.    
+            [motCompsFM_L,MCnumElems_L]    = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
+            [llbehFM_L ,LLBehNumElems_L]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
+% Generate the high level behaviors for the left arm        
+        [hlbehStrucL,fcAvgDataL,successFlagL,boolFCDataL]=hlbehComposition_new(motCompsFM_L,MCnumElems_L,llbehFM_L,LLBehNumElems_L,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);                
+        end
     end
     
 %% G) Compute the Bayesian Filter for the HLB
