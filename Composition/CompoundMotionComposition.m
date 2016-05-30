@@ -157,8 +157,8 @@ function motComps=CompoundMotionComposition(StrategyType,statData,saveData,gradL
     motComps = resizeData(motComps);
     
 %% E. CleanUp the motion compositions
-    % PA10 Pivot Approach
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+    % Pivot Approach
+    if(strategySelector('PA',StrategyType))
         CleanLoops = CLEANUP_CYCLES;
     % HIRO Side Approach
     else

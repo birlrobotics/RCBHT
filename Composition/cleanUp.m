@@ -138,7 +138,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
     % Analyze states where there is force contact. 
     % (1) In the PA10 experiments and the PivotApproach, only the Adjustment and Contact Position use force contact.
     % (2) In HIRO and the Side Approach we include the Rotation and Insertion
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+    if(strategySelector('PA',StrategyType))     % 'PA' stands for PivotApproach. This strat uses 5 states (including Alignment). The function will be set to true for a number of strategy types that belong to this category.
         NumStates       = length(stateData)-2;
         
     % HIRO Side Approach
@@ -148,7 +148,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
         
     
     % Set the simulation time step
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+    if(strategySelector('PA',StrategyType))
         SIM_TIME_STEP   = 0.001;                % Uses OpenHRP-3.1.1 or higher release.  
     else
         SIM_TIME_STEP   = 0.002;                % Uses OpenHRP3.0 version
@@ -162,8 +162,8 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
     % go through the next state. 
     stateVec        = zeros(NumStates,2);
     
-    %% PA10 PivApproach
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+    %% PivApproach
+    if(strategySelector('PA',StrategyType))
         stateVec(1,:)   = [stateData(2,1),(stateData(3,1)-SIM_TIME_STEP)];      % State 2. Need to subtract one time step based on simulation timing.
         
         % Check for ize of state vector. In FailureCases, the size will be smaller:
@@ -171,7 +171,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
             stateVec(2,:)   = [stateData(3,1),(stateData(4,1)-SIM_TIME_STEP)];  % State 3 
         end
         
-    %% HIRO SideApproach
+    %% SideApproach
     else        
         % Check for size of state vector. In FailureCases, the size will be smaller:
         if(NumStates>0) % Has Insertion
@@ -523,7 +523,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
 %     % Analyze states where there is force contact. 
 %     % (1) In the PA10 experiments and the PivotApproach, only the Adjustment and Contact Position use force contact.
 %     % (2) In HIRO and the Side Approach we include the Rotation and Insertion
-%     if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+%     if(strategySelector('PA',StrategyType))
 %         NumStates       = length(stateData)-2;
 %         
 %     % HIRO Side Approach
@@ -533,7 +533,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
 %         
 %     
 %     % Set the simulation time step
-%     if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+%     if(strategySelector('PA',StrategyType))
 %         SIM_TIME_STEP   = 0.001;                % Uses OpenHRP-3.1.1 or higher release.  
 %     else
 %         SIM_TIME_STEP   = 0.002;                % Uses OpenHRP3.0 version
@@ -546,7 +546,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
 %     stateVec        = zeros(NumStates,2);
 %     
 %     %% PA10 PivApproach
-%     if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+%     if(strategySelector('PA',StrategyType))
 %         stateVec(1,:)   = [stateData(2,1),(stateData(3,1)-SIM_TIME_STEP)];      % State 2. Need to subtract one time step based on simulation timing.
 %         
 %         % Check for ize of state vector. In FailureCases, the size will be smaller:

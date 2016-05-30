@@ -162,7 +162,7 @@ global armSide;         % This variable helps us to know whether we are working 
                         fprintf(fid, '\n');    
                     end                   
                 elseif(dataFlag==hlbehStruc)
-                    r=size(data);
+                    r=length(data);
                     if(r==1)
                         fprintf(fid,'%d\t%d\t%d\t%d\t',data(1));
                     elseif(r==2)

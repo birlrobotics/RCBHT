@@ -76,17 +76,20 @@ function [fPath,StratTypeFolder,...
     % Has 4 variables for each arm starting with the right arm:
     % Angle data, cartesian data, force data (local or world depending on flag),
     % Then it has two final variables: joint spring data (snap part angle), state time vector data
+    
     % For one arm, default right:
-    if ~strcmp(StrategyType,'SIM_SA_DualArm')
+    if ~strategySelector('dual',StrategyType)
         [angleData,cartPosData,ForceData,~,~,~,~,jointsnapData,stateData] = loadData(fPath,StratTypeFolder,FolderName);%,...
                                                                                      %anglesDataFlag,cartposDataFlag,local0_world1_coords,leftArmDataFlag);
     
     % For two arms, left and right.
-    else
+    elseif(strategySelector('dual',StrategyType))
          [angleData, cartPosData, ForceData, ...
           angleDataL,cartPosDataL,ForceDataL,...
                                   jointsnapData,stateData] = loadData(fPath,StratTypeFolder,FolderName);%,...
                                                                       %anglesDataFlag,cartposDataFlag,local0_world1_coords,leftArmDataFlag);
+    else
+        [angleData,cartPosData,ForceData,~,~,~,~,jointsnapData,stateData] = loadData(fPath,StratTypeFolder,FolderName);
     end
     %----------------------------------------------------------------------
     % The following code plots the data in the Torques.dat file. If running
@@ -104,8 +107,8 @@ function [fPath,StratTypeFolder,...
             TIME_LIMIT_PERC = -1; SIGNAL_THRESHOLD = -1;
         end
 
-        %% For PA10 include spring joint angles
-        if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+        %% For PA10 performing PA/SA include spring joint angles
+        if(strategySelector('pa10',StrategyType))
 
         %% Plot Rotation Spring Joint Position
             if(plotOptions)
@@ -225,7 +228,7 @@ function [fPath,StratTypeFolder,...
         handles         = [pFx pFy pFz pMx pMy pMz];
 
         % 8 axes for PA10
-        if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm')) % Include limits for the rotational spring
+        if(strategySelector('PA',StrategyType))         % 'PA' stands for PivotApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
             TOP_LIMIT       = [TOP_LIMIT_S1 TOP_LIMIT_S2 TOP_LIMIT_Fx TOP_LIMIT_Fy TOP_LIMIT_Fz TOP_LIMIT_Mx TOP_LIMIT_My TOP_LIMIT_Mz];
             BOTTOM_LIMIT    = [BOTTOM_LIMIT_S1 BOTTOM_LIMIT_S2 BOTTOM_LIMIT_Fx BOTTOM_LIMIT_Fy BOTTOM_LIMIT_Fz BOTTOM_LIMIT_Mx BOTTOM_LIMIT_My BOTTOM_LIMIT_Mz];
         % 6 axes for HIRO
@@ -329,7 +332,7 @@ function [fPath,StratTypeFolder,...
             handlesL         = [pFxL pFyL pFzL pMxL pMyL pMzL];
 
             % 8 axes for PA10
-            if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm')) % Include limits for the rotational spring
+            if(strategySelector('PA',StrategyType))         % 'PA' stands for PivotApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
                 TOP_LIMIT_L       = [TOP_LIMIT_S1,      TOP_LIMIT_S2,   TOP_LIMIT_Fx_L,    TOP_LIMIT_Fy_L,     TOP_LIMIT_Fz_L,     TOP_LIMIT_Mx_L,     TOP_LIMIT_My_L,     TOP_LIMIT_Mz_L];
                 BOTTOM_LIMIT_L    = [BOTTOM_LIMIT_S1,   BOTTOM_LIMIT_S2,BOTTOM_LIMIT_Fx_L, BOTTOM_LIMIT_Fy_L,  BOTTOM_LIMIT_Fz_L,  BOTTOM_LIMIT_Mx_L,  BOTTOM_LIMIT_My_L,  BOTTOM_LIMIT_Mz_L];
             % 6 axes for HIRO

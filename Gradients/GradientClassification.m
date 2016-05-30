@@ -143,7 +143,7 @@ function gradLabel = GradientClassification(gradient,domain,...
         %% Read value from file to know if we should load standard values
         %% or optimized values
         
-        if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+        if(strategySelector('PA',StrategyType))         % 'PA' stands for PivotApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
             pimp  =1000.0;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
             bpos  = 100.0;     bneg = -1*bpos;
             mpos  =  10.0;     mneg = -1*mpos;

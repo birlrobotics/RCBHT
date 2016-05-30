@@ -179,15 +179,17 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
 
 %%  State: 
     rState      = size(stateData);
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+    if(strategySelector('PA',StrategyType))     % 'PA' stands for PivotApproach. This strat uses 5 states (including Alignment). The function will be set to true for a number of strategy types that belong to this category.
         
         % Only when all states where accomplished and there is a terminating time, do we want to subtract 1 to enumerate the number of states
-        if(rState==5)
+        if(rState==7)
             StateNum    = rState(1)-1;        % STATE VECTOR MUST INCLUDE TASK'S ENDING TIME. We subtract one b/c there is no upper boundary after 4
+        % Failure case scenarios where there are less than the complete number of states
+        else
+            StateNum = rState(1)-1;             
         end
-    % PA10 Experiments have one more state than the HIRO Side Approach, because they include Alignment
-    else
-        
+    
+    else        
         % Only when all states where accomplished and there is a terminating time, do we want to subtract 1 to enumerate the number of states
         if(rState==6)
             StateNum = rState(1)-1;
@@ -209,7 +211,7 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
                                             % Currently 4 states for Side Approach
 
 %% PivotApproach/PA10 Code
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))    
+    if(strategySelector('PA',StrategyType))     % 'PA' stands for PivotApproach. This strat uses 5 states (including Alignment). The function will be set to true for a number of strategy types that belong to this category.
         %% (1) Create a state x ForceElments Cell array structure
 
         % Keep a counter of which labels belong to a given state
@@ -520,6 +522,8 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
                  end
             else
                 fcResult=0;
+                avgMyData=-1;
+                bool_fcData=-1;
             end
              
             %% Failure Specific Steps
@@ -585,9 +589,9 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
     end
 %% Save to File
     if(DB_WRITE)
-        pType=-1;   % Normally used to pass a stringed array of ['Fx'...'Mz']
-        saveData=0; % Flag indicating whether this data should be saved as a .mat. Will already save to .txt.
-        dataFlag = 2; % 2 represents that we want to save the higher-level behavior structure
+        pType=-1;       % Normally used to pass a stringed array of ['Fx'...'Mz']
+        saveData=0;     % Flag indicating whether this data should be saved as a .mat. Will already save to .txt.
+        dataFlag = 2;   % 2 represents that we want to save the higher-level behavior structure
         WriteCompositesToFile(fPath,StratTypeFolder,FolderName,pType,saveData,hlbehStruc,dataFlag); % This function can save data to file for motion compositions, llbehaviors, and hlbehaviors
     end
 %% End of Function

@@ -166,8 +166,8 @@ function  [hlbBelief,llbBelief,...
     global MC_COMPS_CLEANUP_CYCLES;
     global LLB_REFINEMENT_CYCLES;  
     
-    MC_COMPS_CLEANUP_CYCLES         = 4;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
-    LLB_REFINEMENT_CYCLES           = 5;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
+    MC_COMPS_CLEANUP_CYCLES         = 10;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
+    LLB_REFINEMENT_CYCLES           = 10;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
     
 %------------------------------------------------------------------------------------------
 
@@ -346,34 +346,35 @@ function  [hlbBelief,llbBelief,...
                     end
                 end
             end              
-        end % End for right arm and left arm
-    end % End all axes
-%%  F) After all axes are finished computing the LLB layer, generate and plot labels for high-level behaviors.
-    if(HLB_LAYER)                        
-        % Save all llbeh strucs in a structure. One field for each llbeh. This is an
-        % update from the previous array. 
-        % 2013July: 
-        mcFlag=2; llbFlag=3;
-        
-        %% Right Arm
-        % Each of these structures are mx17, so they can be separated in this way.    
-        [motCompsFM,MCnumElems]     = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
-        [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
-        
-        % Generate the high level behaviors for the right arm        
-        [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);    
-        
-        %% Left Arm
-        if(leftArmDataFlag)
-            
-        	% Each of these structures are mx17, so they can be separated in this way.    
-            [motCompsFM_L,MCnumElems_L]    = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
-            [llbehFM_L ,LLBehNumElems_L]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
-% Generate the high level behaviors for the left arm        
-        [hlbehStrucL,fcAvgDataL,successFlagL,boolFCDataL]=hlbehComposition_new(motCompsFM_L,MCnumElems_L,llbehFM_L,LLBehNumElems_L,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);                
+        end % End axis=first:last
+
+    %%  F) After all axes are finished computing the LLB layer, generate and plot labels for high-level behaviors.
+        if(HLB_LAYER)                        
+            % Save all llbeh strucs in a structure. One field for each llbeh. This is an
+            % update from the previous array. 
+            % 2013July: 
+            mcFlag=2; llbFlag=3;
+
+            %% Right Arm          
+            if(armSide==RIGHT)
+                % Each of these structures are mx17, so they can be separated in this way.    
+                [motCompsFM,MCnumElems]     = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
+                [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
+
+                % Generate the high level behaviors for the right arm        
+                [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);    
+
+            %% Left Arm
+            elseif(armSide==LEFT)
+
+                % Each of these structures are mx17, so they can be separated in this way.    
+                [motCompsFM_L,MCnumElems_L]    = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
+                [llbehFM_L ,LLBehNumElems_L]   = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
+                % Generate the high level behaviors for the left arm        
+                [hlbehStrucL,fcAvgDataL,successFlagL,boolFCDataL]=hlbehComposition_new(motCompsFM_L,MCnumElems_L,llbehFM_L,LLBehNumElems_L,llbehLbl,stateData,axesHandlesLeft,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);                
+            end
         end
-    end
-    
+    end % End armSide=RIGHT:LEFT
 %% G) Compute the Bayesian Filter for the HLB
     if(Optimization==0)
         if(pRCBHT==1)

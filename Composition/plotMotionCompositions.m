@@ -37,30 +37,28 @@ function htext = plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps)
     fig_handle = gca;
     maxHeight = fig_handle.YLim(2);
     minHeight = fig_handle.YLim(1);
-    
-    % Set Text Height Limit
+       
+    % Set Text Upper Height Limit
     if(TL>maxHeight)
         TL=maxHeight;
     elseif(TL<minHeight)
         TL=minHeight;
     end
     
-    % Set Scaling Factor for Labels
-    % PA10
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))        
-        if(TL>0) % Positive plot
-            k=0.75;                   
-        else % Negative Plot
-            k=1.25;
-        end
-    % HIRO plots
-    else
-        if(TL>0) % Positive plot
-            k=0.90;                   
-        else % Negative Plot
-            k=1.1;
-        end
-    end
+    % Set Text Lower Height Limit
+    if(BL<minHeight)
+        BL=minHeight;
+    elseif(BL>maxHeight)
+        BL=maxHeight;
+    end     
+    
+    % Set Text Height Levels. 
+    if(maxHeight>0) % 
+        height_LLB =minHeight+((maxHeight-minHeight)*0.95);
+    else 
+        height_LLB =minHeight+((maxHeight-minHeight)*0.95);
+    end   
+
     
 %%  Labeling
     
@@ -70,24 +68,13 @@ function htext = plotMotionCompositions(StrategyType,rHandle,TL,BL,motComps)
         % For each of the compositions
         % PA10
         for index=1:r(1)                                             % rows            
-            if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
-                htext(i)=text(motComps(index,AvgTime),...                 % x-position. Average time of composition.
-                             (k*TL+((randn*TL)/10)),...                   % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
-                              actionInt2actionLbl(...
-                                motComps(index,compString)),...           % Composition string: alignment, increase, decrease, constant.
-                              'FontSize',8,...                            % Size of font. (Changed from 7.5 to 8).
-                              'FontWeight','light',...                    % Font weight can be light, normal, demi, bold
-                              'HorizontalAlignment','center');            % Alignment of font: left, center, right. 
-            % Side Approach: no rand variability
-            else
-                htext(i)=text(motComps(index,AvgTime),...                 % x-position. Average time of composition.
-                         (k*TL(i)),...%+((randn*TL(i))/10)),...        % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
+            htext(i)=text(motComps(index,AvgTime),...               % x-position. Average time of composition.
+                          height_LLB,...                            % y-position. Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                           actionInt2actionLbl(...
-                          motComps(index,compString)),...                 % Composition string: alignment, increase, decrease, constant.
-                          'FontSize',8,...                                % Size of font. (Changed from 7.5 to 8).
-                          'FontWeight','light',...                        % Font weight can be light, normal, demi, bold
-                          'HorizontalAlignment','center'); 
-            end
+                          motComps(index,compString)),...           % Composition string: alignment, increase, decrease, constant.
+                          'FontSize',8,...                          % Size of font. (Changed from 7.5 to 8).
+                          'FontWeight','light',...                  % Font weight can be light, normal, demi, bold
+                          'HorizontalAlignment','center');          % Alignment of font: left, center, right.             
         end
     end
 end

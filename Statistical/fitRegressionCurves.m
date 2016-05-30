@@ -69,7 +69,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
     [rows c]            = size(forceData);          % size elements of force data
     
     % Thresholds
-     if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
+     if(strategySelector('PA',StrategyType))         % 'PA' stands for PivotApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
         GoodFitThreshold    = 0.70;                 % Correlation coefficient USed to determine when to start a new data fit
     else
         GoodFitThreshold    = 0.90;                 % Correlation coefficient USed to determine when to start a new data fit        

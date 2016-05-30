@@ -23,32 +23,73 @@
 function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData,fPath,StrategyType,FolderName)
 
 %%  Preprocessing    
-    %k       = 1;                       % counter
-    len     = length(aHandle);          % Check how many hanlde entries we have
-    r       = length(hlbehStruc);       % Get the # entries of compositions
-    htext   = zeros(r,1);               % This is a text handle and can be used if we want to modify/delete the text
-
-    % Indeces
-    %LblIndex  = 1;                     % type of composition: alignment, increase, decrease, constant
-    if(~strcmp(StrategyType,'SIM_SideApproach') && ~strcmp(StrategyType(1:12),'SIM_SA_Error') && ~strcmp(StrategyType,'SIM_SA_DualArm'))
-        sLen    = length(stateData);        % Number of states. When working with Hiro this assumes that there is a state entry for the end of the task. This is not the case if working with PA1-0 yet.
-        hlBehLbl = {'Approach','Rotation','Alignment','Snap','Mating'};
-        
-    else
-        sLen = length(stateData)-1;
-        hlBehLbl = ['Approach','Rotation','Snap','Mating']; % For HIRO and ErrorCharac change the labels into an array of strings.
-    end
-        
-%%  Labeling
+    %k       = 1;                               % counter
+    len     = length(aHandle);                  % Check how many hanlde entries we have
+    r       = length(hlbehStruc);               % Get the # entries of compositions
+    sLen    = length(stateData);                % Number of states. When working with Hiro this assumes that there is a state entry for the end of the task. This is not the case if working with PA1-0 yet.
+    htext   = zeros(r,1);                       % This is a text handle and can be used if we want to modify/delete the text
+    center  = (stateData(end)-stateData(1))/2;
     
+    % Strategy Type Folder
+    StratTypeFolder=AssignDir(StrategyType);
+    
+    % Indeces
+    % LblIndex  = 1;                                % type of composition: alignment, increase, decrease, constant
+    if(strategySelector('PA',StrategyType))         % 'PA' stands for PivotApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
+        % Create a char array for access to complete words
+        hlBehLbl = char('Approach','Rotation','Alignment','Snap','Mating');
+        
+    elseif(strategySelector('SA',StrategyType)      % SA stands for SideApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
+        hlBehLbl = char('Approach','Rotation','Snap','Mating'); % For HIRO and ErrorCharac change the labels into an array of strings.
+    else
+        hlBehLbl = char('Approach','Rotation','Snap','Mating');
+    end       
+        
+%%  Evaluate High-Level Behaviors
+       
+    % Change the color of the string based on whether it was successful or not
+    if(hlbehStruc(1:end)) % end is used b/c when used with PA10 there are five states, when used with HIRO there are 4 states.
+        clrVec = [0,0.50,0]; % green for success            
+        result = 'SUCCESS';
+    else
+        clrVec = [0.5,0,0]; % red for failure            
+        result = 'FAILURE';
+    end
+
 %%  HANDLES    
     % For each of the axis handles
     if(len==8); len=6; end;
     for i=1:len                           % Expect 6                
         
-        % Activate the appropriate handle
-        %axes(aHandle(i));
-        %axes(gca);
+        axes(aHandle(i));        
+        
+        % Plot Properties
+        % Maximum height of plot
+        maxHeight = aHandle(i).YLim(2);
+        minHeight = aHandle(i).YLim(1);
+
+        % Set Text Upper Height Limit
+        if(TL(i)>maxHeight)
+            TL(i)=maxHeight;
+        elseif(TL(i)<minHeight)
+            TL(i)=minHeight;
+        end
+
+        % Set Text Lower Height Limit
+        if(BL(i)<minHeight)
+            BL(i)=minHeight;
+        elseif(BL(i)>maxHeight)
+            BL(i)=maxHeight;
+        end    
+
+        % Set Text Height Levels. For HLB @ 10% From Bottom. For Task @ 50%
+        if(maxHeight>0) % 
+            height_HLB =minHeight+((maxHeight-minHeight)*0.05);
+            height_Task=minHeight+((maxHeight-minHeight)*0.50);
+        else 
+            height_HLB =minHeight+((maxHeight-minHeight)*0.05);
+            height_Task=minHeight+((maxHeight-minHeight)*0.50);
+        end
         
 %%      STATES        
         % For each of the states
@@ -63,9 +104,9 @@ function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData
             end
             
 %%          X-LOCATION            
-            % Compute the 0.20 location of each state
+            % Compute the 0.50 location of each state
             if(index<length(stateData))
-                textPos = (stateData(index) + stateData(index+1))/5;
+                textPos_HLB = (stateData(index) + stateData(index+1))/2;                
 %             % For the last two states put at one third and two thirds
 %             elseif(index==5)
 %                 if(k==1)
@@ -81,46 +122,26 @@ function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData
             end              
                 
             % Plot the labels
-            htext(i)=text(textPos,...                           % x-position. Average time of composition.
-                          (0.85*BL(i)),...                      % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = BL*0.04
-                          hlBehLbl(index),...                   % HLB String: Approach, Rotation, Insertion, Mating
+            htext(i)=text(textPos_HLB,...                           % x-position. Average time of composition.
+                           height_HLB,...                           % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = BL*0.04
+                           hlBehLbl(index,:),...                % HLB String: Approach, Rotation, Insertion, Mating
                           'Color',clrVec,...                    % Green or red font color
-                          'FontSize',7,...                      % Size of font
-                          'FontWeight','normal',...             % Font weight can be light, normal, demi, bold
-                          'HorizontalAlignment','center');      % Alignment of font: left, center, right. 
-        end
-    end
+                          'FontSize',10,...                     % Size of font
+                          'FontWeight','bold',...               % Font weight can be light, normal, demi, bold
+                          'HorizontalAlignment','center');      % Alignment of font: left, center, right.        
     
-%%	G) Evaluate High-Level Behaviors
-       
-    % Change the color of the string based on whether it was successful or not
-    if(hlbehStruc(1:end)) % end is used b/c when used with PA10 there are five states, when used with HIRO there are 4 states.
-        clrVec = [0,0.50,0]; % green for success            
-        result = 'SUCCESS';
-    else
-        clrVec = [0.5,0,0]; % red for failure            
-        result = 'FAILURE';
-    end  
-    
-%%  Print the label
-    
-    % Get the handle first
-    %hdl = ancestor(aHandle,'axes'); % returns handle of ancestor of curHandle for the axes
-    for i=1:len 
-        
-        % Activate the handels
-        axes(aHandle(i));
-        %axes(hdl);
-        
-        text(4.15,...                           % x-position. Position at the center
-             0.85*BL(i),...                     % y-position. Position almost at the top
-             result,...                         % 'Success' string
-             'Color',clrVec,...                 % Color
-             'FontSize',10,...                   % Size of font
-             'FontWeight','bold',...            % Font weight can be light, normal, demi, bold
-             'HorizontalAlignment','center');   % Alignment of font: left, center, right.);
-    end
-    
+            %%  Print the SUCCESS and FAILURE LABEL when we reach the last state
+            if(index==(sLen-1 ))
+                text(center,...                         % x-position. Position at the center
+                     height_Task,...                     % y-position. Position almost at the top
+                     result,...                         % 'Success' string
+                     'Color',clrVec,...                 % Color
+                     'FontSize',10,...                   % Size of font
+                     'FontWeight','bold',...            % Font weight can be light, normal, demi, bold
+                     'HorizontalAlignment','center');   % Alignment of font: left, center, right.);
+            end                        
+        end % End index=1:sLen-1  
+    end % End fori=1:len
 %%  Save plot
-    savePlot(fPath,StrategyType,FolderName,aHandle,'hlbehPlot');
+    savePlot(fPath,StratTypeFolder,FolderName,aHandle,'hlbehPlot');
 end

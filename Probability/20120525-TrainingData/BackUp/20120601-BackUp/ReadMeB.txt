@@ -1,1 +1,0 @@
-For this backup, I set self transitions to zero. Some matrices are all zero, rendering the final probability zero as well.

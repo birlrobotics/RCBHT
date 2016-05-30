@@ -30,6 +30,7 @@ function [rHandle,TOP_LIMIT,BOTTOM_LIMIT]=plotRegressionFit(x,yfit,Type,pHandle,
     
     % Choose line color
     lineColor = 'r';
+    lineWidth = 1.0; % Normally 1.5
     
     % If no handle is given, open a new figure
     if(pHandle==0)
@@ -37,7 +38,7 @@ function [rHandle,TOP_LIMIT,BOTTOM_LIMIT]=plotRegressionFit(x,yfit,Type,pHandle,
     
         % Plot Data.
         hold on;
-        rHandle=plot(x,yfit,lineColor,'linewidth',1.5); 
+        rHandle=plot(x,yfit,lineColor,'linewidth',lineWidth); 
         
 %% Insert State Lines into Diagram
         % Compute the real end of the signal
