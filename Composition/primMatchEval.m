@@ -174,7 +174,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 % Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)
 
@@ -231,7 +234,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 % Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)                
 
@@ -281,7 +287,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 % Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)                  
 
@@ -408,7 +417,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 %% Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)
 
@@ -466,7 +478,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 %% Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)
 
@@ -515,7 +530,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 %% Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)
 
@@ -642,7 +660,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 %% Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)
 
@@ -691,7 +712,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 %% Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)
 
@@ -738,7 +762,10 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 %% Get Duration of primitives inside compositions
                 p1time = statData(index,TE)-statData(index,TS);   % Get duration of first primitive
                 p2time = statData(nextIndex,TE)-statData(nextIndex,TS);   % Get duration of second primitive
-                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf);break;end
+                if(p1time == 0 || p2time == 0 || p1time==inf || p2time==inf)
+                        fprintf('CompoundMotionComposition::primMatchEval: Duration of primitive is 0 or inf!')
+                        break
+                end
                 durationRatio=p2time/p1time;
                 % || durationRatio>lengthRatio || durationRatio < inv(lengthRatio)
 

@@ -25,38 +25,38 @@ function StratTypeFolder = AssignDir(StrategyType)
     elseif strcmp(StrategyType,'SIM_HIRO_SLA_NOISE')
         StratTypeFolder = 'PositionControl/StraightLineApproach-NewIkinParams-Noise/';      % Straight Line with new IKin params with noise
     
-    elseif strcmp(StrategyType,'SIM_PA10_SLA')
+    elseif strcmp(StrategyType,'SIM_PA10_ONE_SL_SUCCESS')
         StratTypeFolder = 'ForceControl/SIM_StraightLineApproach/';                         % Used with PA10 Simulation
 
     %% Simulations: Pivot Approach w/ PA10/HIRO         
-    elseif strcmp(StrategyType,'SIM_HIRO_PivotApproach')
+    elseif strcmp(StrategyType,'SIM_HIRO_ONE_PA_SUCCESS')
         StratTypeFolder = 'PositionControl/PivotApproach-NewIkinParams/';                   % Pivot approach with new IKin Params
     
-    elseif strcmp(StrategyType,'SIM_HIRO_PivotApproach_Noise')
+    elseif strcmp(StrategyType,'SIM_HIRO_ONE_PA_NOISE')
         StratTypeFolder = 'PositionControl/PivotApproach-NewIKin-Noise/';                   % Pivot approach with new IKin Params with noise        
     
-    elseif strcmp(StrategyType,'SIM_PA10_PivotApproach')
+    elseif strcmp(StrategyType,'SIM_PA10_ONE_PA_SUCCESS')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with PA10 PivotApproach Simulation
 
     %% Simulations: Side Approach w/ HIRO/Baxter     
-    elseif strcmp(StrategyType,'SIM_HIRO_SideApproach')
+    elseif strcmp(StrategyType,'SIM_HIRO_ONE_SA_SUCCESS')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with HIRO SideApproach Simulation and Physical
     
     %% Simulations: Side Approach Error Characterization
-    elseif strcmp(StrategyType, 'SIM_HIRO_SA_ErrorCharac_001')
+    elseif strcmp(StrategyType, 'SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_x')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with HIRO SideApproach to compute error characteristics
     
-    elseif strcmp(StrategyType, 'SIM_HIRO_SA_ErrorCharac_002')
+    elseif strcmp(StrategyType, 'SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_y')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         
         
-    elseif strcmp(StrategyType, 'SIM_HIRO_SA_ErrorCharac_003')
+    elseif strcmp(StrategyType, 'SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         
     
-    elseif strcmp(StrategyType, 'SIM_HIRO_SA_ErrorCharac_004')
+    elseif strcmp(StrategyType, 'SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');
         
     %% Simulations: Dual Arm Side Approach 
-    elseif strcmp(StrategyType, 'SIM_HIRO_SA_DualArm')
+    elseif strcmp(StrategyType, 'SIM_HIRO_TWO_SA_SUCCESS')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with simulations of the HIRO robot performing a side approach strategy with two arms: right and left under a coordination policy of push -hold.           
 
     %------------------------ REAL HIRO---------------------------------
@@ -65,21 +65,21 @@ function StratTypeFolder = AssignDir(StrategyType)
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with real hiro robot performing the side approach strategy.
     
     %% Robot: Side Approach Error Characterization
-    elseif strcmp(StrategyType, 'HIRO_SA_ErrorCharac')
+    elseif strcmp(StrategyType, 'REAL_HIRO_ONE_SA_ERROR_CHARAC')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with real hiro robot performing error deviations in the side approach strategy.
 
     %------------------------ SIM BAXTER ---------------------------------------------
-    elseif strcmp(StrategyType, 'SIM_BAXTER_SA')
-        StratTypeFolder = strcat('ForceControl/',StrategyType,'/');
+    elseif strcmp(StrategyType, 'SIM_BAXTER_ONE_SA_SUCCES')
+        StratTypeFolder = strcat('PositionControl/',StrategyType,'/');
 
     elseif strcmp(StrategyType, 'SIM_BAXTER_SA_DUAL')
-        StratTypeFolder = strcat('ForceControl/',StrategyType,'/');
+        StratTypeFolder = strcat('PositionControl/',StrategyType,'/');
 
     %------------------------ REAL BAXTER ---------------------------------------------
-    elseif strcmp(StrategyType, 'BAXTER_SideApproach')
-        StratTypeFolder = strcat('ForceControl/',StrategyType,'/');
+    elseif strcmp(StrategyType, 'REAL_BAXTER_ONE_SA_SUCCESS')
+        StratTypeFolder = strcat('PositionControl/',StrategyType,'/');
 
-    elseif strcmp(StrategyType, 'BAXTER_SA_DUAL')
+    elseif strcmp(StrategyType, 'REAL_BAXTER_TWO_SA_SUCCESS')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');
     
     else

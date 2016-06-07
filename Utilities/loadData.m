@@ -18,9 +18,36 @@
 % strcat commands
 % if(ispc) remove
 %
-% As of Aug 2015, data for both arms was introduced.
+% As of Aug 2015, data for both arms was introduced. June 2016 added Baxter
+% support. Use node to convert bag_to_mat. Load the
+% robot_limb_right_endpoint_state.mat with the following fields in data as
+% columns:
+%     header.seq        
+%     header.stamp.secs 
+%     header.stamp.nsecs
+%     header.frame_id   
+%     pose.position.x   
+%     pose.position.y   
+%     pose.position.z   
+%     pose.orientation.x
+%     pose.orientation.y
+%     pose.orientation.z
+%     pose.orientation.w
+%     twist.linear.x    
+%     twist.linear.y    
+%     twist.linear.z    
+%     twist.angular.x   
+%     twist.angular.y   
+%     twist.angular.z   
+%     wrench.force.x    
+%     wrench.force.y    
+%     wrench.force.z    
+%     wrench.torque.x   
+%     wrench.torque.y   
+%     wrench.torque.z   
 % Inputs:
 % fPath:            Path to results for data
+% StrategyType:     Type of strategy. Specially encoded string.
 % StratTypeFolder:  Folder for a given type of strategy
 % FolderName:       Name of foler where data actually resides
 % anglesDataFlag,cartposDataFlag,local0_world1_coords,leftArmDataFlag);
@@ -37,9 +64,9 @@
 % jointSnapData:    IF snap elastic rotation takes place, this holds the
 %                   angle data for that.
 %--------------------------------------------------------------------------
-function [AD,  CP,  FD,  ...                           % Right Arm Data
-          ADL, CPL, FDL, ...                          % Left Arm Data
-          JSD,SD]= loadData(fPath,StratTypeFolder,FolderName) %,...
+function [ADR, CPR, FDR,  ...                           % Right Arm Data
+          ADL, CPL, FDL, ...                            % Left Arm Data
+          JSD,SDR]= loadData(fPath,StrategyType,StratTypeFolder,FolderName) %,...
                                %anglesDataFlag,cartposDataFlag,local0_world1_coords,leftArmDataFlag)
 
     % If manually loading adjust here and comment out later
@@ -55,147 +82,263 @@ function [AD,  CP,  FD,  ...                           % Right Arm Data
     % StateData       ='\\home\\grxuser\\src\\OpenHRP3-0\\Controller\\IOserver\\HRP2STEP1\\bin\\State.dat';
     
     %% Global Variables
+    % Paths
+    
+    
     % Data
     global anglesDataFlag;              % Enable loading/printing of current joint angles
     global cartposDataFlag;             % Same for cartesian position of end effector
     global local0_world1_coords;        % Sets wrench data to load/plot wrt end-effector or world coordinates
     global gravityCompensated;          % % If you want to plot torques that have used gravity compensation
     
-    % Left Arm
-    global leftArmDataFlag;             % Enables to load/plot left arm data.    
+    % Arm Side Information
+    global armSide;                     % Array with bools indicating whether using left/right arm. . 
+    
+    % Loop Rate
+    loopRate = 0.005;                   % Default rate. Modified later.
+    
+    % Initialize variables
+    ADR=0; CPR=0; FDR=0;
+    ADL=0; CPL=0; FDL=0;
     
     %% (1) Assign folder names     
     %% Right Arm: Always load this data
-    if(gravityCompensated==0 && local0_world1_coords==0)
-        ForceData  =strcat(fPath,StratTypeFolder,FolderName,'/R_Torques.dat');
-    elseif(gravityCompensated==0 && local0_world1_coords==1)
-        ForceData  =strcat(fPath,StratTypeFolder,FolderName,'/R_worldTorques.dat');
-    elseif(gravityCompensated==1 && local0_world1_coords==0)
-        ForceData  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_Torques.dat');    
-    elseif(gravityCompensated==1 && local0_world1_coords==0)
-        ForceData  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_worldTorques.dat');  
-    end
-    StateData       =strcat(fPath,StratTypeFolder,FolderName,'/R_State.dat');
-    
-    % Joint Angle Data
-    if(anglesDataFlag)
-        AngleData   =strcat(fPath,StratTypeFolder,FolderName,'/R_Angles.dat');
-    else 
-        AngleData=0;        
-    end
-    
-    % Cartesian Data
-    if(cartposDataFlag)
-        CartPos     =strcat(fPath,StratTypeFolder,FolderName,'/R_CartPos.dat');      
-    else
-        CartPos=0;
-    end
-
-    %% Left Arm
-    if(leftArmDataFlag)
+    %------------------------ HIRO-----------------------------------------
+    if(strategySelector('hiro',StrategyType))
         if(gravityCompensated==0 && local0_world1_coords==0)
-            ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_Torques.dat');
+            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_Torques.dat');
         elseif(gravityCompensated==0 && local0_world1_coords==1)
-            ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_worldTorques.dat');
+            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_worldTorques.dat');
         elseif(gravityCompensated==1 && local0_world1_coords==0)
-            ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_GC_Torques.dat');    
-        elseif(gravityCompensated==1 && local0_world1_coords==0)
-            ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_GC_worldTorques.dat');  
+            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_Torques.dat');    
+        elseif(gravityCompensated==1 && local0_world1_coords==1)
+            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_worldTorques.dat');  
         end
-        %StateDataL      =strcat(fPath,StratTypeFolder,FolderName,'/L_State.dat');
+        StateData       =strcat(fPath,StratTypeFolder,FolderName,'/R_State.dat');
 
         % Joint Angle Data
         if(anglesDataFlag)
-            AngleDataL   =strcat(fPath,StratTypeFolder,FolderName,'/L_Angles.dat');
+            AngleData   =strcat(fPath,StratTypeFolder,FolderName,'/R_Angles.dat');
         else 
-            AngleDataL=0;        
+            AngleData=0;        
         end
 
         % Cartesian Data
         if(cartposDataFlag)
-            CartPosL     =strcat(fPath,StratTypeFolder,FolderName,'/L_CartPos.dat');      
+            CP     =strcat(fPath,StratTypeFolder,FolderName,'/R_CartPos.dat');      
         else
-            CartPosL=0;
-        end    
-    end
+            CP=0;
+        end
+
+        %% Left Arm
+        if(armSide(1,1))
+            if(gravityCompensated==0 && local0_world1_coords==0)
+                ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_Torques.dat');
+            elseif(gravityCompensated==0 && local0_world1_coords==1)
+                ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_worldTorques.dat');
+            elseif(gravityCompensated==1 && local0_world1_coords==0)
+                ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_GC_Torques.dat');    
+            elseif(gravityCompensated==1 && local0_world1_coords==1)
+                ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_GC_worldTorques.dat');  
+            end
+            %StateDataL      =strcat(fPath,StratTypeFolder,FolderName,'/L_State.dat');
+
+            % Joint Angle Data
+            if(anglesDataFlag)
+                AngleDataL   =strcat(fPath,StratTypeFolder,FolderName,'/L_Angles.dat');
+            else 
+                AngleDataL=0;        
+            end
+
+            % Cartesian Data
+            if(cartposDataFlag)
+                CartPosL     =strcat(fPath,StratTypeFolder,FolderName,'/L_CartPos.dat');      
+            else
+                CartPosL=0;
+            end    
+        end
+        
+        %% (2) Load the data
+        % Snap Joints: Was used with PA10, not now.
+        JSD=-1;
+        
+        %% Right Arm
+        FDR = load(FD);
+        SDR = load(StateData);
+        if (length(FDR)>1); loopRate=FDR(2,1); end;
+        
+        % Joint Angle Data
+        if(anglesDataFlag)
+            ADR  = load(AngleData);
+        else
+            ADR=-1;
+        end
+        
+        % Cartesian Position
+        if(cartposDataFlag)
+            CPR  = load(CP);
+        else
+            CPR=-1;
+        end
+        
+        %% Left Arm
+        FDL = load(ForceDataL);
+        %SDR      = load(StateDataL);
+        if (length(FDL)>1); loopRate=FDL(2,1); end;
+        
+        % Joint Angle Data
+        if(anglesDataFlag)
+            ADL  = load(AngleDataL);
+        else
+            ADL=-1;
+        end
+        
+        % Cartesian Position
+        if(cartposDataFlag)
+            CPL  = load(CartPosL);
+        else
+            CPL=-1;
+        end
+ 
+    %------------------------- BAXTER -------------------------------------
+    elseif(strategySelector('baxter',StrategyType)) 
+        % Snap Joints: Was used with PA10, not now.
+        JSD=-1;
+
+        if(armSide(1,2)) % Right
+            rTopicName='__robot_limb_right_endpoint_state.mat';
+            rosDataRight=load(strcat(fPath,FolderName,rTopicName));
+
+        elseif(armSide(1,1)) % Left
+            lTopicName='__robot_limb_left_endpoint_state.mat';
+            rosDataLeft=load(strcat(fPath,FolderName,lTopicName));            
+        end
+        
+        % LEFT ARM
+        % Load the MAT Files
+        if(armSide(1,1)) % LEFT
+            % Load the MAT Files
+            rosDataLeft=load(strcat(baxterPath,FolderName,lTopicName));
+        
+            % Separate the Data and store
+            % Pre-allocation
+            [r,~]=size(rosDataLeft.data);
+            FDL=zeros(r,7);
+            if(anglesDataFlag);  ADL=zeros(r,8); else ADL=0; end;
+            if(cartposDataFlag); CPL=FDL;        else CPL=0; end;
+            
+            % Copy data locally
+            for i=1:r
+                % Time: all elems - first index as offset. Convert from nsec to sec
+                FDL(i,1)=( (rosDataLeft.data(i,2)+(rosDataLeft.data(i,3)*1e-09)) - (rosDataLeft.data(1,2)+(rosDataLeft.data(1,3)*1e-09)) );
+                round(FDL(i,1),4,'significant'); % Round to 4sf
+                
+                % Copy wrench data
+                FDL(i,2:7)=rosDataLeft.data(i,18:23);
+
+                % End-effector Cartesian Pose
+                if(cartposDataFlag)
+                    % Time
+                    CPL(:,1)=FDL(:,1);
+                    % Pose
+                    CPL(i,2:4)=rosDataLeft.data(i,5:7);
+                    % Convert Quaternions to ZYX Euler and then adjust as RPY or XYZ
+                    CPL(i,5:7)=fliplr(quat2eul(rosDataLeft.data(i,8:11)));
+                else
+                    CPL=0;
+                end        
+               
+                % Joint Angles Data
+                if(anglesDataFlag)
+                  	% Time
+                    ADL(:,1)=FDL(:,1);
+                else
+                    ADL=0;
+                end                
+               
+         	end     % for loop
+            
+        % RIGHT ARM
+        elseif(armSide(1,2)) % RIGHT_ARM           
+           	% Pre-allocation
+            [r,~]=size(rosDataRight.data);
+            FDR=zeros(r,7);
+            if(anglesDataFlag);  ADR=zeros(r,8); else ADR=0; end;
+            if(cartposDataFlag); CPR=FDR;        else CPR=0; end;
+
+            % Copy data locally
+            for i=1:r
+               % Time: all elems - first index as offset. Convert from nsec to sec
+                FDR(i,1)=( (rosDataRight.data(i,2)+(rosDataRight.data(i,3)*1e-09)) - (rosDataRight.data(1,2)+(rosDataRight.data(1,3)*1e-09)) );
+                round(FDR(i,1),4,'significant'); % Round to 4sf
+                
+                % Copy wrench data
+                FDR(i,2:7)=rosDataRight.data(i,18:23);
+
+                % End-effector Cartesian Pose
+                if(cartposDataFlag)
+                    % Time
+                    CPR(:,1)=FDR(:,1);
+                    % Pose
+                    CPR(i,2:4)=rosDataRight.data(i,5:7);
+                    % Convert Quaternions to ZYX Euler and then adjust as RPY or XYZ
+                    CPR(i,5:7)=fliplr(quat2eul(rosDataRight.data(i,8:11)));
+                else
+                    CPR=0;
+                end     
+               
+                % Joint Angles Data
+                if(anglesDataFlag)
+                    % Time
+                    ADR(:,1)=FDR(:,1);
+                else
+                    ADR=0;
+                end                 
+               
+            end     % for loop        
+        end         % ARM SIDE
+        
+        if(armSide(1,1))
+        	if (i>1); loopRate=FDL(2,1); end;
+        elseif(armSide(1,2))
+            if (i>1); loopRate=FDR(2,1); end;
+        end
+    end             % ROBOT TYPE
+   % Get the State Transition Vector    
+   SDR  =load(strcat(fPath,'/State.dat'));
    
-    %% (2) Load the data    
-    % Snap Joints: Was used with PA10, not now.
-    JSD=-1;
-    
-    %% Right Arm
-    FD = load(ForceData);
-    SD = load(StateData);
-    
-    % Joint Angle Data
-    if(anglesDataFlag)
-        AD  = load(AngleData);    
-    else
-        AD=-1;
-    end
-    
-    % Cartesian Position
-    if(cartposDataFlag)
-        CP  = load(CartPos);
-    else
-        CP=-1;
-    end
-    
-    %% Left Arm 
-    FDL = load(ForceDataL);
-    %SD      = load(StateDataL);
-    
-    % Joint Angle Data
-    if(anglesDataFlag)
-        ADL  = load(AngleDataL);     
-    else
-        ADL=-1;
-    end
-    
-    % Cartesian Position
-    if(cartposDataFlag)
-        CPL  = load(CartPosL);
-    else
-        CPL=-1;
-    end
     
     %% State Vector Length Verification
     % Adjust the data length so that it finishes when mating is finished. 
-    r = size(SD);
+    r = size(SDR);
     if(r(1)==5)
-        endTime = SD(5,1);
+        endTime = SDR(5,1);
     
         % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
-        if(FD(end,1)>endTime)
+        if(FDR(end,1)>endTime)
 
-            % Note that SD(5,1) is hardcoded as some time k later thatn SD(4,1). 
-            endTime = floor(endTime/0.005)+1; % The Angles/Torques data is comprised of steps of magnitude 0.0005. Then we round down.
+            % Note that SDR(5,1) is hardcoded as some time k later thatn SDR(4,1). 
+            endTime = floor(endTime/loopRate)+1; % The Angles/Torques data is comprised of steps of magnitude 0.005. Then we round down.
 
             % Time will be from 1:to the entry denoted by the State Vector in it's 5th entry. 
-            FD = FD(1:endTime,:);
+            FDR = FDR(1:endTime,:);
             if(anglesDataFlag && cartposDataFlag)            
-                AD = AD(1:endTime,:);                
-                CP = CP(1:endTime,:);
+                ADR = ADR(1:endTime,:);                
+                CPR = CPR(1:endTime,:);
             end
 
         else
-            SD(5,1) = FD(end,1);
+            SDR(5,1) = FDR(end,1);
         end
         
     %% Insert an end state for failed assemblies that have less than the 5 entries
     else
-        SD(r(1)+1,1) = FD(end,1);  % Enter a new row in SD which includes the last time value contained in any of the other data vecs.
+        SDR(r(1)+1,1) = FDR(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
         
     end
     %% Check to make sure that StateData has a finishing time included
-    if(strcmp(StratTypeFolder,'ForceControl/SIM_SideApproach/')         || ... 
-       strcmp(StratTypeFolder,'ForceControl/SIM_SA_ErrorCharac_001/')   || ...
-       strcmp(StratTypeFolder,'ForceControl/SIM_SA_ErrorCharac_002/')   || ...
-       strcmp(StratTypeFolder,'ForceControl/SIM_SA_ErrorCharac_003/')   || ...
-       strcmp(StratTypeFolder,'ForceControl/SIM_SA_ErrorCharac_004/')   || ...
-       strcmp(StratTypeFolder,'ForceControl/SIM_SA_DualArm/')           || ...
-       strcmp(StratTypeFolder,'ForceControl/HIRO_SideApproach/'))
-        if(length(SD)<5)
+    if(strategySelector('SA',StrategyType))
+        if(length(SDR)<5)
             fprintf('StateData does not have 5 entries. You probably need to include the finishing time of the Assembly task in this vector.\n');
         end
     end

@@ -1,10 +1,12 @@
 %% ****************************** Documentation ***************************
-% Latest Update: July 2013 (002). // Jan 2013 (001).
+% Latest Update: June 2016 (004) // June 2015 (003) // July 2013 (002) // Jan 2013 (001)
 % 
 % This code originally was developed for the PivotApproach/PA10 Simulation.
 % We want to extend this to include SideApproach HIRO in Simulation/Physical Experiment.
 % A new revision has come for it in July 2013 as we prepare the
 % In July, 2013, we work to include the ErrorCharacterization and now this code will totally work without cells.
+% In June 2015, we introduced characterization of up to two arms (right,left).
+% In June 2016, we introduced the Baxter robot, work with matlab, and allow to read data files/mat files as output ROS
 %
 % The fifth layer of the taxonomy looks one state-at-a-time (context
 % specific) 
@@ -18,16 +20,17 @@
 %   �	State 4: Snap 		Y/N
 %   �	State 5: Mating 	Y/N
 % 
-% Each of the high-level behaviors requires a specific combination of low-level 
+% Each of the high-level behaviors (HLBs) requires a specific combination of low-level 
 % behaviors across the different force-elements but not necessarily all of them. 
-% The key is that if certain key low-level behaviors are present, the presence of 
-% the high-level behavior can be ascertained. 
+% We are testing different functions/methods to classify HLB with data from
+% lower layers. Here we have currently tested: rule-based methods, probabilistic methods, and SVM. 
 %
 % Note: for State 1
 %   State 1: Failure cases: most easily interpreted here. Study differnt conditions
 %            to understand nature of failure if present.
 %            If successful returns 1 for this state.
 % 
+% Rule-Based Classification
 % Here is the list of necessary state-sensitive low-level behavior requirements. 
 %
 % PivotApproach - PA10 - Simulation
@@ -107,7 +110,7 @@
 %                    - ALIGHMENT
 %                    - INSERTION
 %                    - MATING
-%               - For HIRO:
+%               - For HIRO/BAXTER:
 %                    - APPROACH
 %                    - ROTATION
 %                    - INSERTION

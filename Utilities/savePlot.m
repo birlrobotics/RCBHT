@@ -48,12 +48,13 @@ global armSide;         % This variable helps us to know whether we are working 
         
 %%      Save      
         % Right Arm
-        if(armSide==1)
+        if(armSide(1,2))
             nm = strcat(fPath,StratTypeFolder,FolderName,'/',plotName,'/',FolderName);      %'plot',num2str(h),num2str(min));
             
         % Left Arm
-        else
+        elseif(armSide(1,1))
             nm = strcat(fPath,StratTypeFolder,FolderName,'/',plotName,'/',FolderName,'_L'); %'plot',num2str(h),num2str(min));
+            
         end
         
         if(strcmp(FolderName(1,end),'/'))
