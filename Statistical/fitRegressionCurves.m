@@ -69,7 +69,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
     [rows c]            = size(forceData);          % size elements of force data
     
     % Thresholds
-    if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+     if(strategySelector('PA',StrategyType))         % 'PA' stands for PivotApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
         GoodFitThreshold    = 0.70;                 % Correlation coefficient USed to determine when to start a new data fit
     else
         GoodFitThreshold    = 0.90;                 % Correlation coefficient USed to determine when to start a new data fit        
@@ -203,7 +203,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
 %%                  ii) Retrieve the segment's statistical Data and write to file
                     [dAvg dMax dMin dStart dFinish dGradient dLabel]=statisticalData(Time(1),   Time(length(Range)),...
                                                                                      dataFit,   domain,      polyCoeffs,...
-                                                                                     FolderName,StrategyType,index); % 1+windowlength
+                                                                                     FolderName,StrategyType,index,fPath); % 1+windowlength
 
                     % iii) Keep history of statistical data 
                     % All data types are numerical in this version. // Prior versions: Given that the datatypes are mixed, we must use cells. See {http://www.mathworks.com/help/techdoc/matlab_prog/br04bw6-98.html}       
@@ -246,7 +246,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
             dataFit     = dataFit(1:length(Range),1);   % Data fit - window components
 
 %%          ii) Retrieve the segment's statistical Data and write to file
-            [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(Time(1),Time(length(Time)),Data,domain,polyCoeffs,FolderName,StrategyType,index); % 1+windowlength
+            [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(Time(1),Time(length(Time)),Data,domain,polyCoeffs,FolderName,StrategyType,index,fPath); % 1+windowlength
 
             % iii) Keep history of statistical data 
             % All data types are numerical in this version. // Prior

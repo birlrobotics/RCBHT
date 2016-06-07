@@ -66,6 +66,10 @@ function [llbehStruc,llbehLbl] = llbehComposition(StrategyType,motComps,curHandl
 %------------------------------------------------------------------------------------------
     global DB_PLOT;                                 % Declared in snapVerification. Enables plotting.
     global DB_WRITE;
+    
+    global axisIndex;
+    global lastIndex; 
+   
 %------------------------------------------------------------------------------------------   
     global LLB_REFINEMENT_CYCLES;  
 %------------------------------------------------------------------------------------------    
@@ -257,6 +261,8 @@ function [llbehStruc,llbehLbl] = llbehComposition(StrategyType,motComps,curHandl
         htext = plotLowLevelBehCompositions(StrategyType,curHandle,TL,BL,llbehStruc);
 
         %  Save plot
-        savePlot(fPath,StratTypeFolder,FolderName,curHandle,'llbehPlot'); 
+        if(axisIndex==lastIndex) % We are in the last round, now plot
+            savePlot(fPath,StratTypeFolder,FolderName,curHandle,'llbehPlot'); 
+        end
     end
 end

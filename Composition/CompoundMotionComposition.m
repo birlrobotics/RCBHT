@@ -66,6 +66,10 @@ function motComps=CompoundMotionComposition(StrategyType,statData,saveData,gradL
 %--------------------------------------------------------------------------
     global DB_PLOT;                                 % Declared in snapVerification. Enables plotting.
     global DB_WRITE;
+
+%--------------------------------------------------------------------------    
+    global axisIndex;                               % Maintain global variables to identify which index of the force plot we are plotting. 
+    global lastIndex;        
 %--------------------------------------------------------------------------    
     global MC_COMPS_CLEANUP_CYCLES;
 %--------------------------------------------------------------------------
@@ -153,8 +157,8 @@ function motComps=CompoundMotionComposition(StrategyType,statData,saveData,gradL
     motComps = resizeData(motComps);
     
 %% E. CleanUp the motion compositions
-    % PA10 Pivot Approach
-    if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+    % Pivot Approach
+    if(strategySelector('PA',StrategyType))
         CleanLoops = CLEANUP_CYCLES;
     % HIRO Side Approach
     else

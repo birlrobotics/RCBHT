@@ -4,20 +4,18 @@
 % 2) Write the entire gradient classification structure.
 % The second choice is done after the relevant gradient classification
 % values have been computed as per described in gradientCalibration()
-function WriteGradientClassification(WinPath,StratTypeFolder,gradClassification,index)                                           
+%
+% 2015 Aug. As we test the dual arm approach it seems that all moment
+% limits should depend on the limits of My and not those of Fx. I think my
+% prior consideration was the magnitude of the signals, those of Fx always
+% being larger, but in fact, we are measuring gradients. And those can be
+% very different in magnitude and are not linearly related with contact
+% magnitudes. L91-107 have the moment's upper limits vary according to My.
+function WriteGradientClassification(fPath,StratTypeFolder,gradClassification,index)                                           
 
 %% Create Directory   
-    if(ispc)
-        % Set path with new folder "Segments" in it.
-        gradClassFolder = 'gradClassFolder';
-        dir             = strcat(WinPath,StratTypeFolder,gradClassFolder);        
-    % Linux
-    else
-        gradClassFolder='gradClassFolder';
-        LinuxPath   = '\\home\\Documents\\Results\\Force Control\\Pivot Approach\\';
-        %QNXPath    = '\\home\\hrpuser\\forceSensorPlugin_Pivot\\data\\Results\\'
-        dir         = strcat(LinuxPath,StratTypeFolder,gradClassFolder);        
-    end    
+    gradClassFolder = 'gradClassFolder';
+    dir             = strcat(fPath,StratTypeFolder,gradClassFolder);        
  
     % Check if directory exists, if not create a directory
     if(exist(dir,'dir')==0)
@@ -25,12 +23,12 @@ function WriteGradientClassification(WinPath,StratTypeFolder,gradClassification,
     end     
         
 %% Load values and copy appropriately
-    if(index==1);         name='\\FxLims.dat';
-    elseif(index==2);     name='\\FyLims.dat';
-    elseif(index==3);     name='\\FzLims.dat';
-    elseif(index==4);     name='\\MxLims.dat';
-    elseif(index==5);     name='\\MyLims.dat';
-    elseif(index==6);     name='\\MzLims.dat';
+    if(index==1);         name='/FxLims.dat';
+    elseif(index==2);     name='/FyLims.dat';
+    elseif(index==3);     name='/FzLims.dat';
+    elseif(index==4);     name='/MxLims.dat';
+    elseif(index==5);     name='/MyLims.dat';
+    elseif(index==6);     name='/MzLims.dat';
     end
     
 %% Write Limits [pimp pConst] to File
@@ -63,19 +61,19 @@ function WriteGradientClassification(WinPath,StratTypeFolder,gradClassification,
     if(index==6)
         
         % Load all 6 gradient limits : [pimp pConst]      
-        FX = load(strcat(dir,'\\FxLims.dat'));
-        FY = load(strcat(dir,'\\FyLims.dat'));
-        FZ = load(strcat(dir,'\\FzLims.dat'));
-        MX = load(strcat(dir,'\\MxLims.dat'));
-        MY = load(strcat(dir,'\\MyLims.dat'));
-        MZ = load(strcat(dir,'\\MzLims.dat'));              
+        FX = load(strcat(dir,'/FxLims.dat'));
+        FY = load(strcat(dir,'/FyLims.dat'));
+        FZ = load(strcat(dir,'/FzLims.dat'));
+        MX = load(strcat(dir,'/MxLims.dat'));
+        MY = load(strcat(dir,'/MyLims.dat'));
+        MZ = load(strcat(dir,'/MzLims.dat'));              
         
 %% Compute gradient classification values for each axes separately.
 
     % Start with Fx, Fz, My which are the key axes for the Pivot Approach
     
 %% Fx   
-        pimp    = FX(1,1);  % pimp - positive impulse
+        pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = FX(2,1);  % pConst - positive constant
         Fx = computeGradientSpectrum(pimp,pConst);
         
@@ -92,18 +90,18 @@ function WriteGradientClassification(WinPath,StratTypeFolder,gradClassification,
     
 %% Mx
         % Copy My's pimp into Mx
-        pimp    = FX(1,1); %pimp
+        pimp    = MY(1,1); %pimp                            // Changed upper limit so that it belongs to My not Fx: pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = MY(2,1);
         Mx = computeGradientSpectrum(pimp,pConst);
         
 %% My
-        pimp    = FX(1,1);  % pimp - positive impulse
+        pimp    = MY(1,1);  % pimp   - positive impulse     // Changed upper limit so that it belongs to My not Fx: pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = MY(2,1);  % pConst - positive constant
         My = computeGradientSpectrum(pimp,pConst);     
 
 %% Mz
         % Copy My's pimp into Mz
-        pimp    = FX(1,1); %pimp
+        pimp    = MY(1,1); %pimp                            // Changed upper limit so that it belongs to My not Fx: pimp    = FX(1,1);  % pimp   - positive impulse
         pConst  = MY(2,1);
         Mz = computeGradientSpectrum(pimp,pConst);    
 
@@ -111,22 +109,22 @@ function WriteGradientClassification(WinPath,StratTypeFolder,gradClassification,
         for i=1:6
 
             if(i==1);       
-                FileName=strcat(dir,'\\Fx.dat');
+                FileName=strcat(dir,'/Fx.dat');
                 data = Fx;
             elseif(i==2)  
-                FileName=strcat(dir,'\\Fy.dat');
+                FileName=strcat(dir,'/Fy.dat');
                 data = Fy;
             elseif(i==3)
-                FileName=strcat(dir,'\\Fz.dat');
+                FileName=strcat(dir,'/Fz.dat');
                 data = Fz;
             elseif(i==4)
-                FileName=strcat(dir,'\\Mx.dat');
+                FileName=strcat(dir,'/Mx.dat');
                 data = Mx;
             elseif(i==5)
-                FileName=strcat(dir,'\\My.dat');
+                FileName=strcat(dir,'/My.dat');
                 data = My;
             elseif(i==6)
-                FileName=strcat(dir,'\\Mz.dat');
+                FileName=strcat(dir,'/Mz.dat');
                 data = Mz;
             end
 

@@ -1,0 +1,15 @@
+# This function helps select appropriate strategy strings as defined by /Utilities/AssignDir.m
+# The function takes two inputs: 
+#   StrategyType:		string provided by user to test a desired Possible.
+#		
+# strategy categories to include are as follows:
+#		sim_pa, 
+#		sim_hiro, 
+#		sim_hiro_error, 
+#		sim_hiro_dual, 
+#		hiro, 
+#		hiro_dual, 
+#		sim_baxter, 
+#		baxter, 
+#		baxter_dual
+function bool = stringSelector(category,StrategyType)

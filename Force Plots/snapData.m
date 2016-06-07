@@ -1,40 +1,17 @@
-function snapData(StrategyType,FolderName)
+function snapData(StrategyType,FolderName,fPath)
 
 %% Debug Enable Commands
     %debug_on_warning(1);
     %debug_on_error(1);
 
 %% Assing appropriate directoy based on Ctrl Strategy 
-    fPath = 'C:\\Documents and Settings\\suarezjl\\My Documents\\School\\Research\\AIST\\Results';
-    if strcmp(StrategyType,'Y')
-        StratTypeFolder = '\\PositionControl\\StraightLineApproach-NewIKinParams\\';				% Straight Line with new IKin params
-    elseif strcmp(StrategyType,'SN')
-        StratTypeFolder = '\\PositionControl\\StraightLineApproach-NewIkinParams-Noise\\';			% Straight Line with new IKin params with noise
-    elseif strcmp(StrategyType,'P')
-        StratTypeFolder = '\\PositionControl\\PivotApproach-NewIkinParams\\';				% Pivot approach with new IKin Params
-    elseif strcmp(StrategyType,'PN')
-        StratTypeFolder = '\\PositionControl\\PivotApproach-NewIKin-Noise\\';				% Pivot approach with new IKin Params with noise
-    elseif strcmp(StrategyType,'FS')
-        StratTypeFolder = '\\ForceControl\\StraightLineApproach\\';
-    elseif strcmp(StrategyType,'FP')
-        StratTypeFolder = '\\ForceControl\\PivotApproach\\';    
-    else
-        StratTypeFolder = '';
-        FolderName='';
-    end
+    StratTypeFolder = AssignDir(StrategyType);
 
 %% Load the data
     % Assign the right folder name
-    if(ispc)
-        %AngleData   =strcat(fPath,StratTypeFolder,FolderName,'\\Torques.dat');
-        ForceData    =strcat(fPath,StratTypeFolder,FolderName,'\\filtTorques.dat');
-        RotSpringData=strcat(fPath,StratTypeFolder,FolderName,'\\RotSpring.dat');
-    else
-
-        %AngleData   =strcat('\\home\\juan\\Documents\\Results\\',StratTypeFolder,FolderName,'\\Torques.dat');
-        ForceData    =strcat('\\home\\juan\\Documents\\Results\\',StratTypeFolder,FolderName,'\\filtTorques.dat');
-        RotSpringData=strcat('\\home\\juan\\Documents\\Results\\',StratTypeFolder,FolderName,'\\RotSpring.dat');
-    end
+    %AngleData   =strcat(fPath,StratTypeFolder,FolderName,'\\Torques.dat');
+    ForceData    =strcat(fPath,StratTypeFolder,FolderName,'\\filtTorques.dat');
+    RotSpringData=strcat(fPath,StratTypeFolder,FolderName,'\\RotSpring.dat');
 
     % Load the data
     % X=load(AngleData);

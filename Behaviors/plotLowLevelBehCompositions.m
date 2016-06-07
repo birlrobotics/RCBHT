@@ -29,31 +29,57 @@ function htext = plotLowLevelBehCompositions(StrategyType,rHandle,TL,BL,data)
     LblIndex  = 1;                % type of composition: alignment, increase, decrease, constant
     AvgTime   = 17;                % Used as an index
     
+   % Maximum height of plot
+    fig_handle = gca;
+    maxHeight = fig_handle.YLim(2);
+    minHeight = fig_handle.YLim(1);
+    
+    % Set Text Upper Height Limit
+    if(TL>maxHeight)
+        TL=maxHeight;
+    elseif(TL<minHeight)
+        TL=minHeight;
+    end
+    
+    % Set Text Lower Height Limit
+    if(BL<minHeight)
+        BL=minHeight;
+    elseif(BL>maxHeight)
+        BL=maxHeight;
+    end     
+    
+    % Set Text Height Levels. 
+    if(maxHeight>0) % 
+        height_LLB =minHeight+((maxHeight-minHeight)*0.85);
+    else 
+        height_LLB =minHeight+((maxHeight-minHeight)*0.85);
+    end   
+    
 %%  Labeling
     
     % For each of the handles
-    for i=1:len                                 % getting 7 handles instead of six...
-        
+    for i=1:len                                 % getting 7 handles instead of six...        
         % For each of the compositions
-        for index=1:r(1);                                    % rows
-            if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+        for index=1:r(1);                                           % rows
+            % Pivot Approach, it has 5 states. 
+            if(strategySelector('PA',StrategyType))
                 htext(i)=text(data(index,AvgTime),...               % x-position. Average time of composition.
-                             (-0.75*TL(i)+(0.10*randn*TL(i))),...   % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
+                              height_LLB,...                        % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
                               data(index,LblIndex),...              % Composition string: alignment, increase, decrease, constant.
                               'Color',[1,0,0],...                   % Font color
                               'FontSize',8.5,...                  	% Size of font. Changed from 7.5 to 8.5
                               'FontWeight','light',...              % Font weight can be light, normal, demi, bold
                               'HorizontalAlignment','center');      % Alignment of font: left, center, right. 
-            % HIRO Side Approach. No variability
+            % Side Approach, it has 4 states. 
             else
-                htext(i)=text   (data(index,AvgTime),...                  % x-position. Average time of composition.
-                                (0.75*TL(i)),...                          % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
-                                 llbInt2llbLbl(...
-                                    data(index,LblIndex)),...             % Composition string: alignment, increase, decrease, constant.
-                                'Color',              [1,0,0],...         % Font color
-                                'FontSize',            8.5,...            % Size of font. Changed from 7.5 to 8.5
-                                'FontWeight',         'light',...         % Font weight can be light, normal, demi, bold
-                                'HorizontalAlignment','center');          % Alignment of font: left, center, right. 
+                htext(i)=text   (data(index,AvgTime),...            % x-position. Average time of composition.
+                                height_LLB,...                      % y-position. No randomness here since there is no overcrowding... //Set it at 75% of the top boundary of the axis +/- randn w/ sigma = TL*0.04
+                                llbInt2llbLbl(...
+                                data(index,LblIndex)),...           % Composition string: alignment, increase, decrease, constant.
+                                'Color',              [1,0,0],...   % Font color
+                                'FontSize',            8.5,...      % Size of font. Changed from 7.5 to 8.5
+                                'FontWeight',         'light',...   % Font weight can be light, normal, demi, bold
+                                'HorizontalAlignment','center');    % Alignment of font: left, center, right. 
             end
         end
     end       

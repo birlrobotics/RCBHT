@@ -24,7 +24,7 @@
 % dLabel        - gradient integer label
 function [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(wStart,    wFinish,...
                                                                           Data,      domain,      polyCoeffs,...
-                                                                          FolderName,StrategyType,forceAxisIndex)
+                                                                          FolderName,StrategyType,forceAxisIndex,fPath)
     
 %% Compute Statistical Parameters of the poly fitted Data   
     dMax        = max(Data);                            % 2)
@@ -43,7 +43,7 @@ function [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(wStart
     % Label each segment based on gradient magnitude:
     % [pimp,bpos,mpos,spos,const,sneg,mneg,bneg,nimp]
     dLabel = GradientClassification(dGradient, domain,...
-                                    FolderName,StrategyType,forceAxisIndex);  % 7)    
+                                    fPath,FolderName,StrategyType,forceAxisIndex);  % 7)    
     
 %% Convert dLabel from string to int
     dLabel = gradLbl2gradInt(dLabel);

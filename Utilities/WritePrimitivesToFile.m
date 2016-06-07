@@ -28,6 +28,9 @@ function [FileName,write2FileFlag]=WritePrimitivesToFile(WinPath,StratTypeFolder
                                                Type,FileName,write2FileFlag,...
                                                segmentIndex,dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel)
 
+%% Global Variables
+    global armSide;             % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
+    
 %% Create Directory   
 %     if(ispc)
         % Set path with new folder "Segments" in it.
@@ -57,16 +60,22 @@ function [FileName,write2FileFlag]=WritePrimitivesToFile(WinPath,StratTypeFolder
         % Retrieve Data // Comment out date inclusion for text file. 
         %date    = clock;            % y/m/d h:m:s
         %h       = num2str(date(4));
-        %min     = date(5);          % minutes before 10 appear as '9', not '09'. 
+        %min     = date(5);                     % minutes before 10 appear as '9', not '09'. 
 
     % Fix appearance of minutes
-        %if(min<10)                              % If before 10 minutes
+        %if(min<10)                             % If before 10 minutes
         %    min = strcat('0',num2str(min));
         %else
         %    min = num2str(min);
         %end
         % Create a time sensitive name for file
-        FileName = strcat(dir,'/Segement_',Type,'.txt'); %h,min,'.txt');                                                  
+        
+        % Write FileName according to whether it is a right or left arm
+        if(armSide==1) % RightArm
+            FileName = strcat(dir,'/Segement_',Type,'.txt'); %h,min,'.txt');                                                  
+        else % Left Arm
+            FileName = strcat(dir,'/Segement_',Type,'_L','.txt'); %h,min,'.txt');                                                  
+        end
        % Change flag
        write2FileFlag = false;
     end

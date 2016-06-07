@@ -29,7 +29,7 @@
 % The domain
 %**************************************************************************
 function gradLabel = GradientClassification(gradient,domain,...
-                                            FolderName,StrategyType,forceAxisIndex)
+                                            fPath,FolderName,StrategyType,forceAxisIndex)
 
 %% Intialization
     global Optimization;                            % Copy the global value defined in snapVerification.m
@@ -49,60 +49,40 @@ function gradLabel = GradientClassification(gradient,domain,...
     end    
 
 %% Create Directory   
-    % Windows
-    if(ispc)
-        % Set path with new folder "Segments" in it.
-        WinPath         = 'C:\\Documents and Settings\\suarezjl\\My Documents\\School\\Research\\AIST\\Results';
-        gradClassFolder = 'gradClassFolder';
-        dir             = strcat(WinPath,StratTypeFolder,gradClassFolder);        
-        
-        % Check if directory exists where optimized gradients were saved
-        if(exist(strcat(dir,name))==2)
-            
-            % The folder exists thus optimization has taken place. Set
-            % gradientClassificationFlag to true to USE those values. 
-            if(Optimization==0)
-                gradientClassificationFlag = true; 
-                gradClassification = load(strcat(dir,name));    % I.e. gradients have been optimized
-                
-            % Optimization == 1
-            % There is a desire to RECOMPUTE the values one more time. Keep
-            % the classification false flag. 
-            else
-                gradientClassificationFlag = true;
+    gradClassFolder = 'gradClassFolder';
+    dir             = strcat(fPath,StratTypeFolder,gradClassFolder);        
 
-            end
-            
-        % No optimized gradients exist because the folder doesn't exist.        
-        else
-            % The folder does not exist but we want to calibrate for the
-            % first time
-            if(Optimization==1)
-                gradientClassificationFlag  = false; %WriteGradientClassification will trigger the computation of calibrated gradients
-                
-            % No calibrated gradients and don't want to compute them.
-            else
-                gradientClassificationFlag = false;
-            end
-            
-        end
+    % Check if directory exists where optimized gradients were saved. ==2, means that it exists.
+    if(exist(strcat(dir,name),'file')==2)
 
-    % Linux
-    else
-        gradClassFolder='gradClassFolder';
-        LinuxPath   = '/home/grxuser/Documents/School/Research/AIST/Results/';
-        %QNXPath    = '\\home\\hrpuser\\forceSensorPlugin_Pivot\\data\\Results\\'
-        dir         = strcat(LinuxPath,StratTypeFolder,gradClassFolder,name); 
-        % Check if directory exists, if not create a directory
-        if(exist(dir,'dir')==0)
-            if(Optimization==1)
-                fprintf('Offline:SideApproach:GradientClassification - grad classification folder does not exist. Continue with standard values!!\n');            
-            end
+        % The folder exists thus optimization has taken place. Set
+        % gradientClassificationFlag to true to USE those values. 
+        if(Optimization==0)
+            gradientClassificationFlag = true; 
+            gradClassification = load(strcat(dir,name));    % I.e. gradients have been optimized
+
+        % Optimization == 1
+        % There is a desire to RECOMPUTE the values one more time. Keep
+        % the gradientClassificationFlag to true. 
         else
             gradientClassificationFlag = true;
-            gradClassification = load(strcat(dir,name));
-        end         
-    end    
+
+        end
+
+    % No optimized gradients exist because the folder doesn't exist.        
+    else
+        % The folder does not exist but we want to calibrate for the
+        % first time. This will happen in snapVerification's call to
+        % gradientCalibration ~ L290
+        if(Optimization==1)
+            gradientClassificationFlag  = false; %WriteGradientClassification will trigger the computation of calibrated gradients
+
+        % No calibrated gradients and don't want to compute them.
+        else
+            gradientClassificationFlag = false;
+        end
+
+    end 
 
 %% Gradient limits - values based on strategy, domain, or optimization
 
@@ -163,7 +143,8 @@ function gradLabel = GradientClassification(gradient,domain,...
         %% Read value from file to know if we should load standard values
         %% or optimized values
         
-        if(~strcmp(StrategyType,'HSA') && ~strcmp(StrategyType,'ErrorCharac'))
+        % pa10
+        if(strategySelector('pa10',StrategyType))        
             pimp  =1000.0;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
             bpos  = 100.0;     bneg = -1*bpos;
             mpos  =  10.0;     mneg = -1*mpos;
@@ -171,7 +152,7 @@ function gradLabel = GradientClassification(gradient,domain,...
             zero  =   0.0;
 
         % HIRO    
-        else
+        elseif(strategySelector('hiro',StrategyType))
             pimp  =  70.0;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
             bpos  =  46.0;     bneg = -1*bpos;
             mpos  =  23.0;     mneg = -1*mpos;
@@ -182,7 +163,7 @@ function gradLabel = GradientClassification(gradient,domain,...
 %% OPTIMIZATION ACCORDING TO THE FORCE/MOMENT-AXIS DOMAIN --Primarily used in moment signals.
         % 1) Scale values by 0.5 if domain is less than 0.1 in total value.
         if(forceAxisIndex>3) % moments
-            if(strcmp(StrategyType,'HSA') && domain < 1.9) 
+            if(strategySelector('hiro',StrategyType) && domain < 1.9) 
                 factor = 10.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
@@ -190,7 +171,7 @@ function gradLabel = GradientClassification(gradient,domain,...
                 mpos  = mpos/factor;     mneg = -1*mpos;
                 spos  = spos/factor;     sneg = -1*spos;   
 
-            elseif(strcmp(StrategyType,'HSA') && domain < 0.1) 
+            elseif(strategySelector('hiro',StrategyType) && domain < 0.1) 
                 factor = 100.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
@@ -198,7 +179,8 @@ function gradLabel = GradientClassification(gradient,domain,...
                 mpos  = mpos/factor;     mneg = -1*mpos;
                 spos  = spos/factor;     sneg = -1*spos; 
 
-            elseif(strcmp(StrategyType,'ErrorCharac') && domain < 4.0)
+            %% Error Characterization HIRO: Has larger values
+            elseif(strategySelector('hiro_error',StrategyType) && domain < 4.0)
                 factor = 10.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
@@ -206,7 +188,7 @@ function gradLabel = GradientClassification(gradient,domain,...
                 mpos  = mpos/factor;     mneg = -1*mpos;
                 spos  = spos/factor;     sneg = -1*spos;   
 
-            elseif(strcmp(StrategyType,'ErrorCharac') && domain < 1)
+            elseif(strategySelector('hiro_error',StrategyType) && domain < 1)
                 factor = 100.0;
 
                 pimp  = pimp/factor;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8

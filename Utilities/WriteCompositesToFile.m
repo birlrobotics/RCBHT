@@ -28,6 +28,10 @@
 %**************************************************************************
 function FileName=WriteCompositesToFile(WinPath,StratTypeFolder,FolderName,pType,saveData,data,dataFlag)
 
+%% Globals
+global armSide;         % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
+                        % Declared in snapVerification. If==1: RightArm, if ==2,LeftArm
+
 %% Initialization
    
     % Structures
@@ -74,18 +78,33 @@ function FileName=WriteCompositesToFile(WinPath,StratTypeFolder,FolderName,pType
 
 %%  Create a time sensitive name for file according to data
     if(dataFlag==motComps)
-        FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
+        if(armSide==1) % Right Arm
+            FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
+        else % Left Arm
+            FileName    = strcat(dir,'/',Folder,'_',pType,'_L');%,h,min);
+        end
 
     elseif(dataFlag==llbehStruc)
-        FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
-        %FileName_temp = strcat(dir,'/',Folder,'_',pType);      % File with no date/time, useful to open from other programs.
+        if(armSide==1) % Right Arm
+            FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
+            %FileName_temp = strcat(dir,'/',Folder,'_',pType);      % File with no date/time, useful to open from other programs.
+        else % Left Arm
+            FileName    = strcat(dir,'/',Folder,'_',pType,'_L');%,h,min);
+        end
 
     elseif(dataFlag==hlbehStruc)
-        FileName    = strcat(dir,'/',Folder);%,'_',pType);%,h,min);   
-
+        if(armSide==1) % Right Arm
+            FileName    = strcat(dir,'/',Folder);%,'_',pType);%,h,min);   
+        else % Left Arm
+            FileName    = strcat(dir,'/',Folder,'_L');%,'_',pType);%,h,min);   
+        end
+        
     elseif(dataFlag==llbBelief)
-        FileName = strcat(dir,'/Data');                % File with no date/time, useful to open from other programs
-
+        if(armSide==1) % Right Arm
+            FileName = strcat(dir,'/Data');                % File with no date/time, useful to open from other programs
+        else % Left Arm
+            FileName = strcat(dir,'/Data','_L');                % File with no date/time, useful to open from other programs
+        end
     end
     
     FileExtension = strcat(FileName,'.txt');
@@ -143,7 +162,7 @@ function FileName=WriteCompositesToFile(WinPath,StratTypeFolder,FolderName,pType
                         fprintf(fid, '\n');    
                     end                   
                 elseif(dataFlag==hlbehStruc)
-                    r=size(data);
+                    r=length(data);
                     if(r==1)
                         fprintf(fid,'%d\t%d\t%d\t%d\t',data(1));
                     elseif(r==2)
@@ -161,9 +180,13 @@ function FileName=WriteCompositesToFile(WinPath,StratTypeFolder,FolderName,pType
     
 %%  Save to composites folder
     if(saveData)
-        % Save motcomps.mat to Composites folder 
-        % save filename content stores only those variables specified by content in file filename
-        save(strcat(FileName,'.mat'),'data');
+        if(armSide==1) % Right arm
+            % Save motcomps.mat to Composites folder 
+            % save filename content stores only those variables specified by content in file filename
+            save(strcat(FileName,'.mat'),'data');
+        else % Left Arm
+            save(strcat(FileName,'_L','.mat'),'data');
+        end
         
 %         if(dataFlag==llbehStruc)
 %             save(strcat(FileName_temp,'.mat'),'data');
