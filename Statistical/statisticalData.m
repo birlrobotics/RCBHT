@@ -37,6 +37,10 @@ function [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(wStart
     end
     dStart      = wStart;                               % 4)
     dFinish     = wFinish;                              % 5)
+    % Special Case
+    if(dStart==dFinish) % represnts a point that had no correlation and the window could not grow longer in fit regression
+        dFinish=dFinish+(dFinish/20);
+    end
     dGradient   = polyCoeffs(1);                        % 6)
     
 %% Label Data   

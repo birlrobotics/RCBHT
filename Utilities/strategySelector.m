@@ -13,53 +13,59 @@
 % conceived as a robot type, a strategy type, or the number of arms.
 
 %% -------------- pa10 Robot ----------------------------
-%       SIM_PA10_SLA
-%       SIM_PA10_PivotApproach
+%       SIM_PA10_ONE_SL_SUCCESS
+%       SIM_PA10_ONE_PA_SUCCESS
 %% -------------- hiro Robot ----------------------------
 %       SIM_HIRO_SLA
 %       SIM_HIRO_SLA_NOISE
-%       SIM_HIRO_PivotApproach,
-%       SIM_HIRO_PivotApproach_Noise
-%       SIM_HIRO_SideApproach
-%       SIM_HIRO_SA_ErrorCharac_001
-%       SIM_HIRO_SA_ErrorCharac_002
-%       SIM_HIRO_SA_ErrorCharac_003
-%       SIM_HIRO_SA_ErrorCharac_004
-%       SIM_HIRO_SA_DualArm
-%       HIRO_SA_ErrorCharac
+%       SIM_HIRO_ONE_PA_SUCCESS,
+%       SIM_HIRO_ONE_PA_NOISE
+%       SIM_HIRO_ONE_SA_SUCCESS
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_x
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_y
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM
+%       SIM_HIRO_TWO_SA_SUCCESS
+%       REAL_BAXTER_ONE_SA_SUCCESS
+%       REAL_HIRO_ONE_SA_ERROR_CHARAC              
+%% -------------- Baxter Robot ----------------------------
+%       SIM_BAXTER_ONE_SA_SUCCES
+%       SIM_BAXTER_SA_DUAL
+%       REAL_BAXTER_ONE_SA_SUCCESS
+%       REAL_BAXTER_TWO_SA_SUCCESS
 %% -------------- SLA ----------------------------
 %       SIM_HIRO_SLA
 %       SIM_HIRO_SLA_NOISE
-%       SIM_PA10_SLA
+%       SIM_PA10_ONE_SL_SUCCESS
 %% -------------- PA ----------------------------   
-%       SIM_HIRO_PivotApproach,
-%       SIM_HIRO_PivotApproach_Noise
-% 		SIM_PA10_PivotApproach,
+%       SIM_HIRO_ONREAL_BAXTER_ONE_SA_SUCCESSE_PA_SUCCESS,
+%       SIM_HIRO_ONE_PA_NOISE
+% 		SIM_PA10_ONE_PA_SUCCESS,
 %% -------------- SA ----------------------------
 %       % --- Simulated HIRO
-%       SIM_HIRO_SideApproach
-%       SIM_HIRO_SA_ErrorCharac_001
-%       SIM_HIRO_SA_ErrorCharac_002
-%       SIM_HIRO_SA_ErrorCharac_003
-%       SIM_HIRO_SA_ErrorCharac_004
-%       SIM_HIRO_SA_DualArm
+%       SIM_HIRO_ONE_SA_SUCCESS
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_x
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_y
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob
+%       SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM
+%       SIM_HIRO_TWO_SA_SUCCESS
 %       % --- Real HIRO
-%       HIRO_SideApproach
+%       REAL_HIRO_ONE_SA_SUCCESS
 %       % --- Real HIRO Error Charac
-%       HIRO_SA_ErrorCharac
+%       REAL_HIRO_ONE_SA_ERROR_CHARAC
 %       % --- Simulated Baxter
-%       SIM_BAXTER_SA
+%       SIM_BAXTER_ONE_SA_SUCCES
 %       SIM_BAXTER_SA_DUAL
 %       % --- Real Baxter
-%       BAXTER_SideApproach
-%       BAXTER_SA_DUAL
+%       REAL_BAXTER_ONE_SA_SUCCESS
+%       REAL_BAXTER_TWO_SA_SUCCESS
 %--------------------------------------------------------------------------
 function res = strategySelector(category,StrategyType)
 
     %% Robot Type: PA10
     if(strcmp(category,'pa10'))
-        if(strcmp(StrategyType,'SIM_PA10_SLA') ||...
-            strcmp(StrategyType,'SIM_PA10_PivotApproach'))
+        if(strcmp(StrategyType,'SIM_PA10_ONE_SL_SUCCESS') ||...
+            strcmp(StrategyType,'SIM_PA10_ONE_PA_SUCCESS'))
         
             res=true;
             return;             
@@ -67,17 +73,21 @@ function res = strategySelector(category,StrategyType)
             res=false;
             return;
         end
-        
+%--------------------------------------------------------------------------        
     % HIRO
+%--------------------------------------------------------------------------    
     elseif(strcmp(category,'hiro'))
         if(strcmp(StrategyType,'SIM_HIRO_SLA')                      ||...
                 strcmp(StrategyType,'SIM_HIRO_SLA_NOISE')           ||...
-                strcmp(StrategyType,'SIM_HIRO_PivotApproach')       ||...
-                strcmp(StrategyType,'SIM_HIRO_PivotApproach_Noise') ||...
-                strcmp(StrategyType,'SIM_HIRO_SideApproach')        ||...
-                strcmp(StrategyType(1:23),'SIM_HIRO_SA_ErrorCharac')||... # Captures all 4 classes of errors
-                strcmp(StrategyType,'SIM_HIRO_SA_DualArm')          ||...
-                strcmp(StrategyType,'HIRO_SA_ErrorCharac'))
+                strcmp(StrategyType,'SIM_HIRO_ONE_PA_SUCCESS')       ||...
+                strcmp(StrategyType,'SIM_HIRO_ONE_PA_NOISE') ||...
+                strcmp(StrategyType,'SIM_HIRO_ONE_SA_SUCCESS')        ||...
+                strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_x')  ||... 
+                strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_y')  ||... 
+               	strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob')  ||... 
+                strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM')  ||... 
+                strcmp(StrategyType,'SIM_HIRO_TWO_SA_SUCCESS')          ||...
+                strcmp(StrategyType,'REAL_HIRO_ONE_SA_ERROR_CHARAC'))
         
             res=true;
             return;             
@@ -85,13 +95,14 @@ function res = strategySelector(category,StrategyType)
             res=false;
             return;
         end
-        
+%--------------------------------------------------------------------------        
     % Baxter
+%--------------------------------------------------------------------------    
     elseif(strcmp(category,'baxter'))
-        if(strcmp(StrategyType,'SIM_BAXTER_SA')                     ||...
+        if(strcmp(StrategyType,'SIM_BAXTER_ONE_SA_SUCCESS')          ||...
                 strcmp(StrategyType,'SIM_BAXTER_SA_DUAL')           ||...
-                strcmp(StrategyType,'BAXTER_SideApproach')          ||...
-                strcmp(StrategyType,'BAXTER_SA_DUAL'))
+                strcmp(StrategyType,'REAL_BAXTER_ONE_SA_SUCCESS')   ||...
+                strcmp(StrategyType,'REAL_BAXTER_TWO_SA_SUCCESS'))
         
             res=true;
             return;             
@@ -99,12 +110,15 @@ function res = strategySelector(category,StrategyType)
             res=false;
             return;
         end    
-
+%--------------------------------------------------------------------------
     %% Strategy Type: 
+%--------------------------------------------------------------------------
+%   Straight Line Approach
+%--------------------------------------------------------------------------
     elseif(strcmp(category,'SLA'))
         if(strcmp(StrategyType,'SIM_HIRO_SLA') ||...
             strcmp(StrategyType,'SIM_HIRO_SLA_NOISE') ||...
-            strcmp(StrategyType,'SIM_PA10_SLA'))
+            strcmp(StrategyType,'SIM_PA10_ONE_SL_SUCCESS'))
         
             res=true;
             return;             
@@ -112,11 +126,13 @@ function res = strategySelector(category,StrategyType)
             res=false;
             return;
         end
-    
+%--------------------------------------------------------------------------
+% Pivot Approach: 5 states
+%--------------------------------------------------------------------------
     elseif(strcmp(category,'PA'))
-            if(strcmp(StrategyType,'SIM_HIRO_PivotApproach') ||...
-                strcmp(StrategyType,'SIM_HIRO_PivotApproach_Noise') ||...
-                strcmp(StrategyType,'SIM_PA10_PivotApproach'))
+            if(strcmp(StrategyType,'SIM_HIRO_ONE_PA_SUCCESS') ||...
+                strcmp(StrategyType,'SIM_HIRO_ONE_PA_NOISE') ||...
+                strcmp(StrategyType,'SIM_PA10_ONE_PA_SUCCESS'))
                 
                 res=true;
                 return;
@@ -124,16 +140,22 @@ function res = strategySelector(category,StrategyType)
                 res=false;
                 return;
             end
+%--------------------------------------------------------------------------
+% Side Approach: 4 states
+%--------------------------------------------------------------------------
     elseif(strcmp(category,'SA'))
-            if(strcmp(StrategyType,'SIM_HIRO_SideApproach') ||...
-                strcmp(StrategyType(1:23),'SIM_HIRO_SA_ErrorCharac_001') ||...  # Captures all 4 classes of errors
-                strcmp(StrategyType,'SIM_HIRO_SA_DualArm') ||...
-                strcmp(StrategyType,'HIRO_SideApproach') ||...
-                strcmp(StrategyType,'HIRO_SA_ErrorCharac') ||...
-                strcmp(StrategyType,'SIM_BAXTER_SA') ||...
+            if(strcmp(StrategyType,'SIM_HIRO_ONE_SA_SUCCESS') ||...
+                strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_x')  ||... 
+                strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_y')  ||... 
+               	strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob')  ||... 
+                strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM')  ||... 
+                strcmp(StrategyType,'SIM_HIRO_TWO_SA_SUCCESS') ||...
+                strcmp(StrategyType,'REAL_HIRO_ONE_SA_SUCCESS') ||...
+                strcmp(StrategyType,'REAL_HIRO_ONE_SA_ERROR_CHARAC') ||...
+                strcmp(StrategyType,'SIM_BAXTER_ONE_SA_SUCCES') ||...
                 strcmp(StrategyType,'SIM_BAXTER_SA_DUAL') ||...
-                strcmp(StrategyType,'BAXTER_SideApproach') ||...
-                strcmp(StrategyType,'BAXTER_SA_DUAL'))
+                strcmp(StrategyType,'REAL_BAXTER_ONE_SA_SUCCESS') ||...
+                strcmp(StrategyType,'REAL_BAXTER_TWO_SA_SUCCESS'))
                 
                 res=true;
                 return;
@@ -141,9 +163,12 @@ function res = strategySelector(category,StrategyType)
                 res=false;
                 return;
             end
-    % ERRORS
+    %% ERRORS
+%--------------------------------------------------------------------------
+%   HIRO ERRORS
+%--------------------------------------------------------------------------
     elseif(strcmp(category,'hiro_error'))
-            if(strcmp(StrategyType(1:23),'SIM_HIRO_SA_ErrorCharac_001'))
+            if(strcmp(StrategyType(1:23),'SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_x'))
                 
                 res=true;
                 return;
@@ -152,10 +177,13 @@ function res = strategySelector(category,StrategyType)
                 return;
             end            
     %% Dual Arms
+%--------------------------------------------------------------------------
+%   Two arm scenarios
+%--------------------------------------------------------------------------
     elseif(strcmp(category,'dual'))
-        if(strcmp(StrategyType,'SIM_HIRO_SA_DualArm')              	||...
+        if(strcmp(StrategyType,'SIM_HIRO_TWO_SA_SUCCESS')              	||...
                 strcmp(StrategyType,'SIM_BAXTER_SA_DUAL')           ||...
-                strcmp(StrategyType,'BAXTER_SA_DUAL'))
+                strcmp(StrategyType,'REAL_BAXTER_TWO_SA_SUCCESS'))
         
             res=true;
             return;             

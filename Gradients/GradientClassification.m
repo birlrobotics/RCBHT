@@ -158,6 +158,20 @@ function gradLabel = GradientClassification(gradient,domain,...
             mpos  =  23.0;     mneg = -1*mpos;
             spos  =   1.0;     sneg = -1*spos;
             zero  =   0.0;
+        
+        % BAXTER
+        elseif(strategySelector('baxter',StrategyType))
+            pimp  =  70.0;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
+            bpos  =  46.0;     bneg = -1*bpos;
+            mpos  =  23.0;     mneg = -1*mpos;
+            spos  =   1.0;     sneg = -1*spos;
+            zero  =   0.0;      
+        else
+            pimp  =  70.0;     nimp = -1*pimp; % These are a later addition but are indexed as positions 7 and 8
+            bpos  =  46.0;     bneg = -1*bpos;
+            mpos  =  23.0;     mneg = -1*mpos;
+            spos  =   1.0;     sneg = -1*spos;
+            zero  =   0.0;             
         end    
     
 %% OPTIMIZATION ACCORDING TO THE FORCE/MOMENT-AXIS DOMAIN --Primarily used in moment signals.

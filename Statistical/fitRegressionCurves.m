@@ -201,7 +201,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
                         dataFit     = dataFit(Range);               % Corresponding force data for a given force element in a given window                                        
                     end
 %%                  ii) Retrieve the segment's statistical Data and write to file
-                    [dAvg dMax dMin dStart dFinish dGradient dLabel]=statisticalData(Time(1),   Time(length(Range)),...
+                    [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(Time(1),   Time(length(Range)),...
                                                                                      dataFit,   domain,      polyCoeffs,...
                                                                                      FolderName,StrategyType,index,fPath); % 1+windowlength
 
@@ -249,8 +249,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
             [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(Time(1),Time(length(Time)),Data,domain,polyCoeffs,FolderName,StrategyType,index,fPath); % 1+windowlength
 
             % iii) Keep history of statistical data 
-            % All data types are numerical in this version. // Prior
-            % versions: Given that the datatypes are mixed, we must use cells. See {http://www.mathworks.com/help/techdoc/matlab_prog/br04bw6-98.html}       
+            % All data types are numerical in this version. // Prior versions: Given that the datatypes are mixed, we must use cells. See {http://www.mathworks.com/help/techdoc/matlab_prog/br04bw6-98.html}       
             statData(segmentIndex,:) = [dAvg dMax dMin dStart dFinish dGradient dLabel];
                         
 %%          CleanUp the statistical data

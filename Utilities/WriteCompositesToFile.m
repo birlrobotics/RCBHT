@@ -78,31 +78,31 @@ global armSide;         % This variable helps us to know whether we are working 
 
 %%  Create a time sensitive name for file according to data
     if(dataFlag==motComps)
-        if(armSide==1) % Right Arm
+        if(armSide(1,2)) % Right Arm
             FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
-        else % Left Arm
+        elseif(armSide(1,1)) % Left Arm
             FileName    = strcat(dir,'/',Folder,'_',pType,'_L');%,h,min);
         end
 
     elseif(dataFlag==llbehStruc)
-        if(armSide==1) % Right Arm
+        if(armSide(1,2)) % Right Arm
             FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
             %FileName_temp = strcat(dir,'/',Folder,'_',pType);      % File with no date/time, useful to open from other programs.
-        else % Left Arm
+        elseif(armSide(1,1)) % Left Arm
             FileName    = strcat(dir,'/',Folder,'_',pType,'_L');%,h,min);
         end
 
     elseif(dataFlag==hlbehStruc)
-        if(armSide==1) % Right Arm
+        if(armSide(1,2)) % Right Arm
             FileName    = strcat(dir,'/',Folder);%,'_',pType);%,h,min);   
-        else % Left Arm
+        elseif(armSide(1,1)) % Left Arm
             FileName    = strcat(dir,'/',Folder,'_L');%,'_',pType);%,h,min);   
         end
         
     elseif(dataFlag==llbBelief)
-        if(armSide==1) % Right Arm
+        if(armSide(1,2)) % Right Arm
             FileName = strcat(dir,'/Data');                % File with no date/time, useful to open from other programs
-        else % Left Arm
+        elseif(armSide(1,1)) % Left Arm
             FileName = strcat(dir,'/Data','_L');                % File with no date/time, useful to open from other programs
         end
     end
@@ -180,11 +180,11 @@ global armSide;         % This variable helps us to know whether we are working 
     
 %%  Save to composites folder
     if(saveData)
-        if(armSide==1) % Right arm
+        if(armSide(1,2)) % Right arm
             % Save motcomps.mat to Composites folder 
             % save filename content stores only those variables specified by content in file filename
             save(strcat(FileName,'.mat'),'data');
-        else % Left Arm
+        elseif(armSide(1,1)) % Left Arm
             save(strcat(FileName,'_L','.mat'),'data');
         end
         

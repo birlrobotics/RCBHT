@@ -39,7 +39,7 @@ function htext = plotHighLevelBehCompositions(aHandle,TL,BL,hlbehStruc,stateData
         % Create a char array for access to complete words
         hlBehLbl = char('Approach','Rotation','Alignment','Snap','Mating');
         
-    elseif(strategySelector('SA',StrategyType)      % SA stands for SideApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
+    elseif(strategySelector('SA',StrategyType))      % SA stands for SideApproach. This strat uses 5 states. The function will be set to true for a number of strategy types that belong to this category.
         hlBehLbl = char('Approach','Rotation','Snap','Mating'); % For HIRO and ErrorCharac change the labels into an array of strings.
     else
         hlBehLbl = char('Approach','Rotation','Snap','Mating');

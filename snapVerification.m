@@ -12,8 +12,9 @@
 % information from either of the following experiments: 
 % - PA10 Simulation Straight Line Approach
 % - PA10 Simulation Pivot Approach
-% - HIRO Simulation Side Approach
-% - HIRO Simulation Error Characterization
+% - HIRO Simulation/Real Side Approach
+% - HIRO Simulation/Real Error Characterization
+% - Baxter Simulation/Real Side Approach
 %
 % Then, for each separate force axis do the following:
 % 2) Primitives Level: 
@@ -76,7 +77,36 @@
 %--------------------------------------------------------------------------
 %
 % Inputs:
-% StrategyType  : HIRO - Offline Snap Verification for Side Approach
+% StrategyType  : the number of strategy types vary according to assembly
+%                 technique, or robot used, or number of arms used. Below is
+%                 a list of current strategies. These can be best
+%                 organized/selected through the strategySelector.m func.
+%                   - SLA ----------------------------
+%                   SIM_HIRO_SLA
+%                   SIM_HIRO_SLA_NOISE
+%                   SIM_PA10_ONE_SL_SUCCESS
+%                   - PA ----------------------------   
+%                   SIM_HIRO_ONE_PA_SUCCESS,
+%                   SIM_HIRO_ONE_PA_NOISE
+%                   SIM_PA10_ONE_PA_SUCCESS,
+%                   - SA ----------------------------
+%                   % --- Simulated HIRO
+%                   SIM_HIRO_ONE_SA_SUCCESS
+%                   SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_x
+%                   SIM_HIRO_ONE_SA_ERROR_CHARAC_LoopBack_y
+%                   SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob
+%                   SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM
+%                   SIM_HIRO_TWO_SA_SUCCESS
+%                   % --- Real HIRO
+%                   REAL_HIRO_ONE_SA_SUCCESS
+%                   % --- Real HIRO Error Charac
+%                   REAL_HIRO_ONE_SA_ERROR_CHARAC
+%                   % --- Simulated Baxter
+%                   SIM_BAXTER_SA_SUCCES
+%                   SIM_BAXTER_SA_DUAL
+%                   % --- Real Baxter
+%                   REAL_BAXTER_ONE_SA_SUCCESS
+%                   REAL_BAXTER_TWO_SA_SUCCESS
 % FolderName    : Name of folder where results are stored, user based.
 % first         : which plot do you want to segment first
 % last          : which plot do you want to segment last
@@ -106,7 +136,8 @@ function  [hlbBelief,llbBelief,...
 
 %% Global Variables
 
-    % Maintain global variables to identify which index of the force plot we are plotting. 
+    % PLOT INDEX
+    % Maintain global variables to identify which index (1 out of 6) of a wrench plot (FxFyFzMxMyMz) we would like to plot. 
     global axisIndex;
     global firstIndex;
     global lastIndex; 
@@ -114,29 +145,51 @@ function  [hlbBelief,llbBelief,...
     firstIndex=first;
     lastIndex= last;
     axisIndex=firstIndex; 
-
+  
 %-----------------------------------------------------------------------------------------
-    % Create figures for the right and left arms
+    % RESULTS PATH
+    global hiroPath;
+    global baxterPath;
+    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';
+    
+%-----------------------------------------------------------------------------------------
+
+    % Index to choose right and left arms in for loop
+    global armSide;                     % Which are are you considering, right, left, or both. armSide will be a 1x2 vector of bools with 1st elem=right, 2nd_elem=right: armside[left,right]
+    leftArmFlag =0;                     % Boolean values as flags. At least one arm must be true.
+    rightArmFlag=1;    
+    armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
+    
+    global leftArmDataFlag;   
+    if(armSide(1,1))
+        leftArmDataFlag = 1;            % If you want to plot data for the left arm, set to true. 
+    else
+        leftArmDataFlag = 0;
+    end
+%-----------------------------------------------------------------------------------------
+    % FIGURE HANDLE
+    % Create figures for the right and left arms, and provide them the
+    % right window focus
 
     global rarmHandle;
     global larmHandle; 
 
-    rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
-    movegui(rarmHandle,'east');
-    
-    larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
-    movegui(larmHandle,'west');
-    
-    figure(rarmHandle);    
-%-----------------------------------------------------------------------------------------
-   
-%-----------------------------------------------------------------------------------------
-    % Index to choose right and left arms in for loop
-    global armSide;
-    RIGHT=1;
-    LEFT =2;
-    
-    armSide=RIGHT;          % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
+    if(armSide(1,1) && ~armSide(1,2))
+        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+        movegui(larmHandle,'west');
+        figure(larmHandle);
+    elseif(~armSide(1,1) && armSide(1,2))
+        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+        movegui(rarmHandle,'east');
+        figure(rarmHandle);
+    else
+        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+        movegui(larmHandle,'west');   
+        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+        movegui(rarmHandle,'east');
+        figure(rarmHandle);
+    end
     
 %-----------------------------------------------------------------------------------------
     % GRADIENT OPTIMIZATION
@@ -166,23 +219,21 @@ function  [hlbBelief,llbBelief,...
     global MC_COMPS_CLEANUP_CYCLES;
     global LLB_REFINEMENT_CYCLES;  
     
-    MC_COMPS_CLEANUP_CYCLES         = 10;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
-    LLB_REFINEMENT_CYCLES           = 10;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
+    MC_COMPS_CLEANUP_CYCLES         = 4;    % Value for FailureCharac 0 % 2013Aug value for normal RCBHT is 4. Pre2013 value was 2    
+    LLB_REFINEMENT_CYCLES           = 5;    % Value for FailureCharac 2 % 2013Aug value for normal RCBHT is 5. Pre2013 value was 4
     
 %------------------------------------------------------------------------------------------
 
-    % OTHER DATA TO PLOT: ANGLES, CARTESIAN, LEFT ARM
+    % CAPTURED DATA
     global anglesDataFlag;
     global cartposDataFlag;
     global local0_world1_coords;
     global gravityCompensated;
-    global leftArmDataFlag;
     
     anglesDataFlag                  = 0; 	% If you want to current joint angle data for analysis set to true. 
     cartposDataFlag                 = 0;    % If you want to use cartesian coordinates wrt the wrst set to true.    
     local0_world1_coords            = 0;    % If you want to plot wrt end-eff set to false, wrt the world, set to true.
     gravityCompensated              = 0;    % If you want to plot torques that have used gravity compensation
-    leftArmDataFlag                 = 1;    % If you want to plot data for the left arm, set to true.    
     
 %------------------------------------------------------------------------------------------
 
@@ -200,7 +251,7 @@ function  [hlbBelief,llbBelief,...
 
 %------------------------------------------------------------------------------------------
     
-    % Local Variables - to run or not to run layers
+    % Layer Flags - to run or not to run layers
     global FAILURE_CHARACTERIZATION;        % Flag checked in hlbehCompositions_new
     PRIM_LAYER                      = 1;    % Compute the primitives layer
     MC_LAYER                        = 1;    % Compute the  motion compositions and clean up cycle
@@ -222,24 +273,22 @@ function  [hlbBelief,llbBelief,...
 %% A) Plot Forces
     plotOptions=1;  % plotOptions=0: plot separate figures. =1, plot in subplots
     
-    % Consider single or dual arm case to output relevant data.
-    % Right Arm
-    if(leftArmDataFlag==0)
+    % Consider single or dual arm case to output relevant data.    
+    if(armSide(1,1))                % Left Arm
+        [fPath,StratTypeFolder,...
+         ~,forceDataL,...
+         ~,~,...                   %angleData,angleDataL,...
+         ~,~,...                   %cartPosData,cartPosDataL,...
+         stateData,axesHandlesRight,axesHandlesLeft,...
+         ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
+    
+    elseif(armSide(1,2))            % Right Arm
         [fPath,StratTypeFolder,...
          forceData,~,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
-         stateData,axesHandlesRight,...
-         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions);
-     
-     % Left Arm
-    else
-        [fPath,StratTypeFolder,...
-         forceData,forceDataL,...
-         ~,~,...                   %angleData,angleDataL,...
-         ~,~,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
-         TL,BL,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
+         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions);    
     end
  
 %% B) Relative-Change Behavior Hierarchical Taxonomy: 
@@ -255,15 +304,21 @@ function  [hlbBelief,llbBelief,...
     
 %% B_Right_1) Perform regression curves for force moment reasoning for the right/left arm                  
         
-    %% Set variables according to whether we are using the right arm or the left
-    for armSide=RIGHT:LEFT
-        if(armSide==RIGHT)
+    %% Set variables according to whether we are using the right arm, the left arm, or both.
+    if(armSide(1,1) && armSide(1,2)); armIndex=2;
+    else                              armIndex=1;
+    end
+    armFlag=false;          % Used to tell which arm has been executed
+    
+    for i=1:armIndex                                                    % Compute Right arm first, then left.
+        if(armSide(1,2) && ~armFlag)                                    
             % Create a matlab pointer struc to force structures, axis handles, to be used later in RCBHT analysis 
             forceData_p = libpointer('doublePtr',forceData);            % Data is extracted by calling forceData_p.Value
             axesHandles = axesHandlesRight;
             TL_p = libpointer('doublePtr',TL);
             BL_p = libpointer('doublePtr',BL);
-        else
+            armFlag=true;
+        else                                                            
             forceData_p = libpointer('doublePtr',forceDataL); % If want to extract array contents do: forceData_p.Value(index)
             axesHandles = axesHandlesLeft;
             TL_p= libpointer('doublePtr',TL_L);
@@ -356,7 +411,7 @@ function  [hlbBelief,llbBelief,...
             mcFlag=2; llbFlag=3;
 
             %% Right Arm          
-            if(armSide==RIGHT)
+            if(armSide(1,2)) % Right Arm
                 % Each of these structures are mx17, so they can be separated in this way.    
                 [motCompsFM,MCnumElems]     = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
                 [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
@@ -365,7 +420,7 @@ function  [hlbBelief,llbBelief,...
                 [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);    
 
             %% Left Arm
-            elseif(armSide==LEFT)
+            elseif(armSide(1,1)) % LEft Arm
 
                 % Each of these structures are mx17, so they can be separated in this way.    
                 [motCompsFM_L,MCnumElems_L]    = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
@@ -374,7 +429,7 @@ function  [hlbBelief,llbBelief,...
                 [hlbehStrucL,fcAvgDataL,successFlagL,boolFCDataL]=hlbehComposition_new(motCompsFM_L,MCnumElems_L,llbehFM_L,LLBehNumElems_L,llbehLbl,stateData,axesHandlesLeft,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);                
             end
         end
-    end % End armSide=RIGHT:LEFT
+    end % End armSide for loop
 %% G) Compute the Bayesian Filter for the HLB
     if(Optimization==0)
         if(pRCBHT==1)
