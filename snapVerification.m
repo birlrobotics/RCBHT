@@ -148,10 +148,11 @@ function  [hlbBelief,llbBelief,...
   
 %-----------------------------------------------------------------------------------------
     % RESULTS PATH
-    global hiroPath;
-    global baxterPath;
-    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
-    baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';
+    % To convert this to ROS/C++ code, cannot have global strings. We will assigned these directly in snapData3.m. Left here for reference.
+%     global hiroPath;
+%     global baxterPath;
+%     hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+%     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';
     
 %-----------------------------------------------------------------------------------------
 
@@ -172,8 +173,8 @@ function  [hlbBelief,llbBelief,...
     % Create figures for the right and left arms, and provide them the
     % right window focus
 
-    global rarmHandle;
-    global larmHandle; 
+%     global rarmHandle;  % changed for ros/coder code. globals can't be strings
+%     global larmHandle; 
 
     if(armSide(1,1) && ~armSide(1,2))
         larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
@@ -280,7 +281,7 @@ function  [hlbBelief,llbBelief,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
-         ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
+         ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);
     
     elseif(armSide(1,2))            % Right Arm
         [fPath,StratTypeFolder,...
@@ -288,7 +289,7 @@ function  [hlbBelief,llbBelief,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
-         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions);    
+         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);    
     end
  
 %% B) Relative-Change Behavior Hierarchical Taxonomy: 

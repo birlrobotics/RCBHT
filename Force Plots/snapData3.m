@@ -12,8 +12,10 @@
 % Input Parameters:
 % StrategyType:     - Changes code according to strategy type, ie. 'HSA'
 % FolderName:       - Folder where data is saved
-% plotOptions       - tells whether plots should be graphed in subplots or
+% plotOptions:      - tells whether plots should be graphed in subplots or
 %                     not.
+% rarmHandle:       - handle for plot for right arm. 
+% larmHandle:       - same for left arm
 %
 % Output Parameters:
 % fPath:            - Path to results folder
@@ -40,7 +42,7 @@ function [fPath,StratTypeFolder,...
           cartPosData,cartPosDataL,...
           stateData,handles,handlesL,...
           TOP_LIMIT,BOTTOM_LIMIT,...
-          TOP_LIMIT_L,BOTTOM_LIMIT_L]=snapData3(StrategyType,FolderName,plotOptions)
+          TOP_LIMIT_L,BOTTOM_LIMIT_L]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle)
 
 %% INTIALIZATION
     % These globals are declared in snapVerification.
@@ -58,20 +60,18 @@ function [fPath,StratTypeFolder,...
     % Arm Side Detection
     global armSide;                         % Tells us whether we are working with the right or left arm. Useful to plot the right figures and save data to the right file.
     
-    % Figure Handles
-    global rarmHandle;
-    global larmHandle;                      % Used to get left arm plots handle. Needed to make sure we plot data to the write place.
-    
     % Switch Flag
     SWITCH = 1;                             % Used to determine whether to turn on margin's around plots for extra space when adjusting.     
     
 %% Assing appropriate directoy based on Ctrl Strategy to read data files
     StratTypeFolder = AssignDir(StrategyType);
+    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';    
     if(strategySelector('hiro',StrategyType))
         fPath = hiroPath;
     elseif(strategySelector('baxter',StrategyType))
         fPath=baxterPath;
-    end
+    end       
     % QNX  fPath='\\home\\hrpuser\forceSensorPlugin_Pivot\Results/'; 
   
 %% Load the data
