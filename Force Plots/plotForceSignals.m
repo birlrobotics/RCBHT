@@ -10,7 +10,7 @@ function plotForceSignals(StrategyType,FolderName)
 
 %%  Debug Enable Commands
     PRINT = 0; % Used to indicated wheter to pring info to screen or not
-
+    global armSide; 
     StratTypeFolder = AssignDir(StrategyType);
 
 %% Folder Name    
@@ -35,7 +35,7 @@ function plotForceSignals(StrategyType,FolderName)
     end
 
     %% Left Arm
-    if(leftArmFlag)
+    if(armSide(1,1))
         localForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_Torques.dat');
         worldForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_worldTorques.dat');
         %StateDataL      =strcat(fPath,StratTypeFolder,FolderName,'/L_State.dat');

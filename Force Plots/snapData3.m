@@ -49,9 +49,9 @@ function [fPath,StratTypeFolder,...
     global DB_PLOT;                         % Enables plotting.
     
     % Paths
-    global hiroPath;                        % Sets the global path for results
-    global baxterPath;
-    
+    % global hiroPath;                        % Sets the global path for results
+    % global baxterPath;
+     
     % Data
     % global anglesDataFlag;                % Enable loading/printing of current joint angles
     % global cartposDataFlag;               % Same for cartesian position of end effector
@@ -63,10 +63,25 @@ function [fPath,StratTypeFolder,...
     % Switch Flag
     SWITCH = 1;                             % Used to determine whether to turn on margin's around plots for extra space when adjusting.     
     
+%% Initialization of variables to assign class for Coder
+    rate=200;                   % ~200Hz
+    expectedTime=10;            % for a trial
+    samples=expectedTime*rate;
+    
+    fPath='';
+    angleData=zeros(samples,8);     %t,q1-q7
+    angleDataL=zeros(samples,8);
+    cartPos=zeros(samples,7);       % t,xyzrpy
+    cartPosL=zeros(samples,7);
+    jointsnapData=zeros(2,1);
+    stateData=zeros(5,1);
+    TIME_LIMIT_PERC = 1.0;
+    SIGNAL_THRESHOLD = 1.0;
 %% Assing appropriate directoy based on Ctrl Strategy to read data files
-    StratTypeFolder = AssignDir(StrategyType);
+    StratTypeFolder = AssignDir(StrategyType); 
     hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
-    baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';    
+    baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';
+    
     if(strategySelector('hiro',StrategyType))
         fPath = hiroPath;
     elseif(strategySelector('baxter',StrategyType))
@@ -110,7 +125,7 @@ function [fPath,StratTypeFolder,...
                                                                       %anglesDataFlag,cartposDataFlag,local0_world1_coords,leftArmDataFlag);                                                                      
                                                                       
     else
-        [angleData,cartPosData,ForceData,~,~,~,~,jointsnapData,stateData] = loadData(fPath,StrategyType,StratTypeFolder,FolderName);
+        [angleData,cartPosData,ForceData,angleDataL,cartPosDataL,ForceDataL,jointsnapData,stateData] = loadData(fPath,StrategyType,StratTypeFolder,FolderName);
     end
     %----------------------------------------------------------------------
     % The following code plots the data in the Torques.dat file. If running
@@ -388,5 +403,5 @@ function [fPath,StratTypeFolder,...
 
             end % Left Arm Printing
         end     % HIRO/BAXTER
-    end         % END DB_PRINT. 
+    end         % END DB_PLOT. 
 end             % End the function

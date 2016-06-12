@@ -96,10 +96,17 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
     
     % Loop Rate
     loopRate = 0.005;                   % Default rate. Modified later.
-    
-    % Initialize variables
-    ADR=0; CPR=0; FDR=0;
-    ADL=0; CPL=0; FDL=0;
+    expectedTime=10;                    % for a trial
+    samples=expectedTime*(1/loopRate);
+    % CODER 
+    % INIT
+    coder.extrinsic('strcat');          % If machine that runs c, has matlab can use.
+    SDR = zeros(5,1);                    % Initialize state transition matrix
+    endTime=0.0;
+   
+    ADR=zeros(samples,8); CPR=zeros(samples,7); FDR=zeros(samples,7);
+    ADL=zeros(samples,8); CPL=zeros(samples,7); FDL=zeros(samples,7);
+    coder.varsize(ADR,ADL,CPR,CPL,FDR,FDL);
     
     %% (1) Assign folder names     
     %% Right Arm: Always load this data
@@ -305,13 +312,13 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
         end
     end             % ROBOT TYPE
    % Get the State Transition Vector    
-   SDR  =load(strcat(fPath,'/State.dat'));
+   SDR = load(strcat(fPath,'/State.dat'));
    
     
     %% State Vector Length Verification
     % Adjust the data length so that it finishes when mating is finished. 
-    r = size(SDR);
-    if(r(1)==5)
+    [r,c] = size(SDR);
+    if(r==5)
         endTime = SDR(5,1);
     
         % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
@@ -333,7 +340,7 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
         
     %% Insert an end state for failed assemblies that have less than the 5 entries
     else
-        SDR(r(1)+1,1) = FDR(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
+        SDR(r+1,1) = FDR(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
         
     end
     %% Check to make sure that StateData has a finishing time included

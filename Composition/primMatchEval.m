@@ -339,7 +339,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(nextIndex,2); p2min = statData(nextIndex,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('pos','impulse',p1,p2);  
+                [amplitudeVal,amp1,amp2] = computedAmplitude('pos','impulse',p1,p2);  
                 % Contact
                 actnClass = actionLbl(pos_contact);          
                 
@@ -359,7 +359,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(nextIndex,2); p2min = statData(nextIndex,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('pos','impulse',p1,p2); 
+                [amplitudeVal,amp1,amp2] = computedAmplitude('pos','impulse',p1,p2); 
                 
                 % Contact
                 actnClass = actionLbl(neg_contact);
@@ -582,7 +582,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(nextIndex,2); p2min = statData(nextIndex,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('neg','impulse',p1,p2);                
+                [amplitudeVal,amp1,amp2] = computedAmplitude('neg','impulse',p1,p2);                
                 
                 % Class: contact
                 actnClass = actionLbl(pos_contact);                % pos_contact   
@@ -603,7 +603,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(nextIndex,2); p2min = statData(nextIndex,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('neg','impulse',p1,p2); 
+                [amplitudeVal,amp1,amp2] = computedAmplitude('neg','impulse',p1,p2); 
                 % Class
                 actnClass = actionLbl(neg_contact);                % neg_contact 
                 
@@ -812,7 +812,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(nextIndex,2); p2min = statData(nextIndex,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('const','impulse',p1,p2);                 
+                [amplitudeVal,amp1,amp2] = computedAmplitude('const','impulse',p1,p2);                 
                 
                 % Contact
                 actnClass = actionLbl(pos_contact);       % pos_contact                            
@@ -833,7 +833,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(nextIndex,2); p2min = statData(nextIndex,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('const','impulse',p1,p2);                 
+                [amplitudeVal,amp1,amp2] = computedAmplitude('const','impulse',p1,p2);                 
                 
                 % Contact
                 actnClass = actionLbl(neg_contact);                % neg_contact               
@@ -894,7 +894,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('pos','pos',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('pos','pos',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(PIMP,:));                               % Impulse
@@ -915,7 +915,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('pos','neg',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('pos','neg',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(PIMP,:));                             % POSITIVE IMPULSE
@@ -935,7 +935,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('pos','const',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('pos','const',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(PIMP,:));                 % Pimp
@@ -954,7 +954,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('pos','pos',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('pos','pos',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(PIMP,:));     % impulse
@@ -973,7 +973,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('pos','neg',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('pos','neg',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(PIMP,:));     % impulse
@@ -1032,7 +1032,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('neg','pos',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('neg','pos',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(NIMP,:));                               % Neg. Impulse
@@ -1053,7 +1053,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('neg','neg',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('neg','neg',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(NIMP,:));                             % NEGATIVE IMPULSE
@@ -1073,7 +1073,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('neg','const',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('neg','const',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(NIMP,:));                 % Pimp
@@ -1092,7 +1092,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('neg','pos',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('neg','pos',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(NIMP,:));     % impulse
@@ -1111,7 +1111,7 @@ function [motComps,index,actionLbl]=primMatchEval(index,labelType,lbl,statData,g
                 p1max = statData(index,2); p1min = statData(index,3);
                 p2max = statData(match,2); p2min = statData(match,3); 
                 p1 = [p1max p1min]; p2 = [p2max p2min];                
-                [amplitudeVal,~,~] = computedAmplitude('neg','neg',p1,p2);
+                [amplitudeVal,amp1,amp2] = computedAmplitude('neg','neg',p1,p2);
                 
                 % Gradient labels
                 glabel1 = gradLbl2gradInt(gradLabels(NIMP,:));     % neg impulse

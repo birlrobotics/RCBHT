@@ -167,7 +167,7 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
 %% Initialization    
     
     % Compute the number of low-level behaviors per force/moment axis.
-    [~,~,NumForceAxis] = size(llbehFM);       % Need to hardcode this as namefields returns a cell array. Currently expect 6 for FxyzMxyz
+    [rr,cc,NumForceAxis] = size(llbehFM);       % Need to hardcode this as namefields returns a cell array. Currently expect 6 for FxyzMxyz
     
 %%  Structure Size    
     % Create a matrix to keep the dimensions of each LLB struc. A (6,m)
@@ -495,7 +495,7 @@ function [hlbehStruc,avgMyData,snapVerificationSuccess,bool_fcData] = hlbehCompo
                             
                             % 1. Compute length of labels in desired state
                             % Structure: 6 axis, each axis with 4 states, length=max num of labels. Start witha ll zero's, and we will iteratively fill it up. 
-                            [~, stateLblEntry] = min(stateLbl(tt,:,axis)); % This vector will have one or more zero's. Find the first entry that contains a zero. That will be where our next entry will be.
+                            [rr, stateLblEntry] = min(stateLbl(tt,:,axis)); % This vector will have one or more zero's. Find the first entry that contains a zero. That will be where our next entry will be.
 
                             % 2. Place the new LLB label from llbehStruc into temp for the relevant state and axis in turn. 
                             stateLbl(tt,stateLblEntry,axis) = llbehStruc(index,1);

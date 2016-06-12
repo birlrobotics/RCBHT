@@ -113,8 +113,8 @@
 %                 where first:last is a vector list.
 %
 % Outputs:
-% hlbBelief     : the belief or posterior probability about the success
-%                 rate of the task.
+% hlbBelief     : the belief or posterior probability about the success 
+%                 of the task.
 % llbBelief     : the belief about all the different LLBs found throughout
 %                 the task
 % stateTimes    : col vector of automata state transition times
@@ -129,9 +129,10 @@
 function  [hlbBelief,llbBelief,...
            stateTimes,hlbehStruc,...
            fcAvgData,boolFCData] = snapVerification(StrategyType,FolderName,first,last)
+
 %  function snapVerification()
-%  StrategyType = 'HSA';
-%  FolderName='20120426-1844-SideApproach-S';
+%  StrategyType = 'REAL_BAXTER_ONE_SA_SUCCESS';
+%  FolderName='pa_jtc_tracIK';
 %  first=1;last=6;
 
 %% Global Variables
@@ -161,36 +162,32 @@ function  [hlbBelief,llbBelief,...
     leftArmFlag =0;                     % Boolean values as flags. At least one arm must be true.
     rightArmFlag=1;    
     armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
-    
-    global leftArmDataFlag;   
-    if(armSide(1,1))
-        leftArmDataFlag = 1;            % If you want to plot data for the left arm, set to true. 
-    else
-        leftArmDataFlag = 0;
-    end
 %-----------------------------------------------------------------------------------------
     % FIGURE HANDLE
     % Create figures for the right and left arms, and provide them the
     % right window focus
 
-%     global rarmHandle;  % changed for ros/coder code. globals can't be strings
+    % ROS Coder: changed for ros/coder code. globals can't be strings
+    rarmHandle=-1;
+    larmHandle=-1;
+%     global rarmHandle;  
 %     global larmHandle; 
-
-    if(armSide(1,1) && ~armSide(1,2))
-        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
-        movegui(larmHandle,'west');
-        figure(larmHandle);
-    elseif(~armSide(1,1) && armSide(1,2))
-        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
-        movegui(rarmHandle,'east');
-        figure(rarmHandle);
-    else
-        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
-        movegui(larmHandle,'west');   
-        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
-        movegui(rarmHandle,'east');
-        figure(rarmHandle);
-    end
+% 
+%     if(armSide(1,1) && ~armSide(1,2))
+%         larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+%         movegui(larmHandle,'west');
+%         figure(larmHandle);
+%     elseif(~armSide(1,1) && armSide(1,2))
+%         rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+%         movegui(rarmHandle,'east');
+%         figure(rarmHandle);
+%     else
+%         larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+%         movegui(larmHandle,'west');   
+%         rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+%         movegui(rarmHandle,'east');
+%         figure(rarmHandle);
+%     end
     
 %-----------------------------------------------------------------------------------------
     % GRADIENT OPTIMIZATION
@@ -203,7 +200,7 @@ function  [hlbBelief,llbBelief,...
                             
 %------------------------------------------------------------------------------------------
     
-% DEBUGGING
+    % DEBUGGING
     global DB_PLOT;         % To plot graphs
     global DB_PRINT;        % To print console messages
     global DB_WRITE;        % To write data to file
@@ -215,7 +212,15 @@ function  [hlbBelief,llbBelief,...
     DB_DEBUG        = 0;
     
 %------------------------------------------------------------------------------------------    
-
+    
+    % Paths
+    fPath='';
+    StratTypeFolder='';
+    % ROS Coder: removed. Since globals cannot be strings
+    % global hiroPath='';
+    % global baxterPath='''
+%------------------------------------------------------------------------------------------      
+    
     % FILTERING
     global MC_COMPS_CLEANUP_CYCLES;
     global LLB_REFINEMENT_CYCLES;  
@@ -261,6 +266,21 @@ function  [hlbBelief,llbBelief,...
     pRCBHT                          = 0;    % Compute the llb and hlb Beliefs  
     FAILURE_CHARACTERIZATION        = 0;    % Run failure characterization analysis
 %------------------------------------------------------------------------------------------
+
+    % ROS Coder INITIALIZTION:  output variable initialization
+    rate=200;                   % ~200Hz
+    expectedTime=10;            % for a trial
+    samples=expectedTime*rate;
+    
+    % Preallocate
+    forceData=zeros(samples,7);    % t,FxyzMxyz
+    forceDataL=zeros(samples,7);
+    
+    TL   = 0;
+    BL   = 0;
+    TL_L = 0;
+    BL_L = 0;
+%------------------------------------------------------------------------------------------
 %% Debug Enable Commands
 % Not supported for cplusplus code generation
 %     if(DB_DEBUG)
@@ -277,19 +297,19 @@ function  [hlbBelief,llbBelief,...
     % Consider single or dual arm case to output relevant data.    
     if(armSide(1,1))                % Left Arm
         [fPath,StratTypeFolder,...
-         ~,forceDataL,...
-         ~,~,...                   %angleData,angleDataL,...
-         ~,~,...                   %cartPosData,cartPosDataL,...
+         forceData,forceDataL,...
+         angleData,angleDataL,...                   %angleData,angleDataL,...
+         cartPos,cartPosL,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
-         ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);
+         TL,BL,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);
     
     elseif(armSide(1,2))            % Right Arm
         [fPath,StratTypeFolder,...
-         forceData,~,...
-         ~,~,...                   %angleData,angleDataL,...
-         ~,~,...                   %cartPosData,cartPosDataL,...
+         forceData,forceDataL,...
+         angleData,angleDataL,...                   %angleData,angleDataL,...
+         cartPos,cartPosL,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
-         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);    
+         TL,BL,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);    
     end
  
 %% B) Relative-Change Behavior Hierarchical Taxonomy: 

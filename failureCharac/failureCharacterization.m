@@ -41,7 +41,7 @@
 %              T1S,T1_END,T2S,T2E,TAVG_INDEX]
 %--------------------------------------------------------------------------
 %-------------------------------------------------------------------------
-function [bool_fcData,avgData]=failureCharacterization(fPath,StratTypeFolder,stateData,motCompsFM,mcNumElems,~,~,whichState)%(fPath,StratTypeFolder,stateData,motCompsFM,mcNumElems,llbehFM,llbehNumElems,whichState)
+function [bool_fcData,avgData]=failureCharacterization(fPath,StratTypeFolder,stateData,motCompsFM,mcNumElems,llbehFM,llbehNumElems,whichState)
 
 %% Global Variables
     % FAILURE CHARACTERIZATION TESTING FLAGS. They serve as masks.

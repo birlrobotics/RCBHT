@@ -29,7 +29,7 @@ function [MyR1,MzR1,MzR23,FzA1,FzA2,FzA3]=performFailureCorrelationC(currMean,My
 
     %% Create index values for historical averaged data: counters, means, upper_bounds, and lower_bounds
     devSum=sum(isTrainStruc(2:4));
-    [~,~,col]=returnDivergenceMeanSubGroupDataC(devSum,whichAxis);
+    [foo,foo,col]=returnDivergenceMeanSubGroupDataC(devSum,whichAxis);
     
     % MyR
     %MyRc=MyR(1,col); 
