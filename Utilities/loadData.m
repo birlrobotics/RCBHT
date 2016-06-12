@@ -305,7 +305,7 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
         end
     end             % ROBOT TYPE
    % Get the State Transition Vector    
-   SDR  =load(strcat(fPath,'/State.dat'));
+   SDR  =load(strcat(fPath,'State.dat'));
    
     
     %% State Vector Length Verification

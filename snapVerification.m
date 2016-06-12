@@ -162,12 +162,12 @@ function  [hlbBelief,llbBelief,...
     rightArmFlag=1;    
     armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
     
-    global leftArmDataFlag;   
-    if(armSide(1,1))
-        leftArmDataFlag = 1;            % If you want to plot data for the left arm, set to true. 
-    else
-        leftArmDataFlag = 0;
-    end
+%     global leftArmDataFlag;   
+%     if(armSide(1,1))
+%         leftArmDataFlag = 1;            % If you want to plot data for the left arm, set to true. 
+%     else
+%         leftArmDataFlag = 0;
+%     end
 %-----------------------------------------------------------------------------------------
     % FIGURE HANDLE
     % Create figures for the right and left arms, and provide them the
@@ -175,6 +175,8 @@ function  [hlbBelief,llbBelief,...
 
 %     global rarmHandle;  % changed for ros/coder code. globals can't be strings
 %     global larmHandle; 
+    larmHandle=-1;
+    rarmHandle=-1;
 
     if(armSide(1,1) && ~armSide(1,2))
         larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
