@@ -142,7 +142,7 @@ global armSide;         % This variable helps us to know whether we are working 
                 elseif(dataFlag==llbehStruc)
                     for i=1:r(1)
                         fprintf(fid, 'Iteration     : %d\n',   i);
-                        fprintf(fid, 'CompLabel     : %s\n',   actionInt2actionLbl(data(i,1)));
+                        fprintf(fid, 'CompLabel     : %s\n',   llbInt2llbLbl(data(i,1)));
                         fprintf(fid, 'averageVal1   : %.5f\n', data(i,2));
                         fprintf(fid, 'averageVal2   : %.5f\n', data(i,3));
                         fprintf(fid, 'AVG_MAG_VAL   : %.5f\n', data(i,4));                    
