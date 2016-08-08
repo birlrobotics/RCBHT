@@ -138,8 +138,8 @@ function statData = primitivesCleanUp(statData,gradLabels)
     for i=1:r(1)-1
         
         % If it is not a contact label compare the times.
-        if(~strcmp(statData(i,GRAD_LBL),gradLabels(PIMP,:)) && ...
-                ~strcmp(statData(i,GRAD_LBL),gradLabels(NIMP,:)))                
+        if(~intcmp(statData(i,GRAD_LBL),PIMP) && ...
+                ~intcmp(statData(i,GRAD_LBL),NIMP))                
             
             % (1) Get Amplitude of Primitives
             amp1 = abs(statData(i,mxAmp)-statData(i,minAmp));       % Absolute value of amplitude difference of first primitive
