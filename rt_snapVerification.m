@@ -56,7 +56,12 @@ function  rt_snapVerification(StrategyType,FolderName)
     
     % Delete any possible existing pools running previously
     delete(gcp);
-    parpool(2);
+    
+    parClus=parcluster;
+    parClus.NumWorkers=8;
+    saveProfile(parClus);
+    
+    parpool(parClus.NumWorkers);
     
     for axisIndex = 1:6
         % Variables for primitive level
