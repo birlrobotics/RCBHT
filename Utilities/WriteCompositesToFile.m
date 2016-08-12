@@ -29,9 +29,9 @@
 function FileName=WriteCompositesToFile(WinPath,StratTypeFolder,FolderName,pType,saveData,data,dataFlag)
 
 %% Globals
-global armSide;         % This variable indicates whether an arm is available.
-                        
-global currentArm;      % This variable indicates which one is the current arm. Declared in snapVerification. RightArm==2, LeftArm==1. 
+global armSide;             % This variable indicates whether an arm is available.                        
+global currentArm;          % This variable indicates which one is the current arm. Declared in snapVerification. RightArm==2, LeftArm==1. 
+global initWriteToFileFlag; % Tells us whether this is the first iteration or not.
 %% Initialization
    
     % Structures
@@ -114,7 +114,14 @@ global currentArm;      % This variable indicates which one is the current arm. 
 %        Change flag
 %        write2FileFlag = false;
     
-%% Open the file
+%% Check for existence and Open the file
+    % IF it exists and it is our first round delete
+    if(exist(FileExtension,'file')==2 && initWriteToFileFlag==0)
+        delete(FileExtension);
+        initWriteToFileFlag = 1;
+    end
+    
+%% Open the file    
     if(dataFlag~=llbBelief)
         fid = fopen(FileExtension, 'a+t');	% Open/create new file 4 writing in text mode 't'
                                             % Append data to end of file.

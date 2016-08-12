@@ -198,7 +198,7 @@ function  [hlbBelief,llbBelief,...
                             
 %------------------------------------------------------------------------------------------
     
-% DEBUGGING
+    % DEBUGGING
     global DB_PLOT;         % To plot graphs
     global DB_PRINT;        % To print console messages
     global DB_WRITE;        % To write data to file
@@ -208,6 +208,12 @@ function  [hlbBelief,llbBelief,...
     DB_PRINT        = 0; 
     DB_WRITE        = 1;
     DB_DEBUG        = 0;
+    
+%------------------------------------------------------------------------------------------    
+   
+    % Helps to Check the Existence of files
+    global initWriteToFileFlag;
+    initWriteToFileFlag = 0;
     
 %------------------------------------------------------------------------------------------    
 
@@ -258,9 +264,9 @@ function  [hlbBelief,llbBelief,...
 %------------------------------------------------------------------------------------------
 %% Debug Enable Commands
 % Not supported for cplusplus code generation
-%     if(DB_DEBUG)
-%         dbstop if error
-%     end
+    if(DB_DEBUG)
+        dbstop if error
+    end
     
 %% Initialization/Preprocessing
     % Create a CELL of strings to capture the types of possible force-torque data plots
@@ -276,7 +282,7 @@ function  [hlbBelief,llbBelief,...
          ~,forceDataL,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
-         stateData,axesHandlesRight,axesHandlesLeft,...
+         stateData,~,axesHandlesLeft,...
          ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
     
     end
@@ -286,7 +292,7 @@ function  [hlbBelief,llbBelief,...
          forceData,~,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
-         stateData,axesHandlesRight,axesHandlesLeft,...
+         stateData,axesHandlesRight,~,...
          TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions);    
     end
  
@@ -345,14 +351,17 @@ function  [hlbBelief,llbBelief,...
                 pType   = plotType(axisIndex,:);                  % Use curly brackets to retrieve the plotType out of the cell
 
                 % Compute regression curves for each force curve
-                [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData_p.Value,stateData,wStart,pHandle,TL_p.Value,BL_p.Value,axisIndex);        
-
+                [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData_p.Value,stateData,wStart,pHandle,TL_p.Value,BL_p.Value,axisIndex);                        
+                
                 if(Optimization==1)
                    gradientCalibration(fPath,StratTypeFolder,stateData,statData,axisIndex);
 
                    llbBelief=-1;
                    hlbBelief=-1; % Dummy variables for this segment
                 end
+
+                % Reset file flag to indicate first run for next axis
+                initWriteToFileFlag=0; 
             end     % End PRIMITIVES_LAYER
 
     %% Do the following only if (gradient classification) optimization is turned off
@@ -378,6 +387,9 @@ function  [hlbBelief,llbBelief,...
                     elseif(axisIndex==6)
                         MCMz = motComps;
                     end     
+                    
+                    % Reset file flag to indicate first run for next axis
+                    initWriteToFileFlag=0; 
                 end
 
     %% D)       Generate the low-level behaviors
@@ -400,9 +412,12 @@ function  [hlbBelief,llbBelief,...
                     elseif(axisIndex==6)
                         llbehMz = llbehStruc;
                     end
-                end
-            end              
-        end % End axis=first:last
+                    
+                    % Reset file flag to indicate first run for next axis
+                    initWriteToFileFlag=0; 
+                end     % LLBs
+            end         % Optimization==0       
+        end             % End axis=first:last
 
     %%  F) After all axes are finished computing the LLB layer, generate and plot labels for high-level behaviors.
         if(HLB_LAYER)                        
@@ -412,16 +427,17 @@ function  [hlbBelief,llbBelief,...
             mcFlag=2; llbFlag=3;
 
             %% Right Arm          
-            if(armSide(1,2)) % Right Arm
+            if(armSide(1,2) && currentArm==2) % Right Arm
                 % Each of these structures are mx17, so they can be separated in this way.    
                 [motCompsFM,MCnumElems]     = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
                 [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
 
                 % Generate the high level behaviors for the right arm        
                 [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);    
-
+            end
+            
             %% Left Arm
-            elseif(armSide(1,1)) % LEft Arm
+            if(armSide(1,1) && currentArm==1) % LEft Arm
 
                 % Each of these structures are mx17, so they can be separated in this way.    
                 [motCompsFM_L,MCnumElems_L]    = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);

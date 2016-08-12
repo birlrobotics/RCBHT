@@ -1,4 +1,7 @@
 %% ************************** Documentation *********************************
+% TODO: write all data to file in one passing instead of opening and
+% closing the file per every data point. 
+% 
 % Write to file, statistical data used in fitRegressionCurves to analyze 
 % segmented portions of force-moment data.
 %
@@ -31,6 +34,7 @@ function [FileName,write2FileFlag]=WritePrimitivesToFile(WinPath,StratTypeFolder
 %% Global Variables
     global armSide;             % This variable indicates if an arm is available; 
     global currentArm;          % This variable indicates if it is the current arm. Useful to plot figures and save data to file.
+    global initWriteToFileFlag;
 %% Create Directory   
 
         % Set path with new folder "Segments" in it.
@@ -69,7 +73,14 @@ function [FileName,write2FileFlag]=WritePrimitivesToFile(WinPath,StratTypeFolder
        write2FileFlag = false;
     end
    
-%% Open the file
+%% Check for existence of files
+    % IF it exists and it is our first round delete
+    if(exist(FileName,'file')==2 && initWriteToFileFlag==0)
+        delete(FileName);
+        initWriteToFileFlag = 1;
+    end
+    
+%% Open the file    
     fid = fopen(FileName, 'a+t');	% Open/create new file 4 writing in text mode 't'
                                     % Append data to end of file.
     if(fid<0)

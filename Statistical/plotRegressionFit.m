@@ -37,6 +37,7 @@ function [rHandle,TOP_LIMIT,BOTTOM_LIMIT]=plotRegressionFit(x,yfit,Type,pHandle,
         figure(2); grid on;
     
         % Plot Data.
+        %% TODO: use drawnow limitrate to have dynamic plotting
         hold on;
         rHandle=plot(x,yfit,lineColor,'linewidth',lineWidth); 
         

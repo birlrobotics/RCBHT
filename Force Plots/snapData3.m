@@ -56,7 +56,8 @@ function [fPath,StratTypeFolder,...
     % global local0_world1_coords;          % Sets wrench data to load/plot wrt end-effector or world coordinates
     
     % Arm Side Detection
-    global armSide;                         % Tells us whether we are working with the right or left arm. Useful to plot the right figures and save data to the right file.
+    global armSide;                         % Indicates which arms are available.
+    global currentArm;                      % Indicates which are is currently being used.
     
     % Figure Handles
     global rarmHandle;
@@ -167,7 +168,8 @@ function [fPath,StratTypeFolder,...
         if(strategySelector('hiro',StrategyType) || strategySelector('baxter',StrategyType))
             %% For HIRO|BAXTER no spring joint angles in the camera: Right Arm
             %  Create plots for right arm and if necessary for left arm as well.
-            if(armSide(1,2)) % Right arm
+            if(armSide(1,2) && currentArm==2) % Right arm
+                figure(rarmHandle);  % Refocus plot for right arm.
                 %% Plot Fx
                 if(plotOptions==1)
                     pFx=subplot(3,2,1); plot(ForceData(:,1),ForceData(:,2));
@@ -274,8 +276,8 @@ function [fPath,StratTypeFolder,...
             end
 
             %% Print for left Arm
-            if(armSide(1,1))
-                % Open a figure used to plot data on the left arm.      
+            if(armSide(1,1) && currentArm==1)
+                % Refocus the left arm figure      
                 figure(larmHandle);         
 
                 %% Plot Fx
