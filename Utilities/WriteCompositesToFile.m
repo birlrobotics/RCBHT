@@ -29,9 +29,9 @@
 function FileName=WriteCompositesToFile(WinPath,StratTypeFolder,FolderName,pType,saveData,data,dataFlag)
 
 %% Globals
-global armSide;         % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
-                        % Declared in snapVerification. If==1: RightArm, if ==2,LeftArm
-
+global armSide;         % This variable indicates whether an arm is available.
+                        
+global currentArm;      % This variable indicates which one is the current arm. Declared in snapVerification. RightArm==2, LeftArm==1. 
 %% Initialization
    
     % Structures
@@ -39,6 +39,9 @@ global armSide;         % This variable helps us to know whether we are working 
     llbehStruc    = 1;
     hlbehStruc    = 2;
     llbBelief     = 3;
+    
+    % Save MATs to file?
+    saveMAT       = 0;
 
 %% Create Directory According to Data
     
@@ -78,31 +81,31 @@ global armSide;         % This variable helps us to know whether we are working 
 
 %%  Create a time sensitive name for file according to data
     if(dataFlag==motComps)
-        if(armSide(1,2)) % Right Arm
+        if(armSide(1,2) && currentArm==2) % Right Arm
             FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
-        elseif(armSide(1,1)) % Left Arm
+        elseif(armSide(1,1) && currentArm==1) % Left Arm
             FileName    = strcat(dir,'/',Folder,'_',pType,'_L');%,h,min);
         end
 
     elseif(dataFlag==llbehStruc)
-        if(armSide(1,2)) % Right Arm
+        if(armSide(1,2) && currentArm==2) % Right Arm
             FileName    = strcat(dir,'/',Folder,'_',pType);%,h,min);
             %FileName_temp = strcat(dir,'/',Folder,'_',pType);      % File with no date/time, useful to open from other programs.
-        elseif(armSide(1,1)) % Left Arm
+        elseif(armSide(1,1) && currentArm==1) % Left Arm
             FileName    = strcat(dir,'/',Folder,'_',pType,'_L');%,h,min);
         end
 
     elseif(dataFlag==hlbehStruc)
-        if(armSide(1,2)) % Right Arm
+        if(armSide(1,2) && currentArm==2) % Right Arm
             FileName    = strcat(dir,'/',Folder);%,'_',pType);%,h,min);   
-        elseif(armSide(1,1)) % Left Arm
+        elseif(armSide(1,1) && currentArm==1) % Left Arm
             FileName    = strcat(dir,'/',Folder,'_L');%,'_',pType);%,h,min);   
         end
         
     elseif(dataFlag==llbBelief)
-        if(armSide(1,2)) % Right Arm
+        if(armSide(1,2) && currentArm==2) % Right Arm
             FileName = strcat(dir,'/Data');                % File with no date/time, useful to open from other programs
-        elseif(armSide(1,1)) % Left Arm
+        elseif(armSide(1,1) && currentArm==1) % Left Arm
             FileName = strcat(dir,'/Data','_L');                % File with no date/time, useful to open from other programs
         end
     end
@@ -179,7 +182,7 @@ global armSide;         % This variable helps us to know whether we are working 
     end
     
 %%  Save to composites folder
-    if(saveData)
+    if(saveMAT)
         if(armSide(1,2)) % Right arm
             % Save motcomps.mat to Composites folder 
             % save filename content stores only those variables specified by content in file filename

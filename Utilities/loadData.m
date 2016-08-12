@@ -105,29 +105,31 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
     %% Right Arm: Always load this data
     %------------------------ HIRO-----------------------------------------
     if(strategySelector('hiro',StrategyType))
-        if(gravityCompensated==0 && local0_world1_coords==0)
-            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_Torques.dat');
-        elseif(gravityCompensated==0 && local0_world1_coords==1)
-            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_worldTorques.dat');
-        elseif(gravityCompensated==1 && local0_world1_coords==0)
-            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_Torques.dat');    
-        elseif(gravityCompensated==1 && local0_world1_coords==1)
-            FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_worldTorques.dat');  
-        end
-        StateData       =strcat(fPath,StratTypeFolder,FolderName,'/R_State.dat');
+        if(armSide(1,2))
+            if(gravityCompensated==0 && local0_world1_coords==0)
+                FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_Torques.dat');
+            elseif(gravityCompensated==0 && local0_world1_coords==1)
+                FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_worldTorques.dat');
+            elseif(gravityCompensated==1 && local0_world1_coords==0)
+                FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_Torques.dat');    
+            elseif(gravityCompensated==1 && local0_world1_coords==1)
+                FD  =strcat(fPath,StratTypeFolder,FolderName,'/R_GC_worldTorques.dat');  
+            end
+            StateData       =strcat(fPath,StratTypeFolder,FolderName,'/State.dat');
 
-        % Joint Angle Data
-        if(anglesDataFlag)
-            AngleData   =strcat(fPath,StratTypeFolder,FolderName,'/R_Angles.dat');
-        else 
-            AngleData=0;        
-        end
+            % Joint Angle Data
+            if(anglesDataFlag)
+                AngleData   =strcat(fPath,StratTypeFolder,FolderName,'/R_Angles.dat');
+            else 
+                AngleData=0;        
+            end
 
-        % Cartesian Data
-        if(cartposDataFlag)
-            CP     =strcat(fPath,StratTypeFolder,FolderName,'/R_CartPos.dat');      
-        else
-            CP=0;
+            % Cartesian Data
+            if(cartposDataFlag)
+                CP     =strcat(fPath,StratTypeFolder,FolderName,'/R_CartPos.dat');      
+            else
+                CP=0;
+            end
         end
 
         %% Left Arm
@@ -141,7 +143,7 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
             elseif(gravityCompensated==1 && local0_world1_coords==1)
                 ForceDataL  =strcat(fPath,StratTypeFolder,FolderName,'/L_GC_worldTorques.dat');  
             end
-            %StateDataL      =strcat(fPath,StratTypeFolder,FolderName,'/L_State.dat');
+            StateDataL      =strcat(fPath,StratTypeFolder,FolderName,'/L_State.dat');
 
             % Joint Angle Data
             if(anglesDataFlag)
@@ -163,41 +165,45 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
         JSD=-1;
         
         %% Right Arm
-        FDR = load(FD);
-        SDR = load(StateData);
-        if (length(FDR)>1); loopRate=FDR(2,1); end;
-        
-        % Joint Angle Data
-        if(anglesDataFlag)
-            ADR  = load(AngleData);
-        else
-            ADR=-1;
-        end
-        
-        % Cartesian Position
-        if(cartposDataFlag)
-            CPR  = load(CP);
-        else
-            CPR=-1;
+        if(armSide(1,2))
+            FDR = load(FD);
+            SDR = load(StateData);
+            if (length(FDR)>1); loopRate=FDR(2,1); end;
+
+            % Joint Angle Data
+            if(anglesDataFlag)
+                ADR  = load(AngleData);
+            else
+                ADR=-1;
+            end
+
+            % Cartesian Position
+            if(cartposDataFlag)
+                CPR  = load(CP);
+            else
+                CPR=-1;
+            end
         end
         
         %% Left Arm
-        FDL = load(ForceDataL);
-        %SDR      = load(StateDataL);
-        if (length(FDL)>1); loopRate=FDL(2,1); end;
-        
-        % Joint Angle Data
-        if(anglesDataFlag)
-            ADL  = load(AngleDataL);
-        else
-            ADL=-1;
-        end
-        
-        % Cartesian Position
-        if(cartposDataFlag)
-            CPL  = load(CartPosL);
-        else
-            CPL=-1;
+        if(armSide(1,1))
+            FDL = load(ForceDataL);
+            SDL      = load(StateDataL);
+            if (length(FDL)>1); loopRate=FDL(2,1); end;
+
+            % Joint Angle Data
+            if(anglesDataFlag)
+                ADL  = load(AngleDataL);
+            else
+                ADL=-1;
+            end
+
+            % Cartesian Position
+            if(cartposDataFlag)
+                CPL  = load(CartPosL);
+            else
+                CPL=-1;
+            end
         end
  
     %------------------------- BAXTER -------------------------------------
@@ -303,39 +309,49 @@ function [ADR, CPR, FDR,  ...                           % Right Arm Data
         elseif(armSide(1,2))
             if (i>1); loopRate=FDR(2,1); end;
         end
+    
+       % Get the State Transition Vector    
+       if(strategySelector('baxter',StrategyType))
+           if(armSide(1,2)); SDR =load(strcat(fPath,'State.dat'));   end
+           if(armSide(1,1)); SDL =load(strcat(fPath,'L_State.dat')); end
+       end
     end             % ROBOT TYPE
-   % Get the State Transition Vector    
-   SDR  =load(strcat(fPath,'/State.dat'));
-   
     
     %% State Vector Length Verification
-    % Adjust the data length so that it finishes when mating is finished. 
-    r = size(SDR);
-    if(r(1)==5)
-        endTime = SDR(5,1);
     
-        % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
-        if(FDR(end,1)>endTime)
+    %TODO: include left state data.
+    % Adjust the data length so that it finishes when mating is finished. 
+    if(armSide(1,2))              
+    r = size(SDR);
+        if(r(1)==5)
+            endTime = SDR(5,1);
 
-            % Note that SDR(5,1) is hardcoded as some time k later thatn SDR(4,1). 
-            endTime = floor(endTime/loopRate)+1; % The Angles/Torques data is comprised of steps of magnitude 0.005. Then we round down.
+            % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
+            if(FDR(end,1)>endTime)
 
-            % Time will be from 1:to the entry denoted by the State Vector in it's 5th entry. 
-            FDR = FDR(1:endTime,:);
-            if(anglesDataFlag && cartposDataFlag)            
-                ADR = ADR(1:endTime,:);                
-                CPR = CPR(1:endTime,:);
+                % Note that SDR(5,1) is hardcoded as some time k later thatn SDR(4,1). 
+                endTime = floor(endTime/loopRate)+1; % The Angles/Torques data is comprised of steps of magnitude 0.005. Then we round down.
+
+                % Time will be from 1:to the entry denoted by the State Vector in it's 5th entry. 
+                FDR = FDR(1:endTime,:);
+                if(anglesDataFlag && cartposDataFlag)            
+                    ADR = ADR(1:endTime,:);                
+                    CPR = CPR(1:endTime,:);
+                end
+
+            else
+                SDR(5,1) = FDR(end,1);
+                if(armSide(1,1))
+                    SDL(5,1) = FDL(end,1);
+                end
             end
 
+        %% Insert an end state for failed assemblies that have less than the 5 entries
         else
-            SDR(5,1) = FDR(end,1);
-        end
-        
-    %% Insert an end state for failed assemblies that have less than the 5 entries
-    else
-        SDR(r(1)+1,1) = FDR(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
-        
-    end
+            SDR(r(1)+1,1) = FDR(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
+
+       end
+    end  
     %% Check to make sure that StateData has a finishing time included
     if(strategySelector('SA',StrategyType))
         if(length(SDR)<5)

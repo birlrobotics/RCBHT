@@ -157,16 +157,12 @@ function  [hlbBelief,llbBelief,...
 
     % Index to choose right and left arms in for loop
     global armSide;                     % Which are are you considering, right, left, or both. armSide will be a 1x2 vector of bools with 1st elem=right, 2nd_elem=right: armside[left,right]
-    leftArmFlag =0;                     % Boolean values as flags. At least one arm must be true.
+    leftArmFlag =1;                     % Boolean values as flags. At least one arm must be true.
     rightArmFlag=1;    
     armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
     
-    global leftArmDataFlag;   
-    if(armSide(1,1))
-        leftArmDataFlag = 1;            % If you want to plot data for the left arm, set to true. 
-    else
-        leftArmDataFlag = 0;
-    end
+    global currentArm;
+    currentArm=2;                       % 1 for left arm, 2 for current arm. 
 %-----------------------------------------------------------------------------------------
     % FIGURE HANDLE
     % Create figures for the right and left arms, and provide them the
@@ -270,11 +266,12 @@ function  [hlbBelief,llbBelief,...
     % Create a CELL of strings to capture the types of possible force-torque data plots
     plotType = ['Fx';'Fy';'Fz';'Mx';'My';'Mz'];
     stateTimes=-1;
-%% A) Plot Forces
+%% A) Load Data and Plot Forces
     plotOptions=1;  % plotOptions=0: plot separate figures. =1, plot in subplots
     
     % Consider single or dual arm case to output relevant data.    
     if(armSide(1,1))                % Left Arm
+        currentArm=1;
         [fPath,StratTypeFolder,...
          ~,forceDataL,...
          ~,~,...                   %angleData,angleDataL,...
@@ -282,7 +279,9 @@ function  [hlbBelief,llbBelief,...
          stateData,axesHandlesRight,axesHandlesLeft,...
          ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
     
-    elseif(armSide(1,2))            % Right Arm
+    end
+    if(armSide(1,2))            % Right Arm
+        currentArm=2;
         [fPath,StratTypeFolder,...
          forceData,~,...
          ~,~,...                   %angleData,angleDataL,...
@@ -311,14 +310,16 @@ function  [hlbBelief,llbBelief,...
     armFlag=false;          % Used to tell which arm has been executed
     
     for i=1:armIndex                                                    % Compute Right arm first, then left.
-        if(armSide(1,2) && ~armFlag)                                    
+        if(armSide(1,2) && ~armFlag)        
+            currentArm=2;
             % Create a matlab pointer struc to force structures, axis handles, to be used later in RCBHT analysis 
             forceData_p = libpointer('doublePtr',forceData);            % Data is extracted by calling forceData_p.Value
             axesHandles = axesHandlesRight;
             TL_p = libpointer('doublePtr',TL);
             BL_p = libpointer('doublePtr',BL);
             armFlag=true;
-        else                                                            
+        else            
+            currentArm=1;
             forceData_p = libpointer('doublePtr',forceDataL); % If want to extract array contents do: forceData_p.Value(index)
             axesHandles = axesHandlesLeft;
             TL_p= libpointer('doublePtr',TL_L);

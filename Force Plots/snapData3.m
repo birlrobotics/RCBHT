@@ -376,9 +376,7 @@ function [fPath,StratTypeFolder,...
                 insertStates3(StrategyType,stateData,EndTime,handlesL,TOP_LIMIT_L,BOTTOM_LIMIT_L);    
 
                 %% Save plot to file
-                mfilename='snapData3';
-                armSide = 2;    % armSide normally changes in the snapVerification.m::for loop. So to avoid further changes to savePlot we modify 
-                                % armSide as a global variable to save the plot with the right name for the left arm. armSide will be reset in the for loop. 
+                mfilename='snapData3';            
                 savePlot(fPath,StratTypeFolder,FolderName,handlesL(1),mfilename);
             else
                 % Assign foo values

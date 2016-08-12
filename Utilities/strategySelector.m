@@ -28,7 +28,7 @@
 %       SIM_HIRO_TWO_SA_SUCCESS
 %       REAL_BAXTER_ONE_SA_SUCCESS
 %       REAL_HIRO_ONE_SA_ERROR_CHARAC              
-%% -------------- Baxter Robot ----------------------------
+%% -------------- baxter  ----------------------------
 %       SIM_BAXTER_ONE_SA_SUCCES
 %       SIM_BAXTER_SA_DUAL
 %       REAL_BAXTER_ONE_SA_SUCCESS
