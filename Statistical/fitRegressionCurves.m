@@ -48,7 +48,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
     
 %% Initialize variables
     % Globals
-    global DB_PLOT;                                 % Declared in snapVerification. Enables plotting.
+    %global DB_PLOT;                                 % Declared in snapVerification. Enables plotting.
     global DB_WRITE;                                % Write to file.
     global DB_DEBUG;                                % Save statData.mat 
     
@@ -216,10 +216,8 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
                                                           segmentIndex,dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel);
                     end
 %%                  % v) Plot data
-                    if(DB_PLOT)
-                        rHandle=plotRegressionFit(Time,dataFit,Type,pHandle,TL,BL,FolderName,forceData,stateData);                                
-                    end
-
+                    rHandle=plotRegressionFit(Time,dataFit,Type,pHandle,TL,BL,FolderName,forceData,stateData);                                
+                    
 %%                  % Wrap Up 
                     % vi) Increase counter
                     segmentIndex = segmentIndex + 1;
@@ -264,10 +262,8 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
                                                                 segmentIndex,dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel);
             end
 
-%%          % v) Plot data
-            if(DB_PLOT)
-                rHandle=plotRegressionFit(Time,dataFit,Type,pHandle,TL,BL,FolderName,forceData,stateData);                                
-            end
+%%          % v) Plot data           
+            rHandle=plotRegressionFit(Time,dataFit,Type,pHandle,TL,BL,FolderName,forceData,stateData);                                            
 
             % Get out of the while loop
             break;

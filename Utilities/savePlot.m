@@ -13,8 +13,9 @@ function savePlot(fPath, StratTypeFolder, FolderName, handle, plotName)
 
 
 %% Global Variables
-global armSide;         % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
-                        % Declared in snapVerification. If==1: RightArm, if ==2,LeftArm
+global armSide;         % This variable helps us to know which arms are available.
+global currentArm;      % Tells if the current arm is right (2) or left (1)
+                        
 %%  Set Directory    
 %    if(ispc)
         % Make matlab folder
@@ -48,13 +49,13 @@ global armSide;         % This variable helps us to know whether we are working 
         
 %%      Save      
         % Right Arm
-        if(armSide(1,2))
+        if(armSide(1,2) && currentArm==2)
             nm = strcat(fPath,StratTypeFolder,FolderName,'/',plotName,'/',FolderName);      %'plot',num2str(h),num2str(min));
-            
+        end
+        
         % Left Arm
-        elseif(armSide(1,1))
-            nm = strcat(fPath,StratTypeFolder,FolderName,'/',plotName,'/',FolderName,'_L'); %'plot',num2str(h),num2str(min));
-            
+        if(armSide(1,1) && currentArm==1)
+            nm = strcat(fPath,StratTypeFolder,FolderName,'/',plotName,'/',FolderName,'_L'); %'plot',num2str(h),num2str(min));            
         end
         
         if(strcmp(FolderName(1,end),'/'))

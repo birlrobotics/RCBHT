@@ -1,4 +1,7 @@
 %% ************************** Documentation *********************************
+% TODO: write all data to file in one passing instead of opening and
+% closing the file per every data point. 
+% 
 % Write to file, statistical data used in fitRegressionCurves to analyze 
 % segmented portions of force-moment data.
 %
@@ -29,10 +32,11 @@ function [FileName,write2FileFlag]=WritePrimitivesToFile(WinPath,StratTypeFolder
                                                segmentIndex,dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel)
 
 %% Global Variables
-    global armSide;             % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
-    
+    global armSide;             % This variable indicates if an arm is available; 
+    global currentArm;          % This variable indicates if it is the current arm. Useful to plot figures and save data to file.
+    global initWriteToFileFlag;
 %% Create Directory   
-%     if(ispc)
+
         % Set path with new folder "Segments" in it.
         SegmentFolder='/Segments';
         dir          = strcat(WinPath,StratTypeFolder,FolderName,SegmentFolder);        
@@ -41,19 +45,7 @@ function [FileName,write2FileFlag]=WritePrimitivesToFile(WinPath,StratTypeFolder
         if(exist(dir,'dir')==0)
             mkdir(dir);
         end
-% 
-%     % Linux
-%     else
-%         SegmentFolder='Segments';
-%         LinuxPath   = '\\home\\Documents\\Results\\Force Control\\Pivot Approach\\';
-%         %Path    =
-%         %'\\home\\hrpuser\\forceSensorPlugin_Pivot\\data\\Results\\'
-%         dir         = strcat(LinuxPath,StratTypeFolder,FolderName,'\\',SegmentFolder); 
-%         % Check if directory exists, if not create a directory
-%         if(exist(dir,'dir')==0)
-%             mkdir(dir);
-%         end         
-%     end    
+  
 %% Write File Name with date
     
     if(write2FileFlag)
@@ -71,16 +63,24 @@ function [FileName,write2FileFlag]=WritePrimitivesToFile(WinPath,StratTypeFolder
         % Create a time sensitive name for file
         
         % Write FileName according to whether it is a right or left arm
-        if(armSide==1) % RightArm
+        if(armSide(1,2) && currentArm==2) % RightArm
             FileName = strcat(dir,'/Segement_',Type,'.txt'); %h,min,'.txt');                                                  
-        else % Left Arm
+        end
+        if(armSide(1,1) && currentArm==1) % Left Arm
             FileName = strcat(dir,'/Segement_',Type,'_L','.txt'); %h,min,'.txt');                                                  
         end
        % Change flag
        write2FileFlag = false;
     end
    
-%% Open the file
+%% Check for existence of files
+    % IF it exists and it is our first round delete
+    if(exist(FileName,'file')==2 && initWriteToFileFlag==0)
+        delete(FileName);
+        initWriteToFileFlag = 1;
+    end
+    
+%% Open the file    
     fid = fopen(FileName, 'a+t');	% Open/create new file 4 writing in text mode 't'
                                     % Append data to end of file.
     if(fid<0)

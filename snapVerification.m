@@ -145,19 +145,48 @@ function  [hlbBelief,llbBelief,...
     firstIndex=first;
     lastIndex= last;
     axisIndex=firstIndex; 
-  
+
+%------------------------------------------------------------------------------------------
+    
+    % DEBUGGING
+    global DB_PLOT;         % To plot graphs
+    global DB_PRINT;        % To print console messages
+    global DB_WRITE;        % To write data to file
+    global DB_DEBUG;        % To enable debugging capabilities
+    
+    DB_PLOT         = 0;
+    DB_PRINT        = 0; 
+    DB_WRITE        = 1;
+    DB_DEBUG        = 0;
+    
 %-----------------------------------------------------------------------------------------
+<<<<<<< HEAD
     % RESULTS PATH
     % To convert this to ROS/C++ code, cannot have global strings. We will assigned these directly in snapData3.m. Left here for reference.
 %     global hiroPath;
 %     global baxterPath;
 %     hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
 %     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';
+=======
+    
+    % RESULTS PATH: you can manually change this if you have saved data in
+    % a different root folder.
+    global hiroPath;
+    global baxterPath;
+    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';
+>>>>>>> baxter
     
 %-----------------------------------------------------------------------------------------
 
+    % Parse the strategy folder to know if you are using one or two arms.
+    % As of Aug. 2016 the use of one arm still implies the right arm. 
+    parsedFile=strsplit(StrategyType,'_');
+    armNum=parsedFile{3};                          % Read 3rd cell to acquire 'ONE' or 'TWO' string.
+
     % Index to choose right and left arms in for loop
     global armSide;                     % Which are are you considering, right, left, or both. armSide will be a 1x2 vector of bools with 1st elem=right, 2nd_elem=right: armside[left,right]
+<<<<<<< HEAD
     leftArmFlag =0;                     % Boolean values as flags. At least one arm must be true.
     rightArmFlag=1;    
     armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
@@ -168,6 +197,19 @@ function  [hlbBelief,llbBelief,...
 %     else
 %         leftArmDataFlag = 0;
 %     end
+=======
+    if(strcmp(armNum,'TWO'))
+        leftArmFlag =1;                     % Boolean values as flags. At least one arm must be true.
+        rightArmFlag=1;    
+    else
+        leftArmFlag =0;
+        rightArmFlag=1;
+    end
+    armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
+    
+    global currentArm;
+    currentArm=2;                       % 1 for left arm, 2 for current arm. 
+>>>>>>> baxter
 %-----------------------------------------------------------------------------------------
     % FIGURE HANDLE
     % Create figures for the right and left arms, and provide them the
@@ -178,20 +220,25 @@ function  [hlbBelief,llbBelief,...
     larmHandle=-1;
     rarmHandle=-1;
 
-    if(armSide(1,1) && ~armSide(1,2))
-        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
-        movegui(larmHandle,'west');
-        figure(larmHandle);
-    elseif(~armSide(1,1) && armSide(1,2))
-        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
-        movegui(rarmHandle,'east');
-        figure(rarmHandle);
+    if(~DB_PLOT)
+        rarmHandle=-1;
+        larmHandle=-1;
     else
-        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
-        movegui(larmHandle,'west');   
-        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
-        movegui(rarmHandle,'east');
-        figure(rarmHandle);
+        if(armSide(1,1) && ~armSide(1,2))
+            larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+            movegui(larmHandle,'west');
+            figure(larmHandle);
+        elseif(~armSide(1,1) && armSide(1,2))
+            rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+            movegui(rarmHandle,'east');
+            figure(rarmHandle);
+        else
+            larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+            movegui(larmHandle,'west');   
+            rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+            movegui(rarmHandle,'east');
+            figure(rarmHandle);
+        end
     end
     
 %-----------------------------------------------------------------------------------------
@@ -202,19 +249,12 @@ function  [hlbBelief,llbBelief,...
                             % %{USER}\Documents\School\Research\AIST\Results\ForceControl\${StratTypeFolder}\gradClassFolder
                             % are deleted. 
                             % After one run, turn the switch off. The routine will used the saved values to file. 
-                            
-%------------------------------------------------------------------------------------------
-    
-% DEBUGGING
-    global DB_PLOT;         % To plot graphs
-    global DB_PRINT;        % To print console messages
-    global DB_WRITE;        % To write data to file
-    global DB_DEBUG;        % To enable debugging capabilities
-    
-    DB_PLOT         = 1;
-    DB_PRINT        = 0; 
-    DB_WRITE        = 1;
-    DB_DEBUG        = 0;
+                               
+%------------------------------------------------------------------------------------------    
+   
+    % Helps to Check the Existence of files
+    global initWriteToFileFlag;
+    initWriteToFileFlag = 0;
     
 %------------------------------------------------------------------------------------------    
 
@@ -265,33 +305,54 @@ function  [hlbBelief,llbBelief,...
 %------------------------------------------------------------------------------------------
 %% Debug Enable Commands
 % Not supported for cplusplus code generation
-%     if(DB_DEBUG)
-%         dbstop if error
-%     end
+    if(DB_DEBUG)
+        dbstop if error
+    end
     
 %% Initialization/Preprocessing
     % Create a CELL of strings to capture the types of possible force-torque data plots
     plotType = ['Fx';'Fy';'Fz';'Mx';'My';'Mz'];
     stateTimes=-1;
-%% A) Plot Forces
+%% A) Load Data and Plot Forces
     plotOptions=1;  % plotOptions=0: plot separate figures. =1, plot in subplots
     
     % Consider single or dual arm case to output relevant data.    
     if(armSide(1,1))                % Left Arm
+        currentArm=1;
         [fPath,StratTypeFolder,...
+<<<<<<< HEAD
          ~,forceDataL,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
          ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);
+=======
+         forceDataL,...
+         ~,...                   %angleDataL,...
+         ~,...                   %cartPosDataL,...
+         stateData,...
+         axesHandlesLeft,...
+         TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
+>>>>>>> baxter
     
-    elseif(armSide(1,2))            % Right Arm
+    end
+    if(armSide(1,2))            % Right Arm
+        currentArm=2;
         [fPath,StratTypeFolder,...
+<<<<<<< HEAD
          forceData,~,...
          ~,~,...                   %angleData,angleDataL,...
          ~,~,...                   %cartPosData,cartPosDataL,...
          stateData,axesHandlesRight,axesHandlesLeft,...
          TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);    
+=======
+         forceData,...
+         ~,...                   %angleData,angleDataL,...
+         ~,...                   %cartPosData,cartPosDataL,...
+         stateData,...
+         axesHandlesRight,...
+         TL,BL]=snapData3(StrategyType,FolderName,plotOptions);    
+>>>>>>> baxter
     end
  
 %% B) Relative-Change Behavior Hierarchical Taxonomy: 
@@ -303,7 +364,7 @@ function  [hlbBelief,llbBelief,...
     % to different environments.
    
     % Switch to the right arm figure    
-    figure(rarmHandle);
+    if(DB_PLOT); figure(rarmHandle); end
     
 %% B_Right_1) Perform regression curves for force moment reasoning for the right/left arm                  
         
@@ -314,14 +375,16 @@ function  [hlbBelief,llbBelief,...
     armFlag=false;          % Used to tell which arm has been executed
     
     for i=1:armIndex                                                    % Compute Right arm first, then left.
-        if(armSide(1,2) && ~armFlag)                                    
+        if(armSide(1,2) && ~armFlag)        
+            currentArm=2;
             % Create a matlab pointer struc to force structures, axis handles, to be used later in RCBHT analysis 
             forceData_p = libpointer('doublePtr',forceData);            % Data is extracted by calling forceData_p.Value
             axesHandles = axesHandlesRight;
             TL_p = libpointer('doublePtr',TL);
             BL_p = libpointer('doublePtr',BL);
             armFlag=true;
-        else                                                            
+        else            
+            currentArm=1;
             forceData_p = libpointer('doublePtr',forceDataL); % If want to extract array contents do: forceData_p.Value(index)
             axesHandles = axesHandlesLeft;
             TL_p= libpointer('doublePtr',TL_L);
@@ -347,14 +410,17 @@ function  [hlbBelief,llbBelief,...
                 pType   = plotType(axisIndex,:);                  % Use curly brackets to retrieve the plotType out of the cell
 
                 % Compute regression curves for each force curve
-                [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData_p.Value,stateData,wStart,pHandle,TL_p.Value,BL_p.Value,axisIndex);        
-
+                [statData,curHandle,gradLabels]=fitRegressionCurves(fPath,StrategyType,StratTypeFolder,FolderName,pType,forceData_p.Value,stateData,wStart,pHandle,TL_p.Value,BL_p.Value,axisIndex);                        
+                
                 if(Optimization==1)
                    gradientCalibration(fPath,StratTypeFolder,stateData,statData,axisIndex);
 
                    llbBelief=-1;
                    hlbBelief=-1; % Dummy variables for this segment
                 end
+
+                % Reset file flag to indicate first run for next axis
+                initWriteToFileFlag=0; 
             end     % End PRIMITIVES_LAYER
 
     %% Do the following only if (gradient classification) optimization is turned off
@@ -380,6 +446,9 @@ function  [hlbBelief,llbBelief,...
                     elseif(axisIndex==6)
                         MCMz = motComps;
                     end     
+                    
+                    % Reset file flag to indicate first run for next axis
+                    initWriteToFileFlag=0; 
                 end
 
     %% D)       Generate the low-level behaviors
@@ -402,9 +471,12 @@ function  [hlbBelief,llbBelief,...
                     elseif(axisIndex==6)
                         llbehMz = llbehStruc;
                     end
-                end
-            end              
-        end % End axis=first:last
+                    
+                    % Reset file flag to indicate first run for next axis
+                    initWriteToFileFlag=0; 
+                end     % LLBs
+            end         % Optimization==0       
+        end             % End axis=first:last
 
     %%  F) After all axes are finished computing the LLB layer, generate and plot labels for high-level behaviors.
         if(HLB_LAYER)                        
@@ -414,16 +486,17 @@ function  [hlbBelief,llbBelief,...
             mcFlag=2; llbFlag=3;
 
             %% Right Arm          
-            if(armSide(1,2)) % Right Arm
+            if(armSide(1,2) && currentArm==2) % Right Arm
                 % Each of these structures are mx17, so they can be separated in this way.    
                 [motCompsFM,MCnumElems]     = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);
                 [llbehFM   ,LLBehNumElems]  = zeroFill(llbehFx,llbehFy,llbehFz,llbehMx,llbehMy,llbehMz,llbFlag);
 
                 % Generate the high level behaviors for the right arm        
                 [hlbehStruc,fcAvgData,successFlag,boolFCData]=hlbehComposition_new(motCompsFM,MCnumElems,llbehFM,LLBehNumElems,llbehLbl,stateData,axesHandlesRight,TL_p.Value,BL_p.Value,fPath,StrategyType,FolderName);    
-
+            end
+            
             %% Left Arm
-            elseif(armSide(1,1)) % LEft Arm
+            if(armSide(1,1) && currentArm==1) % LEft Arm
 
                 % Each of these structures are mx17, so they can be separated in this way.    
                 [motCompsFM_L,MCnumElems_L]    = zeroFill(MCFx,MCFy,MCFz,MCMx,MCMy,MCMz,mcFlag);

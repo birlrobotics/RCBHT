@@ -26,6 +26,9 @@
 %**************************************************************************
 function [rHandle,TOP_LIMIT,BOTTOM_LIMIT]=plotRegressionFit(x,yfit,Type,pHandle,TL,BL,FolderName,Data,stateData)
 
+%% Globals
+global DB_PLOT;
+
 %% Preprocessing and Plotting
     
     % Choose line color
@@ -37,42 +40,42 @@ function [rHandle,TOP_LIMIT,BOTTOM_LIMIT]=plotRegressionFit(x,yfit,Type,pHandle,
         figure(2); grid on;
     
         % Plot Data.
+        %% TODO: use drawnow limitrate to have dynamic plotting
         hold on;
-        rHandle=plot(x,yfit,lineColor,'linewidth',lineWidth); 
+        rHandle=plot(0,0);%(x,yfit,lineColor,'linewidth',lineWidth); 
         
 %% Insert State Lines into Diagram
-        % Compute the real end of the signal
-        [TIME_LIMIT_PERC, SIGNAL_THRESHOLD] = CustomizePlotLength(FolderName,Data);                  
-
-        % Adjust Axes
-        MARGIN = 0;         % Do you want a margin of white space surrounding the max,min values of the curve
-        AVERAGE = 0;        % Do you want to set axis data around average value of curve
-        [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,TIME_LIMIT_PERC,SIGNAL_THRESHOLD,MARGIN,AVERAGE);
-
-        % Insert the states
-        FillFlag = 1; % Fill with color
-        axes(gca);      % Activate the appropriate subplot/axis handle
-        insertStates(stateData,TOP_LIMIT,BOTTOM_LIMIT,FillFlag);                  
+        % Compute the real end of the signal        
+%         [TIME_LIMIT_PERC, SIGNAL_THRESHOLD] = CustomizePlotLength(FolderName,Data);                  
+% 
+%         % Adjust Axes
+%         MARGIN = 0;         % Do you want a margin of white space surrounding the max,min values of the curve
+%         AVERAGE = 0;        % Do you want to set axis data around average value of curve
+%         [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,TIME_LIMIT_PERC,SIGNAL_THRESHOLD,MARGIN,AVERAGE);
+% 
+%         % Insert the states
+%         FillFlag = 1; % Fill with color
+%         axes(gca);      % Activate the appropriate subplot/axis handle
+%         insertStates(stateData,TOP_LIMIT,BOTTOM_LIMIT,FillFlag);                  
 %%                
     else
         % Set the handle of the corresponding already plotted force data.
-        axes(pHandle); hold on; % When using parfor this throws an error saying that it is an invalid object handle
-        rHandle=plot(x,yfit,lineColor,'linewidth',1.5);        
-    end                
+        if(DB_PLOT)
+            axes(pHandle); hold on; % When using parfor this throws an error saying that it is an invalid object handle
+            rHandle=plot(x,yfit,lineColor,'linewidth',1.5);
+            %rHandle=plot(0,0);  % Do this to keep the handle alive.                          
         
-%% Labels
-
-    % x-axis
-    xlabel('Time (secs)'); 
-    
-    % y-axis
-    if(strcmp(Type,'Fx') || strcmp(Type,'Fy') || strcmp(Type,'Fz'))
-        ylabel('Force (N)'); 
-    elseif(strcmp(Type,'Mx') || strcmp(Type,'My') || strcmp(Type,'Mz'))
-        ylabel('Moment (N-m)');        
+            % Labels
+            xlabel('Time (secs)'); 
+            if(strcmp(Type,'Fx') || strcmp(Type,'Fy') || strcmp(Type,'Fz'))
+                ylabel('Force (N)'); 
+            elseif(strcmp(Type,'Mx') || strcmp(Type,'My') || strcmp(Type,'Mz'))
+                ylabel('Moment (N-m)');        
+            end
+            % Title
+            title(['Regression Fits for',' ',Type]);
+        else
+            rHandle=-1;
+        end
     end
-    
-    % Title
-    title(['Regression Fits for',' ',Type]);
-
 end % End function
