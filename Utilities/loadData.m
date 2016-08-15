@@ -85,6 +85,9 @@ function [AD, CP, FD,  ...                           % Sensor Data
     % StateData       ='\\home\\grxuser\\src\\OpenHRP3-0\\Controller\\IOserver\\HRP2STEP1\\bin\\State.dat';
     
     %% Global Variables
+    
+    % Flags
+    global DB_WRITE;
   
     % Data
     global anglesDataFlag;              % Enable loading/printing of current joint angles
@@ -263,8 +266,6 @@ function [AD, CP, FD,  ...                           % Sensor Data
                 fprintf('StateData does not have 5 entries for the Right Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
             elseif(length(SD)<5 && currentArm==1)
                 fprintf('StateData does not have 5 entries for the left Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
-            else
-                fprintf('StateData does not have 5 entries. You probably need to include the finishing time of the Assembly task in this vector.\n');
             end
         end
     end

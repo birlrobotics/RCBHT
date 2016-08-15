@@ -161,7 +161,8 @@ function  [hlbBelief,llbBelief,...
     
 %-----------------------------------------------------------------------------------------
     
-    % RESULTS PATH
+    % RESULTS PATH: you can manually change this if you have saved data in
+    % a different root folder.
     global hiroPath;
     global baxterPath;
     hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
@@ -169,10 +170,20 @@ function  [hlbBelief,llbBelief,...
     
 %-----------------------------------------------------------------------------------------
 
+    % Parse the strategy folder to know if you are using one or two arms.
+    % As of Aug. 2016 the use of one arm still implies the right arm. 
+    parsedFile=strsplit(StrategyType,'_');
+    armNum=parsedFile{3};                          % Read 3rd cell to acquire 'ONE' or 'TWO' string.
+
     % Index to choose right and left arms in for loop
     global armSide;                     % Which are are you considering, right, left, or both. armSide will be a 1x2 vector of bools with 1st elem=right, 2nd_elem=right: armside[left,right]
-    leftArmFlag =1;                     % Boolean values as flags. At least one arm must be true.
-    rightArmFlag=1;    
+    if(strcmp(armNum,'TWO'))
+        leftArmFlag =1;                     % Boolean values as flags. At least one arm must be true.
+        rightArmFlag=1;    
+    else
+        leftArmFlag =0;
+        rightArmFlag=1;
+    end
     armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
     
     global currentArm;
