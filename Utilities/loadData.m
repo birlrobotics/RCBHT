@@ -200,40 +200,6 @@ function [AD, CP, FD,  ...                           % Sensor Data
             FD(i,1)=( (rosData.data(i,2)+(rosData.data(i,3)*1e-09)) - (rosData.data(1,2)+(rosData.data(1,3)*1e-09)) );
             round(FD(i,1),4,'significant'); % Round to 4sf
 
-<<<<<<< HEAD
-                % End-effector Cartesian Pose
-                if(cartposDataFlag)
-                    % Time
-                    CPR(:,1)=FDR(:,1);
-                    % Pose
-                    CPR(i,2:4)=rosDataRight.data(i,5:7);
-                    % Convert Quaternions to ZYX Euler and then adjust as RPY or XYZ
-                    CPR(i,5:7)=fliplr(quat2eul(rosDataRight.data(i,8:11)));
-                else
-                    CPR=0;
-                end     
-               
-                % Joint Angles Data
-                if(anglesDataFlag)
-                    % Time
-                    ADR(:,1)=FDR(:,1);
-                else
-                    ADR=0;
-                end                 
-               
-            end     % for loop        
-        end         % ARM SIDE
-        
-        if(armSide(1,1))
-        	if (i>1); loopRate=FDL(2,1); end;
-        elseif(armSide(1,2))
-            if (i>1); loopRate=FDR(2,1); end;
-        end
-    end             % ROBOT TYPE
-   % Get the State Transition Vector    
-   SDR  =load(strcat(fPath,'State.dat'));
-   
-=======
             % Copy wrench data
             FD(i,2:7)=rosData.data(i,18:23);
 
@@ -263,7 +229,6 @@ function [AD, CP, FD,  ...                           % Sensor Data
        if(armSide(1,1) && currentArm==1);     SD =load(strcat(fPath,'L_State.dat'));    % Left
        elseif(armSide(1,2) && currentArm==2); SD =load(strcat(fPath,'State.dat')); end  % Right
     end % ROBOT TYPE
->>>>>>> baxter
     
     %% State Vector Length Verification
     

@@ -160,14 +160,6 @@ function  [hlbBelief,llbBelief,...
     DB_DEBUG        = 0;
     
 %-----------------------------------------------------------------------------------------
-<<<<<<< HEAD
-    % RESULTS PATH
-    % To convert this to ROS/C++ code, cannot have global strings. We will assigned these directly in snapData3.m. Left here for reference.
-%     global hiroPath;
-%     global baxterPath;
-%     hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
-%     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pa_demo/bags/';
-=======
     
     % RESULTS PATH: you can manually change this if you have saved data in
     % a different root folder.
@@ -175,7 +167,6 @@ function  [hlbBelief,llbBelief,...
     global baxterPath;
     hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';
->>>>>>> baxter
     
 %-----------------------------------------------------------------------------------------
 
@@ -186,18 +177,6 @@ function  [hlbBelief,llbBelief,...
 
     % Index to choose right and left arms in for loop
     global armSide;                     % Which are are you considering, right, left, or both. armSide will be a 1x2 vector of bools with 1st elem=right, 2nd_elem=right: armside[left,right]
-<<<<<<< HEAD
-    leftArmFlag =0;                     % Boolean values as flags. At least one arm must be true.
-    rightArmFlag=1;    
-    armSide=[leftArmFlag,rightArmFlag]; % This variable helps us to know whether we are working with the right or left. Useful to plot figures and save data to file.
-    
-%     global leftArmDataFlag;   
-%     if(armSide(1,1))
-%         leftArmDataFlag = 1;            % If you want to plot data for the left arm, set to true. 
-%     else
-%         leftArmDataFlag = 0;
-%     end
-=======
     if(strcmp(armNum,'TWO'))
         leftArmFlag =1;                     % Boolean values as flags. At least one arm must be true.
         rightArmFlag=1;    
@@ -209,7 +188,6 @@ function  [hlbBelief,llbBelief,...
     
     global currentArm;
     currentArm=2;                       % 1 for left arm, 2 for current arm. 
->>>>>>> baxter
 %-----------------------------------------------------------------------------------------
     % FIGURE HANDLE
     % Create figures for the right and left arms, and provide them the
@@ -320,39 +298,23 @@ function  [hlbBelief,llbBelief,...
     if(armSide(1,1))                % Left Arm
         currentArm=1;
         [fPath,StratTypeFolder,...
-<<<<<<< HEAD
-         ~,forceDataL,...
-         ~,~,...                   %angleData,angleDataL,...
-         ~,~,...                   %cartPosData,cartPosDataL,...
-         stateData,axesHandlesRight,axesHandlesLeft,...
-         ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);
-=======
          forceDataL,...
          ~,...                   %angleDataL,...
          ~,...                   %cartPosDataL,...
          stateData,...
          axesHandlesLeft,...
          TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
->>>>>>> baxter
     
     end
     if(armSide(1,2))            % Right Arm
         currentArm=2;
         [fPath,StratTypeFolder,...
-<<<<<<< HEAD
-         forceData,~,...
-         ~,~,...                   %angleData,angleDataL,...
-         ~,~,...                   %cartPosData,cartPosDataL,...
-         stateData,axesHandlesRight,axesHandlesLeft,...
-         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions,rarmHandle,larmHandle);    
-=======
          forceData,...
          ~,...                   %angleData,angleDataL,...
          ~,...                   %cartPosData,cartPosDataL,...
          stateData,...
          axesHandlesRight,...
          TL,BL]=snapData3(StrategyType,FolderName,plotOptions);    
->>>>>>> baxter
     end
  
 %% B) Relative-Change Behavior Hierarchical Taxonomy: 
