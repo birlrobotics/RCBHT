@@ -149,7 +149,7 @@ function statData = primitivesCleanUp(statData,gradLabels)
             ampRatio = amp2/amp1;
             if(ampRatio==0 || ampRatio==inf); continue; end            
             if(ampRatio > amplitudeRatio || ampRatio < inv(amplitudeRatio)) 
-                break;                                              % If this is true, don't do anything else.
+                continue;                                              % If this is true, don't do anything else.
             
             % The amplitude ratio is small, it's okay to filter by duration
             else                

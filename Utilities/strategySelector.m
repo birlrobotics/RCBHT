@@ -38,7 +38,7 @@
 %       SIM_HIRO_SLA_NOISE
 %       SIM_PA10_ONE_SL_SUCCESS
 %% -------------- PA ----------------------------   
-%       SIM_HIRO_ONREAL_BAXTER_ONE_SA_SUCCESSE_PA_SUCCESS,
+%       SIM_HIRO_ONREAL_BAXTER_ONE_SA_SUCCESS_PA_SUCCESS,
 %       SIM_HIRO_ONE_PA_NOISE
 % 		SIM_PA10_ONE_PA_SUCCESS,
 %% -------------- SA ----------------------------

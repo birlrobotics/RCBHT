@@ -145,8 +145,22 @@ function  [hlbBelief,llbBelief,...
     firstIndex=first;
     lastIndex= last;
     axisIndex=firstIndex; 
-  
+
+%------------------------------------------------------------------------------------------
+    
+    % DEBUGGING
+    global DB_PLOT;         % To plot graphs
+    global DB_PRINT;        % To print console messages
+    global DB_WRITE;        % To write data to file
+    global DB_DEBUG;        % To enable debugging capabilities
+    
+    DB_PLOT         = 0;
+    DB_PRINT        = 0; 
+    DB_WRITE        = 1;
+    DB_DEBUG        = 0;
+    
 %-----------------------------------------------------------------------------------------
+    
     % RESULTS PATH
     global hiroPath;
     global baxterPath;
@@ -171,20 +185,25 @@ function  [hlbBelief,llbBelief,...
     global rarmHandle;
     global larmHandle; 
 
-    if(armSide(1,1) && ~armSide(1,2))
-        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
-        movegui(larmHandle,'west');
-        figure(larmHandle);
-    elseif(~armSide(1,1) && armSide(1,2))
-        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
-        movegui(rarmHandle,'east');
-        figure(rarmHandle);
+    if(~DB_PLOT)
+        rarmHandle=-1;
+        larmHandle=-1;
     else
-        larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
-        movegui(larmHandle,'west');   
-        rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
-        movegui(rarmHandle,'east');
-        figure(rarmHandle);
+        if(armSide(1,1) && ~armSide(1,2))
+            larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+            movegui(larmHandle,'west');
+            figure(larmHandle);
+        elseif(~armSide(1,1) && armSide(1,2))
+            rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+            movegui(rarmHandle,'east');
+            figure(rarmHandle);
+        else
+            larmHandle=figure('Name','Left Arm Forces','NumberTitle','off','position', [0, 0, 970, 950]);
+            movegui(larmHandle,'west');   
+            rarmHandle=figure('Name','Right Arm Forces','NumberTitle','off','position', [990, 0, 970, 950]);
+            movegui(rarmHandle,'east');
+            figure(rarmHandle);
+        end
     end
     
 %-----------------------------------------------------------------------------------------
@@ -195,20 +214,7 @@ function  [hlbBelief,llbBelief,...
                             % %{USER}\Documents\School\Research\AIST\Results\ForceControl\${StratTypeFolder}\gradClassFolder
                             % are deleted. 
                             % After one run, turn the switch off. The routine will used the saved values to file. 
-                            
-%------------------------------------------------------------------------------------------
-    
-    % DEBUGGING
-    global DB_PLOT;         % To plot graphs
-    global DB_PRINT;        % To print console messages
-    global DB_WRITE;        % To write data to file
-    global DB_DEBUG;        % To enable debugging capabilities
-    
-    DB_PLOT         = 1;
-    DB_PRINT        = 0; 
-    DB_WRITE        = 1;
-    DB_DEBUG        = 0;
-    
+                               
 %------------------------------------------------------------------------------------------    
    
     % Helps to Check the Existence of files
@@ -279,21 +285,23 @@ function  [hlbBelief,llbBelief,...
     if(armSide(1,1))                % Left Arm
         currentArm=1;
         [fPath,StratTypeFolder,...
-         ~,forceDataL,...
-         ~,~,...                   %angleData,angleDataL,...
-         ~,~,...                   %cartPosData,cartPosDataL,...
-         stateData,~,axesHandlesLeft,...
-         ~,~,TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
+         forceDataL,...
+         ~,...                   %angleDataL,...
+         ~,...                   %cartPosDataL,...
+         stateData,...
+         axesHandlesLeft,...
+         TL_L,BL_L]=snapData3(StrategyType,FolderName,plotOptions);
     
     end
     if(armSide(1,2))            % Right Arm
         currentArm=2;
         [fPath,StratTypeFolder,...
-         forceData,~,...
-         ~,~,...                   %angleData,angleDataL,...
-         ~,~,...                   %cartPosData,cartPosDataL,...
-         stateData,axesHandlesRight,~,...
-         TL,BL,~,~]=snapData3(StrategyType,FolderName,plotOptions);    
+         forceData,...
+         ~,...                   %angleData,angleDataL,...
+         ~,...                   %cartPosData,cartPosDataL,...
+         stateData,...
+         axesHandlesRight,...
+         TL,BL]=snapData3(StrategyType,FolderName,plotOptions);    
     end
  
 %% B) Relative-Change Behavior Hierarchical Taxonomy: 
@@ -305,7 +313,7 @@ function  [hlbBelief,llbBelief,...
     % to different environments.
    
     % Switch to the right arm figure    
-    figure(rarmHandle);
+    if(DB_PLOT); figure(rarmHandle); end
     
 %% B_Right_1) Perform regression curves for force moment reasoning for the right/left arm                  
         

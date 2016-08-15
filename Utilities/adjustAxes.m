@@ -17,7 +17,7 @@ function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMI
 
 %% Initialize local variable
     global DB_PRINT;
-    
+    global DB_PLOT; 
     fmFlag              = 0;
     COMPOUND_FORCE_DATA = 2;
 %% Start adjusting the data range for any force and moment plots.
@@ -151,27 +151,29 @@ function [TOP_LIMIT, BOTTOM_LIMIT] = adjustAxes(Type,Data,StrategyType,TIME_LIMI
     end
     
     % Adjust the axes
-    axis([Data(1,1) (Data(length(Data),1)*TIME_LIMIT_PERC) BOTTOM_LIMIT TOP_LIMIT]);
+    if(DB_PLOT)
+        axis([Data(1,1) (Data(length(Data),1)*TIME_LIMIT_PERC) BOTTOM_LIMIT TOP_LIMIT]);
 
-%% Write the legend
-    if(strcmp(Type,'Rotation Spring'))
-        legend('Snap1','Snap2','location','NorthWest');
-    elseif(strcmp(Type,'Force Plot'))
-        legend('dFx','dFy','dFz','location','NorthWest');
-    elseif(strcmp(Type,'Moment Plot'))
-        legend('dMx','dMy','dMz','location','NorthWest');
-    elseif(strcmp(Type,'Fx'))
-        %legend('dFx','location','NorthWest');
-    elseif(strcmp(Type,'Fy'))
-        %legend('dFy','location','NorthWest');
-    elseif(strcmp(Type,'Fz'))
-        %legend('dFz','location','NorthWest');
-    elseif(strcmp(Type,'Mx'))
-        %legend('dMx','location','NorthWest');
-    elseif(strcmp(Type,'My'))
-        %legend('dMy','location','NorthWest');
-    elseif(strcmp(Type,'Mz'))
-        %legend('dMz','location','NorthWest');        
+        %% Write the legend
+        if(strcmp(Type,'Rotation Spring'))
+            legend('Snap1','Snap2','location','NorthWest');
+        elseif(strcmp(Type,'Force Plot'))
+            legend('dFx','dFy','dFz','location','NorthWest');
+        elseif(strcmp(Type,'Moment Plot'))
+            legend('dMx','dMy','dMz','location','NorthWest');
+        elseif(strcmp(Type,'Fx'))
+            %legend('dFx','location','NorthWest');
+        elseif(strcmp(Type,'Fy'))
+            %legend('dFy','location','NorthWest');
+        elseif(strcmp(Type,'Fz'))
+            %legend('dFz','location','NorthWest');
+        elseif(strcmp(Type,'Mx'))
+            %legend('dMx','location','NorthWest');
+        elseif(strcmp(Type,'My'))
+            %legend('dMy','location','NorthWest');
+        elseif(strcmp(Type,'Mz'))
+            %legend('dMz','location','NorthWest');        
+        end
     end
 end
     
