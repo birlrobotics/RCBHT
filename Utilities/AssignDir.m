@@ -55,10 +55,17 @@ function StratTypeFolder = AssignDir(StrategyType)
     elseif strcmp(StrategyType, 'SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');
         
+    elseif strcmp(StrategyType, 'SIM_HIRO_ONE_SA_FAILURE')
+        StratTypeFolder = strcat('ForceControl/',StrategyType,'/');
+        
     %% Simulations: Dual Arm Side Approach 
     elseif strcmp(StrategyType, 'SIM_HIRO_TWO_SA_SUCCESS')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with simulations of the HIRO robot performing a side approach strategy with two arms: right and left under a coordination policy of push -hold.           
 
+    %% Simulations: Dual Arm Side FAILURE 
+    elseif strcmp(StrategyType, 'SIM_HIRO_TWO_SA_FAILURE')
+        StratTypeFolder = strcat('ForceControl/',StrategyType,'/');        
+        
     %------------------------ REAL HIRO---------------------------------
     %% Robot: Side Approach
     elseif strcmp(StrategyType, 'HIRO_SideApproach')
@@ -67,6 +74,9 @@ function StratTypeFolder = AssignDir(StrategyType)
     %% Robot: Side Approach Error Characterization
     elseif strcmp(StrategyType, 'REAL_HIRO_ONE_SA_ERROR_CHARAC')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with real hiro robot performing error deviations in the side approach strategy.
+        
+    elseif strcmp(StrategyType, 'REAL_HIRO_ONE_SA_FAILURE')
+        StratTypeFolder = strcat('ForceControl/',StrategyType,'/');        
 
     %------------------------ SIM BAXTER ---------------------------------------------
     elseif strcmp(StrategyType, 'SIM_BAXTER_ONE_SA_SUCCES')
