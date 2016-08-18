@@ -25,18 +25,18 @@ function testSnapVerification(StrategyType)
 
         % remove folders starting with .
         fname = folders(k).name;
-        if fname(1) == '.'
-            folders(k) = [ ];
-        elseif(~strcmp(fname(1:2),'20'))
-            folders(k) = [ ];
-%         elseif(strcmp('gradClassFolder',fname))
-%                 folders(k) = [ ];            
-%         elseif(strcmp('001_MPFH',fname))
-%             folders(k) = [ ];
-%         elseif(strcmp('002_MHFP',fname))
-%             folders(k) = [ ];          
-%         elseif(strcmp('Media',fname))
-%             folders(k) = [ ];              
+        if(strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob'))
+            if fname(1) == '.'
+                folders(k) = [ ];        
+            elseif(~strcmp(fname(1:2),'ex') && ~strcmp(fname(1:2),'FC'))
+                folders(k) = [ ];             
+            end                        
+        else
+            if fname(1) == '.'
+                folders(k) = [ ];        
+            elseif(~strcmp(fname(1:2),'20'))
+                folders(k) = [ ];             
+            end
         end
     end
 
