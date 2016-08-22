@@ -162,8 +162,8 @@ global initWriteToFileFlag; % Tells us whether this is the first iteration or no
                         fprintf(fid, 'amplitudeVal1 : %.5f\n', data(i,8));
                         fprintf(fid, 'amplitudeVal2 : %.5f\n', data(i,9));
                         fprintf(fid, 'AVG_AMP_VAL   : %.5f\n', data(i,10));                    
-                        fprintf(fid, 'Label 1       : %s\n',   gradInt2gradLbl(data(i,11)));
-                        fprintf(fid, 'Label 2       : %s\n',   gradInt2gradLbl(data(i,12)));
+                        fprintf(fid, 'Label 1       : %s\n',   actionInt2actionLbl(data(i,11))); % Changed from gradInt2gradLbl(data(i,11)));
+                        fprintf(fid, 'Label 2       : %s\n',   actionInt2actionLbl(data(i,12))); 
                         fprintf(fid, 't1Start       : %.5f\n', data(i,13));
                         fprintf(fid, 't1End         : %.5f\n', data(i,14));            
                         fprintf(fid, 't2Start       : %.5f\n', data(i,15));
