@@ -68,7 +68,7 @@ function StratTypeFolder = AssignDir(StrategyType)
         
     %------------------------ REAL HIRO---------------------------------
     %% Robot: Side Approach
-    elseif strcmp(StrategyType, 'HIRO_SideApproach')
+    elseif strcmp(StrategyType, 'REAL_HIRO_ONE_SA_SUCCESS')
         StratTypeFolder = strcat('ForceControl/',StrategyType,'/');                         % Used with real hiro robot performing the side approach strategy.
     
     %% Robot: Side Approach Error Characterization
