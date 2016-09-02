@@ -29,6 +29,7 @@
 %       SIM_HIRO_TWO_SA_SUCCESS
 %       SIM_HIRO_TWO_SA_FAILURE
 %       REAL_BAXTER_ONE_SA_SUCCESS
+%       REAL_HIRO_ONE_SA_SUCCESS
 %       REAL_HIRO_ONE_SA_ERROR_CHARAC              
 %% -------------- baxter  ----------------------------
 %       SIM_BAXTER_ONE_SA_SUCCES
@@ -93,6 +94,7 @@ function res = strategySelector(category,StrategyType)
                 strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_SVM')     ||... 
                 strcmp(StrategyType,'SIM_HIRO_TWO_SA_SUCCESS')              ||...
                 strcmp(StrategyType,'SIM_HIRO_TWO_SA_FAILURE')              ||...
+                strcmp(StrategyType,'REAL_HIRO_ONE_SA_SUCCESS')             ||...
                 strcmp(StrategyType,'REAL_HIRO_ONE_SA_ERROR_CHARAC'))
         
             res=true;

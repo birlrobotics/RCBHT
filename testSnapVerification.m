@@ -6,7 +6,7 @@
 function testSnapVerification(StrategyType)
 
     strat=AssignDir(StrategyType);
-    path='/media/vmrguser/DATA/Documents/School/research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    path='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
     %baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';  
 
     % Formulate base path
