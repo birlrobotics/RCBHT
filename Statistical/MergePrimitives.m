@@ -1,15 +1,11 @@
 %% **************************** Documentation *****************************
-% Merges data between two continguous elements in a data composition data
+% Merges data between repeated elements in a data composition data
 % structure. 
 % 
 % The data structure is a row numeric vector array composed of 7 elements: 
 % statData = [dAvg dMax dMin dStart dFinish dGradient dLabel]. 
 %
-% Update: 
-% Merge now can also look, not just at the next neighbor but at
-% many neighbors.
-%
-% If the value of gradientLblIndex is 0 or 1, it will run the former code,
+% If the value of gradientLblIndex is 0 or 1, it will merge the neighbor,
 % but if it is larger than 1, it functions as a counter and will average gradientLblIndex number of primitives.
 % 
 % Input Parameters:
@@ -44,6 +40,7 @@ function data = MergePrimitives(index,data,gradientLblIndex)
     GRAD_VAL    = 6;
     GRAD_LBL    = 7;
     
+    % Contiguous neighbor is repeated. 
     if(gradientLblIndex<2)
 
     %%  Name Label 

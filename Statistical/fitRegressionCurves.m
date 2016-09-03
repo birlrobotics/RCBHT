@@ -109,7 +109,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
 %% Data Analysis
     % Two while loops: (a) run until all data has been analyzed; (b) run until
     % a segment has been finished
-    while(i<rows+window_length) % For all force data points including a window (allow the last iteration to pass), which will be greater than rows to pass through
+    while(i<rows)%+window_length) % For all force data points including a window (allow the last iteration to pass), which will be greater than rows to pass through
         
         if(i<rows) % All iterations except the last one
             
@@ -125,6 +125,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
                     if(windowIndex>rows) 
                         Range = wStart:rows;
                         iterFlag = false;
+                        i = rows;
                     end
                 Time        = forceData(Range,1);          % Time indeces that we are working with
                 Data        = forceData(Range,forceIndex); % Corresponding force data for a given force element in a given window
@@ -182,7 +183,7 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
                     i= i+window_length;
 
 %%              % e2) If false, save data window, plot, & perform statistics. 
-                else         
+                elseif(coeffThshld <= GoodFitThreshold && iterFlag)
 
                     % i) Adjust window parameters except for first iteration
                     if(~(windowIndex-window_length==1))             % If not the beginning
@@ -231,52 +232,49 @@ function [statData,rHandle,gradLabels] = fitRegressionCurves(fPath,StrategyType,
                     iterflag = false;
                     wFinish  = rows;
                 end % End coefficient threshold
-            end     % End while(iterFlag)
-        
-%%      WRAP-UP: Last iteration        
-        % This is the last iteration, wrap up. 
-        else
-            % Set the final variables
-            wFinish     = rows;                            % Set to the last index of statData (the primitives space)
-            Range       = wStart:wFinish;               % Save from wStart to the immediately preceeding index that passed the threshold
-            Time        = forceData(Range,1);           % Time indeces that we are working with
-            Data        = forceData(Range,forceIndex);  % Corresponding force data for a given force element in a given window
-            dataFit     = dataFit(1:length(Range),1);   % Data fit - window components
-
-%%          ii) Retrieve the segment's statistical Data and write to file
-            [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(Time(1),Time(length(Time)),Data,domain,polyCoeffs,FolderName,StrategyType,index,fPath); % 1+windowlength
-
-            % iii) Keep history of statistical data 
-            % All data types are numerical in this version. // Prior versions: Given that the datatypes are mixed, we must use cells. See {http://www.mathworks.com/help/techdoc/matlab_prog/br04bw6-98.html}       
-            statData(segmentIndex,:) = [dAvg dMax dMin dStart dFinish dGradient dLabel];
-                        
-%%          CleanUp the statistical data
-            % For contiguous pairs of primitives, if one is 5 times longer
-            % than the other, absorb it.
-            statData = primitivesCleanUp(statData,gradLabels);
-
-            % iv) Write to file
-            if(DB_WRITE)
-                [FileName,write2FileFlag]=WritePrimitivesToFile(fPath,StratTypeFolder,FolderName,...
-                                                                Type,FileName,write2FileFlag, ...
-                                                                segmentIndex,dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel);
-            end
-
-%%          % v) Plot data           
-            rHandle=plotRegressionFit(Time,dataFit,Type,pHandle,TL,BL,FolderName,forceData,stateData);                                            
-
-            % Get out of the while loop
-            break;
+            end     % End while(iterFlag)       
         end         % End i<rows
     end             % End while(i<rows+window_length)
     
-    
-%% Resize statData in case not all of its rows were occupied
-    statData = resizeData(statData);  
+%%      WRAP-UP: Last iteration    
+    if(~iterFlag)
+        % This is the last iteration, wrap up. 
 
-%% Save statData.mat to file
-    if(DB_DEBUG)
-        save(strcat(fPath,StratTypeFolder,FolderName,'/statData.mat'),'statData','-mat')        
-    end
-    
+    %     % Set the final variables
+    %     wFinish     = rows;                            % Set to the last index of statData (the primitives space)
+    %     Range       = wStart:wFinish;               % Save from wStart to the immediately preceeding index that passed the threshold
+    %     Time        = forceData(Range,1);           % Time indeces that we are working with
+    %     Data        = forceData(Range,forceIndex);  % Corresponding force data for a given force element in a given window
+    %     dataFit     = dataFit(1:length(Range),1);   % Data fit - window components
+
+    %%  ii) Retrieve the segment's statistical Data and write to file
+        [dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel]=statisticalData(Time(1),Time(length(Time)),Data,domain,polyCoeffs,FolderName,StrategyType,index,fPath); % 1+windowlength
+
+        % iii) Keep history of statistical data 
+        % All data types are numerical in this version. // Prior versions: Given that the datatypes are mixed, we must use cells. See {http://www.mathworks.com/help/techdoc/matlab_prog/br04bw6-98.html}       
+        statData(segmentIndex,:) = [dAvg dMax dMin dStart dFinish dGradient dLabel];
+
+    %%      CleanUp the statistical data
+        % For contiguous pairs of primitives, if one is 5 times longer
+        % than the other, absorb it.
+        statData = primitivesCleanUp(statData,gradLabels);
+
+        % iv) Write to file
+        if(DB_WRITE)
+            [FileName,write2FileFlag]=WritePrimitivesToFile(fPath,StratTypeFolder,FolderName,...
+                                                            Type,FileName,write2FileFlag, ...
+                                                            segmentIndex,dAvg,dMax,dMin,dStart,dFinish,dGradient,dLabel);
+        end
+
+    %%      % v) Plot data           
+        rHandle=plotRegressionFit(Time,dataFit,Type,pHandle,TL,BL,FolderName,forceData,stateData);                                                            
+
+        %% Resize statData in case not all of its rows were occupied
+        statData = resizeData(statData);  
+
+    %% Save statData.mat to file
+        if(DB_DEBUG)
+            save(strcat(fPath,StratTypeFolder,FolderName,'/statData.mat'),'statData','-mat')        
+        end
+    end % End iterflag
 end     % End function

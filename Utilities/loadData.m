@@ -236,23 +236,25 @@ function [AD, CP, FD,  ...                           % Sensor Data
     r = size(SD);
     if(r(1)==5)
         endTime = SD(5,1);
-
-        % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
-        if(FD(end,1)>endTime)
-
-            % Note that SDR(5,1) is hardcoded as some time k later thatn SDR(4,1). 
-            endTime = floor(endTime/loopRate)+1; % The Angles/Torques data is comprised of steps of magnitude 0.005. Then we round down.
-
-            % Time will be from 1:to the entry denoted by the State Vector in it's 5th entry. 
-            FD = FD(1:endTime,:);
-            if(anglesDataFlag && cartposDataFlag)            
-                AD = AD(1:endTime,:);                
-                CP = CP(1:endTime,:);
-            end
-
-        else
-            SD(5,1) = FD(end,1);
+        
+        if(FD(end,1)~=endTime)
+            SD(5,1)=FD(end,1);        
         end
+        % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
+%         if(FD(end,1)>endTime)
+%             % Note that SDR(5,1) is hardcoded as some time k later thatn SDR(4,1). 
+%             endTime = floor(endTime/loopRate)+1; % The Angles/Torques data is comprised of steps of magnitude 0.005. Then we round down.
+% 
+%             % Time will be from 1:to the entry denoted by the State Vector in it's 5th entry. 
+%             FD = FD(1:endTime,:);
+%             if(anglesDataFlag && cartposDataFlag)            
+%                 AD = AD(1:endTime,:);                
+%                 CP = CP(1:endTime,:);
+%             end
+% 
+%         else
+%             SD(5,1) = FD(end,1);
+%         end
 
     %% Insert an end state for failed assemblies that have less than the 5 entries
     else
