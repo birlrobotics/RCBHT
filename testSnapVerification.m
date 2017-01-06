@@ -2,11 +2,11 @@
 %dirFlags = [files.isdir]
 % Extract only those that are directories.
 %subFolders = files(dirFlags)
-% SIM_HIRO_TWO_SA_SUCCESS
+% SIM_HIRO_ONE_SA_SUCCESS
 function testSnapVerification(StrategyType)
 
     strat=AssignDir(StrategyType);
-    path='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    path='/home/vmrguser/research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
     %baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';  
 
     % Formulate base path
@@ -28,7 +28,7 @@ function testSnapVerification(StrategyType)
         if(strcmp(StrategyType,'SIM_HIRO_ONE_SA_ERROR_CHARAC_Prob'))
             if fname(1) == '.'
                 folders(k) = [ ];        
-            elseif(~strcmp(fname(1:2),'ex') && ~strcmp(fname(1:2),'FC'))
+            elseif(~strcmp(fname(1:2),'XX') && ~strcmp(fname(1:2),'FC'))
                 folders(k) = [ ];             
             end                        
         else

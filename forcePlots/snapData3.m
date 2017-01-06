@@ -67,7 +67,7 @@ function [fPath,StratTypeFolder,...
         
 %% Assing appropriate directoy based on Ctrl Strategy to read data files
     StratTypeFolder = AssignDir(StrategyType);
-    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    hiroPath='/home/vmrguser/research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';    
     if(strategySelector('hiro',StrategyType))
         fPath = hiroPath;

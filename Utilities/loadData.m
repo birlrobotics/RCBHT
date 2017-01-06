@@ -87,6 +87,7 @@ function [AD, CP, FD,  ...                           % Sensor Data
     %% Global Variables
     
     % Flags
+    global DB_PRINT;
     global DB_WRITE;
   
     % Data
@@ -258,16 +259,21 @@ function [AD, CP, FD,  ...                           % Sensor Data
 
     %% Insert an end state for failed assemblies that have less than the 5 entries
     else
-        SD(r(1)+1,1) = FD(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
-
+        if ( SD(r(1),1) ~= FD(end,1) )
+            SD(r(1)+1,1) = FD(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
+        end
     end  
     %% Check to make sure that StateData has a finishing time included
     if(DB_WRITE)
         if(strategySelector('SA',StrategyType))
             if(length(SD)<5 && currentArm==2)
-                fprintf('StateData does not have 5 entries for the Right Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                    if(DB_PRINT)
+                        fprintf('StateData does not have 5 entries for the Right Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                    end
             elseif(length(SD)<5 && currentArm==1)
-                fprintf('StateData does not have 5 entries for the left Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                if(DB_PRINT)
+                        fprintf('StateData does not have 5 entries for the left Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                end
             end
         end
     end

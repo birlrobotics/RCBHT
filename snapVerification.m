@@ -165,7 +165,7 @@ function  [hlbBelief,llbBelief,...
     % a different root folder.
     global hiroPath;
     global baxterPath;
-    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    hiroPath='/home/vmrguser/research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';
     
 %-----------------------------------------------------------------------------------------
