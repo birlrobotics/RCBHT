@@ -1,4 +1,4 @@
-%*************************** Documentation *******************************
+%d Documentation *******************************
 % snapVerification()
 %
 % Is the main program to execute the relative-change-based hieararchical
@@ -165,7 +165,7 @@ function  [hlbBelief,llbBelief,...
     % a different root folder.
     global hiroPath;
     global baxterPath;
-    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    hiroPath='/home/vmrguser/research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';
     
 %-----------------------------------------------------------------------------------------
@@ -193,8 +193,8 @@ function  [hlbBelief,llbBelief,...
     % Create figures for the right and left arms, and provide them the
     % right window focus
 
-%     global rarmHandle;  % changed for ros/coder code. globals can't be strings
-%     global larmHandle; 
+    global rarmHandle;  
+    global larmHandle; 
     larmHandle=-1;
     rarmHandle=-1;
 
@@ -277,7 +277,7 @@ function  [hlbBelief,llbBelief,...
     PRIM_LAYER                      = 1;    % Compute the primitives layer
     MC_LAYER                        = 1;    % Compute the  motion compositions and clean up cycle
     LLB_LAYER                       = 1;    % Compute the low-level behavior and refinement cycle
-    HLB_LAYER                       = 1;    % Compute the higher-level behavior
+    HLB_LAYER                       = 0;    % Compute the higher-level behavior
     pRCBHT                          = 0;    % Compute the llb and hlb Beliefs  
     FAILURE_CHARACTERIZATION        = 0;    % Run failure characterization analysis
 %------------------------------------------------------------------------------------------
@@ -308,10 +308,11 @@ function  [hlbBelief,llbBelief,...
     end
     if(armSide(1,2))            % Right Arm
         currentArm=2;
-        [fPath,StratTypeFolder,...
-         forceData,...
-         ~,...                   %angleData,angleDataL,...
-         ~,...                   %cartPosData,cartPosDataL,...
+        [fPath,...
+         StratTypeFolder,...
+         forceData,... 
+         ~,...
+         ~,...
          stateData,...
          axesHandlesRight,...
          TL,BL]=snapData3(StrategyType,FolderName,plotOptions);    

@@ -194,18 +194,18 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
     noActionRepeat  = true;
     repeatCtr       = 0;
        
-%% Find out the first index in which the Rotation state starts    
-    
+%% Find out the first index in which the Rotation state starts, if there is one.    
+  
+     % Assumes no end-time has been inserted into the file
     for i=1:r(1)
-        if(motComps(i,10)>stateData(2,1))
-            startIndex=i;
-            break;
-        end
-    end
-    
-    % In case there is no startRot
-    if(startIndex==0)
-        startIndex=motComps(end,10); % TODO: Actually the jump could be anywhere, need to look at the magnitdue value
+        if(length(stateData)>1)
+            if(motComps(i,10)>stateData(2,1))
+                startIndex=i;
+                break;
+            end
+        else % No rotation state
+            startIndex=1; % the first index
+        end        
     end
         
 %%  Iterate through all compositions except last one
@@ -218,13 +218,10 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
         %if( ~isempty([motComps(i,:)]))
         if( ~all(motComps(i,:)==0)) % Updated July 2012
 
-            % Merge for iterations in relevants states: PA10-PivApp: states
-            % 3 and 4; HIRO-SideApp: state2.Rotation and state3.Insertion.
-            % Update: 2013Aug. Now that we are doing failure
-            % characterization, we also need to do this in the Approach
-            % State for the HIRO work.
-            if(motComps(j,T2E) < stateVec(2,2))
-           %if(motComps(i,T1S)>stateVec(1,1) && motComps(j,T2E) < stateVec(2,2))
+            % Cleaning up.
+            % Conditional statement can set in which states to cleanup.
+            %if( length(stateVec)>1 && ( motComps(j,T2E) < stateVec(2,2)) )
+            %if(motComps(i,T1S)>stateVec(1,1) && motComps(j,T2E) < stateVec(2,2))
 
                 % If there are two contiguous actionLbl2actionInt('a')s accross compositions
                 if(intcmp( motComps(i,ACTN_LBL),  actionLbl2actionInt('a')) && intcmp(motComps(j,ACTN_LBL),actionLbl2actionInt('a')))
@@ -282,7 +279,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
                         end
                     end % End Action Repeat                                                            
                 end     % End if two contiguous actionLbl2actionInt('a')s                
-            end         % End iterations through if statment                        
+            %end         % End iterations through if statment                        
         end             % End if not empty
     end                 % For loop
     

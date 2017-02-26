@@ -60,6 +60,8 @@ function [fPath,StratTypeFolder,...
     % Arm Side Detection
     global armSide;                         % Indicates which arms are available.
     global currentArm;                      % Indicates which are is currently being used.
+    global rarmHandle;                      % handles to right/left arm
+    global larmHandle;
     
     % Switch Flag
     SWITCH = 1;                             % Used to determine whether to turn on margin's around plots for extra space when adjusting.     
@@ -67,7 +69,7 @@ function [fPath,StratTypeFolder,...
         
 %% Assing appropriate directoy based on Ctrl Strategy to read data files
     StratTypeFolder = AssignDir(StrategyType);
-    hiroPath='/media/vmrguser/DATA/Documents/School/Research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
+    hiroPath='/media/vmrguser/hdd/school/research/AIST/Results/'; % The path at which you want to save the main body of results. Folders will be created within this folder for different strategyTypes.
     baxterPath='/home/vmrguser/ros/indigo/baxter_ws/src/birl_baxter/birl_demos/pivotApproach/pa_demo/bags/';    
     if(strategySelector('hiro',StrategyType))
         fPath = hiroPath;
