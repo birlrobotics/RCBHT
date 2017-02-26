@@ -87,6 +87,7 @@ function [AD, CP, FD,  ...                           % Sensor Data
     %% Global Variables
     
     % Flags
+    global DB_PRINT;
     global DB_WRITE;
   
     % Data
@@ -236,36 +237,43 @@ function [AD, CP, FD,  ...                           % Sensor Data
     r = size(SD);
     if(r(1)==5)
         endTime = SD(5,1);
-
-        % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
-        if(FD(end,1)>endTime)
-
-            % Note that SDR(5,1) is hardcoded as some time k later thatn SDR(4,1). 
-            endTime = floor(endTime/loopRate)+1; % The Angles/Torques data is comprised of steps of magnitude 0.005. Then we round down.
-
-            % Time will be from 1:to the entry denoted by the State Vector in it's 5th entry. 
-            FD = FD(1:endTime,:);
-            if(anglesDataFlag && cartposDataFlag)            
-                AD = AD(1:endTime,:);                
-                CP = CP(1:endTime,:);
-            end
-
-        else
-            SD(5,1) = FD(end,1);
+        
+        if(FD(end,1)~=endTime)
+            SD(5,1)=FD(end,1);        
         end
+        % There are 2 cases to check: (1) If state endTime is less than actual data, and if it is more.  
+%         if(FD(end,1)>endTime)
+%             % Note that SDR(5,1) is hardcoded as some time k later thatn SDR(4,1). 
+%             endTime = floor(endTime/loopRate)+1; % The Angles/Torques data is comprised of steps of magnitude 0.005. Then we round down.
+% 
+%             % Time will be from 1:to the entry denoted by the State Vector in it's 5th entry. 
+%             FD = FD(1:endTime,:);
+%             if(anglesDataFlag && cartposDataFlag)            
+%                 AD = AD(1:endTime,:);                
+%                 CP = CP(1:endTime,:);
+%             end
+% 
+%         else
+%             SD(5,1) = FD(end,1);
+%         end
 
     %% Insert an end state for failed assemblies that have less than the 5 entries
     else
-        SD(r(1)+1,1) = FD(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
-
+        if ( SD(r(1),1) ~= FD(end,1) )
+            SD(r(1)+1,1) = FD(end,1);  % Enter a new row in SDR which includes the last time value contained in any of the other data vecs.
+        end
     end  
     %% Check to make sure that StateData has a finishing time included
     if(DB_WRITE)
         if(strategySelector('SA',StrategyType))
             if(length(SD)<5 && currentArm==2)
-                fprintf('StateData does not have 5 entries for the Right Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                    if(DB_PRINT)
+                        fprintf('StateData does not have 5 entries for the Right Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                    end
             elseif(length(SD)<5 && currentArm==1)
-                fprintf('StateData does not have 5 entries for the left Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                if(DB_PRINT)
+                        fprintf('StateData does not have 5 entries for the left Arm. You probably need to include the finishing time of the Assembly task in this vector.\n');
+                end
             end
         end
     end

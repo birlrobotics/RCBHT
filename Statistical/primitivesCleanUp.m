@@ -118,7 +118,7 @@ function statData = primitivesCleanUp(statData,gradLabels)
             else
                 % Merge as many primitives as are repeated
                 nextPrimitive=numRepeated;
-                statData = MergePrimitives(i,statData,nextPrimitive); % The third argument is gradLabels but it is not used.
+                statData = MergePrimitives(i,statData,nextPrimitive); 
                 i=i+1+numRepeated; % Since, j+1 was deleted, move to the next next element.
 
                 % Change the noRepeat flag 

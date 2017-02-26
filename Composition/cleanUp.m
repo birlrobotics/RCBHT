@@ -143,7 +143,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
         
     % HIRO Side Approach
     else
-        NumStates       = length(stateData)-3;
+            NumStates       = length(stateData)-3;
     end
         
     
@@ -156,17 +156,21 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
 %%  Define the state vector for Desired States (where there are meaningful signals)
     % In our initial development stages it was only: 3-5 in PivotApproach and 3-4 in SideApproach
     % But now it's is in all states
-    % Create a 3x2 vector that does not contains the first and last items of each
+    % Create a 3x2 vector that does not contain the first and last items of each
     % state. Create a for loop that iterates through all time indeces of a
-    % given state, and at the end, changes the indeces of the for loop to
+    % given state, and at the end, change the indeces of the for loop to
     % go through the next state. 
-    stateVec        = zeros(NumStates,2);
+    if NumStates>1
+        stateVec    = zeros(NumStates,2);
+    else
+        stateVec    = zeros(1,2);  % only one state
+    end
     
     %% PivApproach
     if(strategySelector('PA',StrategyType))
         stateVec(1,:)   = [stateData(2,1),(stateData(3,1)-SIM_TIME_STEP)];      % State 2. Need to subtract one time step based on simulation timing.
         
-        % Check for ize of state vector. In FailureCases, the size will be smaller:
+        % Check for size of state vector. In FailureCases, the size will be smaller:
         if(NumStates>=3)
             stateVec(2,:)   = [stateData(3,1),(stateData(4,1)-SIM_TIME_STEP)];  % State 3 
         end
@@ -182,8 +186,8 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
             stateVec(2,:) = [stateData(2,1),stateData(3,1)];
         elseif(NumStates==-1) % Has Approach
             % Keep all the limits the same
-            %stateVec(1,:) = [stateData(2,1),stateData(2,1)];
-            stateVec(2,:) = [stateData(2,1),stateData(2,1)];                         
+            stateVec(1,:) = [stateData(2,1),stateData(2,1)];
+            %stateVec(2,:) = [stateData(2,1),stateData(2,1)];                         
         end        
     end
             
@@ -198,14 +202,17 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
   
      % Assumes no end-time has been inserted into the file
     for i=1:r(1)
-        if(length(stateData)>1)
-            if(motComps(i,10)>stateData(2,1))
-                startIndex=i;
-                break;
-            end
-        else % No rotation state
-            startIndex=1; % the first index
-        end        
+        if(motComps(i,10)>stateData(2,1))
+            startIndex=i;
+            break;
+        end
+    end
+    
+    % In case there is no startRot, set leave startIndex to zero, and skip
+    % cleaning.
+    if(startIndex==0)
+        %startIndex=motComps(end,10); % TODO: Actually the jump could be anywhere, need to look at the magnitdue value
+        startIndex=r(1); % make this index bigger than r(1)-1 used below and skip this clean up session. 
     end
         
 %%  Iterate through all compositions except last one
@@ -364,7 +371,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
             ampRatio = amp2/amp1;
             if(ampRatio==0 || ampRatio==inf); continue; end            
             if(ampRatio > lengthRatio || ampRatio < inv(lengthRatio)) 
-                break;                                              % If this is true, don't do anything else.
+                continue;                                              % If this is true, don't do anything else.
             
             % Durations
             else                  
@@ -444,7 +451,7 @@ function motComps = cleanUp(StrategyType,motComps,stateData,gradLabels,actionLbl
             ampRatio = amp2/amp1;
             if(ampRatio==0 || ampRatio==inf); continue; end            
             if(ampRatio > lengthRatio || ampRatio < inv(lengthRatio)) 
-                break;                                              % If this is true, don't do anything else.
+                continue;                                              % If this is true, don't do anything else.
             
             % Durations
             else                   
